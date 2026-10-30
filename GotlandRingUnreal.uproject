@@ -1,0 +1,16 @@
+{
+  "FileVersion": 3,
+  "Category": "Migration prototype",
+  "Description": "GotlandRing source-data road and apron migration",
+  "Plugins": [
+    {
+      "Name": "PythonScriptPlugin",
+      "Enabled": true
+    },
+    {
+      "Name": "EditorScriptingUtilities",
+      "Enabled": true
+    }
+  ],
+  "EngineAssociation": "5.8"
+}

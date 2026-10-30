@@ -1,0 +1,35 @@
+{
+  "source_sha256": "778bba6066860608dbc3414143773115c783a22824da9617d8ff5062bbefdf4d",
+  "rows": 2406,
+  "chainage_m": [
+    0.0,
+    7214.397
+  ],
+  "edge_reconstruction_max_m": 0.0011452443169513533,
+  "road_apron_seam_gap_m": 0,
+  "circuit_closure_gap_cm": 0.0,
+  "triangles": 86580,
+  "bounds_cm": [
+    [
+      -42041.200395832006,
+      69929.55674619885
+    ],
+    [
+      -79063.29417362451,
+      67139.08718726787
+    ],
+    [
+      -1969.66585592832,
+      406.89030076800003
+    ]
+  ],
+  "origin": {
+    "latitude": 57.835756925442,
+    "longitude": 18.830856092125,
+    "height_RH2000_m": 38.507350922,
+    "sweref99_e": 727401.318349,
+    "sweref99_n": 6416863.884251
+  },
+  "transform": "UE(X,Y,Z)=100*Unity(z,x,y); local AEQD, not SWEREF offsets",
+  "limitations": "Terrain-derived road and 3 m aprons only. No DTM raster present. Export checks only; see Validation/import_validation.json for engine checks."
+}
