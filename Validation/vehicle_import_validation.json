@@ -1,0 +1,138 @@
+{
+  "meshes": [
+    {
+      "name": "Vehicle_00",
+      "triangles": 75572
+    },
+    {
+      "name": "Vehicle_01",
+      "triangles": 1074
+    },
+    {
+      "name": "Vehicle_02",
+      "triangles": 1156
+    },
+    {
+      "name": "Vehicle_03",
+      "triangles": 18275
+    },
+    {
+      "name": "Vehicle_04",
+      "triangles": 1252
+    },
+    {
+      "name": "Vehicle_05",
+      "triangles": 8280
+    },
+    {
+      "name": "Vehicle_06",
+      "triangles": 8280
+    },
+    {
+      "name": "Vehicle_07",
+      "triangles": 8280
+    },
+    {
+      "name": "Vehicle_08",
+      "triangles": 8280
+    },
+    {
+      "name": "Vehicle_09",
+      "triangles": 280
+    },
+    {
+      "name": "Vehicle_10",
+      "triangles": 2152
+    },
+    {
+      "name": "Vehicle_11",
+      "triangles": 18988
+    },
+    {
+      "name": "Vehicle_12",
+      "triangles": 4122
+    },
+    {
+      "name": "Vehicle_13",
+      "triangles": 1368
+    },
+    {
+      "name": "Vehicle_14",
+      "triangles": 6
+    },
+    {
+      "name": "Vehicle_15",
+      "triangles": 2
+    },
+    {
+      "name": "Vehicle_16",
+      "triangles": 43
+    },
+    {
+      "name": "Vehicle_17",
+      "triangles": 52
+    },
+    {
+      "name": "Vehicle_18",
+      "triangles": 4986
+    },
+    {
+      "name": "Vehicle_19",
+      "triangles": 1880
+    },
+    {
+      "name": "Vehicle_20",
+      "triangles": 27768
+    },
+    {
+      "name": "Vehicle_21",
+      "triangles": 162
+    }
+  ],
+  "collision_meshes": [
+    "LeftApron",
+    "RightApron",
+    "Road",
+    "Scenery_00",
+    "Scenery_01",
+    "Scenery_02",
+    "Scenery_03",
+    "Scenery_04",
+    "Scenery_05",
+    "Scenery_06",
+    "Scenery_07",
+    "Scenery_08",
+    "Scenery_09",
+    "Scenery_10",
+    "Scenery_11",
+    "Scenery_12",
+    "Scenery_13",
+    "Scenery_14",
+    "Scenery_15",
+    "Scenery_16",
+    "Scenery_17"
+  ],
+  "wheel_centers_cm": [
+    [
+      126.64644622802734,
+      -80.40039825439453,
+      33.86575698852539
+    ],
+    [
+      126.69422912597656,
+      80.1154556274414,
+      33.86575698852539
+    ],
+    [
+      -127.93030548095703,
+      -81.4244155883789,
+      33.86573028564453
+    ],
+    [
+      -127.80206298828125,
+      81.46915435791016,
+      33.86573028564453
+    ]
+  ],
+  "wheel_radius_cm": 33.86572301387787
+}

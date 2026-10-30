@@ -1,0 +1,5 @@
+dynamics.cpp
+engine_rows=4000 max_rpm_error=0.0009765625 max_torque_error_nm=0.0002746582031 audio_peak=0.3272165954 audio_max_sample_error=2.980232239e-07 audio_relative_rms_error=4.08259131e-07 muted_peak=0
+30s_speed_kmh=179.2293091 gear=4 shifts=3 max_slip=0.1563977599
+brake_start_kmh=179.2293091 brake_end_kmh=0.003157681087
+PASS drivetrain, tire budgets, reverse, brake cut, audio rates and source parity

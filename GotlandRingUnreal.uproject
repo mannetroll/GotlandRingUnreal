@@ -12,5 +12,12 @@
       "Enabled": true
     }
   ],
-  "EngineAssociation": "5.8"
+  "EngineAssociation": "5.8",
+  "Modules": [
+    {
+      "Name": "GotlandRingUnreal",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ]
 }

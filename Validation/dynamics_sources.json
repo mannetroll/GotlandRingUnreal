@@ -1,0 +1,22 @@
+[
+  {
+    "path": "Assets/Scripts/SubaruEngine.cs",
+    "sha256": "12c342d767d99466191a81c47d860957460bc6e285ea9a11de07779cf0cc2910"
+  },
+  {
+    "path": "Assets/Scripts/SubaruVehicleSetup.cs",
+    "sha256": "f08544a399cf82652ff2a12664c2667284b517eedc3f076f1b4cf95761ba7f6b"
+  },
+  {
+    "path": "Assets/Scripts/SubaruAwdController.cs",
+    "sha256": "027f660a76b6ddf9058ef46e75361cb577af3ad69e6b1903a7a5eef79afca500"
+  },
+  {
+    "path": "Assets/Scripts/ImprezaEngineMixer.cs",
+    "sha256": "6d79d34191049bc9dbbf5b9dc5b3e8abe6437bff82fa7b8a1cb57bb85892a1a5"
+  },
+  {
+    "path": "Assets/Scripts/BoxerAudio.cs",
+    "sha256": "3df78e4a61136cf174eeec3ed465c11b73e5d0edb27c33e64c25ff7fee85a13b"
+  }
+]

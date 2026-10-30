@@ -1,0 +1,21 @@
+{
+  "engine": "Unreal Engine 5.8.4",
+  "host": "EXCAVATOR",
+  "telemetry_frames": 1854,
+  "median_step_s": 0.01670000000000016,
+  "max_step_s": 0.016799999999999926,
+  "source_sha256": {
+    "Source/GotlandRingUnrealEditor.Target.cs": "29ebfdce90bc21a8ad64accc3f4cf5c697ec62de3b102739ea124e4ad9c26da4",
+    "Source/GotlandRingUnreal.Target.cs": "df11a3ef19343cac8e370dfd2a8611c776ee6c75f25f96189dce322d56a57409",
+    "Source/GotlandRingUnreal/RingCar.h": "35dd61e728ab1a1e1082b2d9d24f59bb628bb57109f24fcd2cfa7ad1f9ba88c6",
+    "Source/GotlandRingUnreal/RingCar.cpp": "d347b90b423bffeb359893327cae25201f50deb2e9f5696c62e2c5b15dbbe6ee",
+    "Source/GotlandRingUnreal/RingAudio.h": "26b3d722e7583b761ef7db2234511db5344e24ba36b7dcc8805efcb980217116",
+    "Source/GotlandRingUnreal/RingEngineMixer.h": "e4dc936c49b637b13a8692d5f7e503e1d8c9f38c3e38087d024499924185da56",
+    "Source/GotlandRingUnreal/RingDynamics.h": "64747b93c1c8db6d58c81c33a1629bc086c0bbb8188136e7d72f4f32514fb623",
+    "Source/GotlandRingUnreal/EngineCycles.h": "9f2b5798d4378878d406120b5024a9f38f677885e40d34941480c7c5bde80026",
+    "Source/GotlandRingUnreal/RingCarValidation.cpp": "02168507b1009a5ea708f2a58df93c18ba37513d0e48d50249cbed9581fb569b",
+    "Source/GotlandRingUnreal/GotlandRingUnreal.Build.cs": "cd4ea9155f0ee6a694ba056599c67a3d43b1487fc3e32d8b1bf0de1099908383",
+    "Source/GotlandRingUnreal/RingAudio.cpp": "39e53fc802f9ba10ca730f1a06f50347be7c0f47dab3492be2990e5de6f5d177",
+    "Source/GotlandRingUnreal/GotlandRingUnreal.cpp": "a27dd645d05546452061954ab3a10e71f5d1b40b02d061a6a8497328d2c7d15e"
+  }
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "file": "ImprezaLow.wav",
+    "sha256": "8591ac9fce511331ab8f8e81f322dfbdf50f4de2491062552bbe93669658590a",
+    "samples": 2092,
+    "rate": 44100,
+    "license": "MIT; repository owner recording"
+  },
+  {
+    "file": "ImprezaMid.wav",
+    "sha256": "ffc664ab0fd13c49af0cfbdf730fee3f6e1aaddaf550030f1ac8f9606996384b",
+    "samples": 1729,
+    "rate": 44100,
+    "license": "MIT; repository owner recording"
+  },
+  {
+    "file": "ImprezaHigh.wav",
+    "sha256": "5d0b9c302d43e803426bfe9d05bf18f6b7efd07a70f742ac656ba8fce8502d51",
+    "samples": 1176,
+    "rate": 44100,
+    "license": "MIT; repository owner recording"
+  }
+]

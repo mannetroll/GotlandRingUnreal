@@ -69,6 +69,7 @@ for name, texture_name in [('Road','Asphalt'),('LeftApron','Gravel'),('RightApro
     if error > 0.1:
         raise RuntimeError(f'{name}: imported bounds differ by {error} cm: {actual} versus {expected}')
     import_checks.append(dict(mesh=name,bounds_cm=actual,max_bounds_error_cm=error))
+exec(compile((root/'Scripts/import_scenery.py').read_text(), str(root/'Scripts/import_scenery.py'), 'exec'))
 sun = actors.spawn_actor_from_class(unreal.DirectionalLight, unreal.Vector(0,0,10000), unreal.Rotator(pitch=-45,yaw=30,roll=0))
 sun_component = sun.get_component_by_class(unreal.DirectionalLightComponent)
 sun_component.set_editor_property('atmosphere_sun_light', True)
@@ -99,3 +100,5 @@ unreal.EditorAssetLibrary.save_directory('/Game/Migration')
 (root/'Saved').mkdir(exist_ok=True)
 (root/'Saved/import_validation.json').write_text(json.dumps(dict(engine=unreal.SystemLibrary.get_engine_version(),chainage_m=metadata['chainage_m'],cross_sections=metadata['rows'],triangles=metadata['triangles'],circuit_closure_gap_cm=metadata['circuit_closure_gap_cm'],meshes=import_checks),indent=2))
 unreal.log('Import finished. Verify scale, winding, UV orientation and lighting in the viewport.')
+
+exec(compile((root/'Scripts/import_vehicle.py').read_text(), str(root/'Scripts/import_vehicle.py'), 'exec'))

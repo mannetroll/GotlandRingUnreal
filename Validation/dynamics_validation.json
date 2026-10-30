@@ -1,0 +1,14 @@
+{
+	"max_speed_kmh": 118.2457275390625,
+	"peak_rpm": 6731.16748046875,
+	"max_gear": 3,
+	"brake_start_kmh": 118.13875579833984,
+	"brake_end_kmh": 0,
+	"max_drive_torque_while_braking_nm": 0,
+	"steering_yaw_deg": 12.849324226379395,
+	"peak_rear_lateral_slip": 0.20634210109710693,
+	"lift_recovery_sideslip_deg": 0.091785922646522522,
+	"reverse_kmh": -29.325733184814453,
+	"final_contacts": 4,
+	"passed": true
+}

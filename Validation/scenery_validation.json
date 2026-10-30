@@ -1,0 +1,132 @@
+{
+  "trees": 10595,
+  "labels": 85,
+  "meshes": [
+    {
+      "name": "Scenery_00",
+      "material": "Galvanized Armco",
+      "objects": 911,
+      "triangles": 26724,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_01",
+      "material": "Kerb weathered white",
+      "objects": 26,
+      "triangles": 9156,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_02",
+      "material": "Kerb weathered charcoal",
+      "objects": 26,
+      "triangles": 9156,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_03",
+      "material": "Pale concrete safety barriers",
+      "objects": 8,
+      "triangles": 24438,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_04",
+      "material": "Quarry limestone and sand",
+      "objects": 3,
+      "triangles": 35098,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_05",
+      "material": "Gotland dry meadow",
+      "objects": 15,
+      "triangles": 115060,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_06",
+      "material": "Paint",
+      "objects": 118,
+      "triangles": 19576,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_07",
+      "material": "Main building slate metal roof",
+      "objects": 100,
+      "triangles": 1200,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_08",
+      "material": "Alloy",
+      "objects": 86,
+      "triangles": 1032,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_09",
+      "material": "Main building shaded glazing",
+      "objects": 6,
+      "triangles": 72,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_10",
+      "material": "Main building pale render",
+      "objects": 5,
+      "triangles": 38,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_11",
+      "material": "Asphalt",
+      "objects": 1,
+      "triangles": 2,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_12",
+      "material": "Paddock limestone gravel",
+      "objects": 1,
+      "triangles": 8,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_13",
+      "material": "Gotland/Catch fence wire",
+      "objects": 1,
+      "triangles": 13194,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_14",
+      "material": "Limestone",
+      "objects": 150,
+      "triangles": 1800,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_15",
+      "material": "Track sign navy",
+      "objects": 42,
+      "triangles": 504,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_16",
+      "material": "Blue kerbs",
+      "objects": 42,
+      "triangles": 504,
+      "max_bounds_error_cm": 0.0
+    },
+    {
+      "name": "Scenery_17",
+      "material": "Pine",
+      "objects": 143,
+      "triangles": 42380,
+      "max_bounds_error_cm": 0.0
+    }
+  ]
+}
