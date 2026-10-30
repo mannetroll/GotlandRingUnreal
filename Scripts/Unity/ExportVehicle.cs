@@ -27,6 +27,8 @@ public static class ExportVehicle {
    var filter=renderer;
    int wheel=-1;Vector3 pivot=Vector3.zero;
    for(int wi=0;wi<4;wi++)if(renderer.transform.IsChildOf(model.wheelSpin[wi])){wheel=wi;pivot=model.wheelSpin[wi].position;break;}
+   if(renderer==model.cockpitHead)wheel=-2;
+   if(renderer.transform.IsChildOf(model.steeringWheel)){wheel=-3;pivot=model.steeringWheel.position;}
    var v=mesh.vertices;var normals=mesh.normals;var uv=mesh.uv;
 
    for(int part=0;part<mesh.subMeshCount;part++){

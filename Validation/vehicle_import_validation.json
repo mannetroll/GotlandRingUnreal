@@ -46,47 +46,55 @@
     },
     {
       "name": "Vehicle_11",
-      "triangles": 18988
+      "triangles": 11942
     },
     {
       "name": "Vehicle_12",
-      "triangles": 4122
+      "triangles": 2484
     },
     {
       "name": "Vehicle_13",
-      "triangles": 1368
+      "triangles": 1638
     },
     {
       "name": "Vehicle_14",
-      "triangles": 6
+      "triangles": 1368
     },
     {
       "name": "Vehicle_15",
-      "triangles": 2
+      "triangles": 6
     },
     {
       "name": "Vehicle_16",
-      "triangles": 43
+      "triangles": 2
     },
     {
       "name": "Vehicle_17",
-      "triangles": 52
+      "triangles": 43
     },
     {
       "name": "Vehicle_18",
-      "triangles": 4986
+      "triangles": 52
     },
     {
       "name": "Vehicle_19",
-      "triangles": 1880
+      "triangles": 4986
     },
     {
       "name": "Vehicle_20",
-      "triangles": 27768
+      "triangles": 1880
     },
     {
       "name": "Vehicle_21",
+      "triangles": 27768
+    },
+    {
+      "name": "Vehicle_22",
       "triangles": 162
+    },
+    {
+      "name": "Vehicle_23",
+      "triangles": 7046
     }
   ],
   "collision_meshes": [

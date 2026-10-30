@@ -1,5 +1,7 @@
 #include "RingCar.h"
 #include "RingAudio.h"
+#include "RingRouteData.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Camera/CameraComponent.h"
@@ -24,9 +26,8 @@ ARingCar::ARingCar() {
  Chassis=CreateDefaultSubobject<UBoxComponent>(TEXT("Chassis"));
  SetRootComponent(Chassis); Chassis->SetBoxExtent(FVector(195,80,24));
  Chassis->SetCollisionProfileName(TEXT("PhysicsActor"));
- Chassis->SetSimulatePhysics(true); Chassis->SetMassOverrideInKg(NAME_None,1360,true);
+ Chassis->SetSimulatePhysics(true);
  Chassis->SetLinearDamping(0); Chassis->SetAngularDamping(.12f);
- Chassis->SetCenterOfMass(FVector((.58f-.5f)*252,0,0));
  Chassis->BodyInstance.bUseCCD=true;
  Boom=CreateDefaultSubobject<USpringArmComponent>(TEXT("ChaseBoom")); Boom->SetupAttachment(Chassis);
  Boom->TargetArmLength=650; Boom->SetRelativeLocation(FVector(0,0,110));
@@ -42,7 +43,8 @@ ARingCar::ARingCar() {
  WheelCenters={FVector(126,-73,30.57),FVector(126,73,30.57),FVector(-126,-73,30.57),FVector(-126,73,30.57)};
 }
 void ARingCar::BeginPlay() {
- Super::BeginPlay(); StartPose=GetActorTransform(); TestStart=GetActorLocation();
+ Super::BeginPlay(); Chassis->SetMassOverrideInKg(NAME_None,1360,true);Chassis->SetCenterOfMass(FVector((.58f-.5f)*252,0,0));Pilot=MakeUnique<Ring::Pilot>(Ring::RouteData,UE_ARRAY_COUNT(Ring::RouteData)); StartPose=GetActorTransform(); TestStart=GetActorLocation();
+ PilotTest=FParse::Param(FCommandLine::Get(),TEXT("RingPilotTest"));Autopilot=PilotTest;
  DynamicsTest=FParse::Param(FCommandLine::Get(),TEXT("RingDynamicsTest"));
  TestMode=DynamicsTest||FParse::Param(FCommandLine::Get(),TEXT("RingDrivingTest"));
  for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It){
@@ -54,9 +56,10 @@ void ARingCar::BeginPlay() {
  EngineAudio->Start();
  for(int32 I=0;I<VisualMeshes.Num();I++) {
   auto* V=NewObject<UStaticMeshComponent>(this); V->SetupAttachment(Chassis);
-  V->SetStaticMesh(VisualMeshes[I]);V->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  V->SetStaticMesh(VisualMeshes[I]);
+  if(V->GetMaterial(0)&&V->GetMaterial(0)->GetName()==TEXT("M_Vehicle_16"))Dashboard=V->CreateDynamicMaterialInstance(0);V->SetCollisionEnabled(ECollisionEnabled::NoCollision);
   V->RegisterComponent();AddInstanceComponent(V);Visuals.Add(V);
-  V->SetRelativeLocation((VisualWheels[I]<0?FVector::ZeroVector:WheelCenters[VisualWheels[I]])-FVector(0,0,48));
+  V->SetRelativeLocation((VisualWheels[I]==-3?FVector(28.58618,-38.799202,83.9761047):(VisualWheels[I]<0?FVector::ZeroVector:WheelCenters[VisualWheels[I]]))-FVector(0,0,48));
  }
  if(TestMode) {
   FString Data;FFileHelper::LoadFileToString(Data,*(FPaths::ProjectDir()/TEXT("Validation/collision_probes.json")));
@@ -74,7 +77,7 @@ void ARingCar::BeginPlay() {
 }
 void ARingCar::ResetCar() {
  Chassis->SetPhysicsLinearVelocity(FVector::ZeroVector);Chassis->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
- SetActorTransform(StartPose,false,nullptr,ETeleportType::TeleportPhysics);Chassis->WakeAllRigidBodies();Dynamics=Ring::Dynamics();
+ SetActorTransform(StartPose,false,nullptr,ETeleportType::TeleportPhysics);Chassis->WakeAllRigidBodies();Dynamics=Ring::Dynamics();Pilot->Reset();PreviousVelocity=ViewAcceleration=ViewLean=ViewTilt=FVector::ZeroVector;
 }
 void ARingCar::Tick(float Dt) {
  Super::Tick(Dt);Elapsed+=Dt;
@@ -84,11 +87,24 @@ void ARingCar::Tick(float Dt) {
   Throttle=(PC->IsInputKeyDown(EKeys::W)||PC->IsInputKeyDown(EKeys::Up))?1.f:0.f;
   ReverseRequest=PC->IsInputKeyDown(EKeys::X);
   Brake=(PC->IsInputKeyDown(EKeys::S)||PC->IsInputKeyDown(EKeys::Down))?1.f:0.f;
-  Steering=(PC->IsInputKeyDown(EKeys::D)?1.f:0.f)-(PC->IsInputKeyDown(EKeys::A)?1.f:0.f);
+  Steering=((PC->IsInputKeyDown(EKeys::D)||PC->IsInputKeyDown(EKeys::Right))?1.f:0.f)-((PC->IsInputKeyDown(EKeys::A)||PC->IsInputKeyDown(EKeys::Left))?1.f:0.f);
   Handbrake=PC->IsInputKeyDown(EKeys::SpaceBar);
-  if(PC->WasInputKeyJustPressed(EKeys::R))ResetCar();
+  if(PC->WasInputKeyJustPressed(EKeys::R))RecoverCar();
+  if(PC->WasInputKeyJustPressed(EKeys::Home))ResetCar();
+  if(PC->WasInputKeyJustPressed(EKeys::P)){Autopilot=!Autopilot;Pilot->Reset();UE_LOG(LogTemp,Display,TEXT("Ring autopilot %s via P"),Autopilot?TEXT("ON"):TEXT("OFF"));}
+  if(PC->WasInputKeyJustPressed(EKeys::C)){ViewMode=(ViewMode+1)%3;LookYaw=LookPitch=0;}
+  if(PC->WasInputKeyJustPressed(EKeys::U)){MouseControl=!MouseControl;MouseSteering=0;LookYaw=LookPitch=0;}
+  if(PC->WasInputKeyJustPressed(EKeys::F2))FScreenshotRequest::RequestScreenshot(FPaths::ProjectSavedDir()/TEXT("GotlandRingCockpit.png"),true,false);
+  if(PC->WasInputKeyJustPressed(EKeys::Escape)){
+   DrivePaused=!DrivePaused;
+   if(DrivePaused){PauseVelocity=Chassis->GetPhysicsLinearVelocity();PauseAngular=Chassis->GetPhysicsAngularVelocityInRadians();Chassis->SetSimulatePhysics(false);}
+   else{Chassis->SetSimulatePhysics(true);Chassis->SetPhysicsLinearVelocity(PauseVelocity);Chassis->SetPhysicsAngularVelocityInRadians(PauseAngular);}
+  }
   if(PC->WasInputKeyJustPressed(EKeys::M))Muted=!Muted;
  }
+ UpdateView(Dt,PC);
+ if(DrivePaused){EngineAudio->SetEngine(Dynamics.Motor.Rpm(),0,0,true);return;}
+ if(MouseControl)Steering=MouseSteering;
  if(DynamicsTest)RunDynamicsTest(Throttle,Brake,Steering);
  // A reproducible standalone physics smoke test uses the same force path as keyboard driving.
  if(TestMode&&!DynamicsTest) {
@@ -122,6 +138,13 @@ void ARingCar::Tick(float Dt) {
  SpeedKmh=Velocity.Size()*.036f;MaxSpeed=FMath::Max(MaxSpeed,SpeedKmh);
  if(ReverseRequest&&Throttle==0){if(Speed>.5f)Brake=1;else Throttle=-1;}
  SideslipDegrees=FMath::RadiansToDegrees(FMath::Atan2(FVector::DotProduct(Velocity,GetActorRightVector())/100,FMath::Max(1.f,FMath::Abs(Speed))));
+ if(Autopilot){
+  FVector P=GetActorLocation()/100;float Fraction,Offset;bool OnRoad;
+  int Segment=Pilot->Nearest({float(P.X),float(P.Y)},Fraction,Offset,OnRoad);
+  auto C=Pilot->Drive({float(P.X),float(P.Y)},GetActorRotation().Yaw,{float(Velocity.X/100),float(Velocity.Y/100)},Segment,OnRoad,Dt,Velocity.Size()/100);
+  Pilot->Correct(C,Speed,SideslipDegrees,FVector::DotProduct(Chassis->GetPhysicsAngularVelocityInRadians(),Up),Velocity.Size()/100,Dt);
+  Throttle=C.Throttle;Brake=C.Brake;Steering=C.Steering;Handbrake=false;PilotTarget=C.Target*3.6f;PilotError=C.Error;
+ }
  GroundedWheels=0;
  float Extensions[4]={},Travel[4]={},LongForces[4]={},LatForces[4]={};
  FVector Anchors[4],Contacts[4],Normals[4];
@@ -178,16 +201,20 @@ void ARingCar::Tick(float Dt) {
  Chassis->AddForce(-Velocity*(Velocity.Size()/100)*.42f);
  if(GroundedWheels)Chassis->AddForce(-Forward*FMath::Clamp(Speed,-1.f,1.f)*.012f*1360*981);
  EngineAudio->SetEngine(Dynamics.Motor.Rpm(),FMath::Abs(Dynamics.Throttle),Velocity.Size()/100,Muted);
+ if(Dashboard){Dashboard->SetScalarParameterValue(TEXT("Rpm"),Dynamics.Motor.Rpm());Dashboard->SetScalarParameterValue(TEXT("Speed"),SpeedKmh);Dashboard->SetScalarParameterValue(TEXT("Gear"),Dynamics.Throttle<0?-1:Dynamics.Gear);}
+ for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]==-3)Visuals[I]->SetRelativeRotation(FQuat(FVector(.982749939,0,-.184939444),FMath::DegreesToRadians(Dynamics.SteeringDegrees*12)));
  for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]>=0) {
   int32 W=VisualWheels[I];Visuals[I]->SetRelativeLocation(WheelCenters[W]-FVector(0,0,48-Extensions[W]));
   Visuals[I]->SetRelativeRotation(FRotator(0,W<2?Dynamics.SteeringDegrees:0,0).Quaternion()*FRotator(-FMath::RadiansToDegrees(Dynamics.Wheels[W].Rotation),0,0).Quaternion());
  }
 
+ if(PilotTest)RunPilotTest(Dt);
 }
 void ARingHUD::DrawHUD() {
  Super::DrawHUD();auto* Car=Cast<ARingCar>(GetOwningPawn());if(!Car)return;
- DrawRect(FLinearColor(0,0,0,.65f),20,20,1100,80);
+ DrawRect(FLinearColor(0,0,0,.65f),20,20,1500,110);
  DrawText(FString::Printf(TEXT("GOTLANDRING | %.0f km/h | %d RPM | gear %d | contacts %d/4 | slip %.1f deg"),Car->SpeedKmh,int32(Car->Dynamics.Motor.Rpm()),Car->Dynamics.Throttle<0?-1:Car->Dynamics.Gear,Car->GroundedWheels,Car->SideslipDegrees),FLinearColor::White,30,30,nullptr,1.5f);
- DrawText(TEXT("W accelerate   S brake   X reverse   A D steer   SPACE handbrake   R reset   M mute"),FLinearColor::White,30,65,nullptr,1.2f);
+ DrawText(TEXT("W/Up accelerate   S/Down brake   X reverse   A/D/Arrows steer   SPACE handbrake   R recover   HOME restart"),FLinearColor::White,30,65,nullptr,1.2f);
+ DrawText(FString::Printf(TEXT("C view: %s   U mouse steer   P autopilot: %s   ESC pause   M mute   F2 screenshot"),Car->ViewMode==0?TEXT("cockpit"):Car->ViewMode==1?TEXT("bonnet"):TEXT("chase"),Car->Autopilot?TEXT("ON"):TEXT("OFF")),FLinearColor::White,30,95,nullptr,1.2f);
 }
 ARingGameMode::ARingGameMode(){DefaultPawnClass=nullptr;HUDClass=ARingHUD::StaticClass();}
