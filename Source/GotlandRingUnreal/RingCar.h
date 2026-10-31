@@ -30,7 +30,7 @@ public:
  UFUNCTION(BlueprintCallable) void ResetCar();
  float SpeedKmh=0;
  int32 GroundedWheels=0;
- bool Autopilot=false;
+ bool Autopilot=false,TyreSquealEnabled=false;
  int32 ViewMode=0;
  float PilotTarget=0,PilotError=0;
 private:
@@ -58,6 +58,7 @@ private:
  FString DynamicsTelemetry;
  void SetupDynamicsTest();
  void RunDynamicsTest(float& Throttle,float& Brake,float& Steering);
+ float PeakTyreSqueal=0;
  float Elapsed=0, MaxSpeed=0, BrakeStart=0, BrakeEnd=0, SteerYaw=0, TestDistance=0;
  FVector TestStart;
  bool TestMode=false, TestFinished=false, Muted=false, ScreenshotTaken=false, SteeringTestStarted=false;

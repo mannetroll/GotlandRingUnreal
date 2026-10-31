@@ -19,7 +19,7 @@ int main(int argc,char** argv){
  float buffer[960],reference[960],peak=0,error=0,mutePeak=0;double errorEnergy=0,signalEnergy=0;
  for(int n=0;n<1200;n++){
   float rpm=n<200?900:n<800?900+(n-200)*9:6300-(n-800)*13.5f;
-  mixer.Render(buffer,960,2,48000,rpm,n>=200&&n<800?1:0,n<200?0:25,n>=1100);
+  mixer.Render(buffer,960,2,48000,rpm,n>=200&&n<800?1:0,n<200?0:25,0,n>=1100);
   audio.read(reinterpret_cast<char*>(reference),sizeof(reference));assert(audio.gcount()==sizeof(reference));
 
   for(int i=0;i<960;i++){assert(std::isfinite(buffer[i]));float d=buffer[i]-reference[i];error=std::max(error,std::abs(d));errorEnergy+=d*d;signalEnergy+=reference[i]*reference[i];peak=std::max(peak,std::abs(buffer[i]));if(n>1120)mutePeak=std::max(mutePeak,std::abs(buffer[i]));}
@@ -27,7 +27,7 @@ int main(int argc,char** argv){
  double relative=std::sqrt(errorEnergy/signalEnergy);
  std::cout<<std::setprecision(10)<<"engine_rows="<<rows<<" max_rpm_error="<<rpmError<<" max_torque_error_nm="<<torqueError<<" audio_peak="<<peak<<" audio_max_sample_error="<<error<<" audio_relative_rms_error="<<relative<<" muted_peak="<<mutePeak<<"\n";
  assert(peak<1&&relative<.002&&mutePeak==0);
- for(int rate:{44100,48000,96000}){Ring::EngineMixer m;for(int n=0;n<100;n++){m.Render(buffer,960,2,rate,6800,1,40,false);for(int i=0;i<960;i++)assert(std::isfinite(buffer[i])&&std::abs(buffer[i])<1);}}
+ for(int rate:{44100,48000,96000}){Ring::EngineMixer m;for(int n=0;n<100;n++){m.Render(buffer,960,2,rate,6800,1,40,1,false);for(int i=0;i<960;i++)assert(std::isfinite(buffer[i])&&std::abs(buffer[i])<1);}}
  Ring::Dynamics d;for(auto& w:d.Wheels){w.Grounded=true;w.Load=Ring::Mass*9.81f/4;}
  float speed=0,maxSlip=0;int maxGear=1;
  for(int n=0;n<15000;n++){

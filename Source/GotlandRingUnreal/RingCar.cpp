@@ -52,7 +52,7 @@ void ARingCar::BeginPlay() {
   if(Mesh->GetStaticMesh()&&Mesh->GetStaticMesh()->GetName()==TEXT("Road"))RoadSurface=Mesh;
  }
  checkf(RoadSurface.IsValid(),TEXT("The driving level must contain the migrated Road mesh"));
- if(TestMode)EngineAudio->CaptureTestAudio();
+ if(TestMode){TyreSquealEnabled=true;EngineAudio->CaptureTestAudio();}
  EngineAudio->Start();
  for(int32 I=0;I<VisualMeshes.Num();I++) {
   auto* V=NewObject<UStaticMeshComponent>(this); V->SetupAttachment(Chassis);
@@ -101,9 +101,10 @@ void ARingCar::Tick(float Dt) {
    else{Chassis->SetSimulatePhysics(true);Chassis->SetPhysicsLinearVelocity(PauseVelocity);Chassis->SetPhysicsAngularVelocityInRadians(PauseAngular);}
   }
   if(PC->WasInputKeyJustPressed(EKeys::M))Muted=!Muted;
+  if(PC->WasInputKeyJustPressed(EKeys::T))TyreSquealEnabled=!TyreSquealEnabled;
  }
  UpdateView(Dt,PC);
- if(DrivePaused){EngineAudio->SetEngine(Dynamics.Motor.Rpm(),0,0,true);return;}
+ if(DrivePaused){EngineAudio->SetEngine(Dynamics.Motor.Rpm(),0,0,0,true);return;}
  if(MouseControl)Steering=MouseSteering;
  if(DynamicsTest)RunDynamicsTest(Throttle,Brake,Steering);
  // A reproducible standalone physics smoke test uses the same force path as keyboard driving.
@@ -129,7 +130,7 @@ void ARingCar::Tick(float Dt) {
  }
  if(TestMode&&Elapsed>(DynamicsTest?33:14)&&!ScreenshotTaken){
   float Peak=0;int32 Samples=0;bool Ok=EngineAudio->SaveCapture(FPaths::ProjectSavedDir()/TEXT("GotlandRingEngine.wav"),Peak,Samples);
-  FString AudioReport=FString::Printf(TEXT("{\"passed\":%s,\"samples\":%d,\"sample_rate\":%d,\"peak\":%.8f}"),Ok?TEXT("true"):TEXT("false"),Samples,EngineAudio->State->Rate.load(),Peak);
+  FString AudioReport=FString::Printf(TEXT("{\"passed\":%s,\"samples\":%d,\"sample_rate\":%d,\"peak\":%.8f,\"peak_tyre_squeal\":%.8f}"),(Ok&&PeakTyreSqueal>0)?TEXT("true"):TEXT("false"),Samples,EngineAudio->State->Rate.load(),Peak,PeakTyreSqueal);
   FFileHelper::SaveStringToFile(AudioReport,*(FPaths::ProjectSavedDir()/TEXT("audio_validation.json")));
   FScreenshotRequest::RequestScreenshot(FPaths::ProjectSavedDir()/TEXT("GotlandRingDriving.png"),true,false);ScreenshotTaken=true;}
  if(TestMode&&Elapsed>(DynamicsTest?35:16))FGenericPlatformMisc::RequestExit(false);
@@ -200,7 +201,8 @@ void ARingCar::Tick(float Dt) {
  }
  Chassis->AddForce(-Velocity*(Velocity.Size()/100)*.42f);
  if(GroundedWheels)Chassis->AddForce(-Forward*FMath::Clamp(Speed,-1.f,1.f)*.012f*1360*981);
- EngineAudio->SetEngine(Dynamics.Motor.Rpm(),FMath::Abs(Dynamics.Throttle),Velocity.Size()/100,Muted);
+ float Squeal=TyreSquealEnabled?Dynamics.TyreSqueal():0;PeakTyreSqueal=FMath::Max(PeakTyreSqueal,Squeal);
+ EngineAudio->SetEngine(Dynamics.Motor.Rpm(),FMath::Abs(Dynamics.Throttle),Velocity.Size()/100,Squeal,Muted);
  if(Dashboard){Dashboard->SetScalarParameterValue(TEXT("Rpm"),Dynamics.Motor.Rpm());Dashboard->SetScalarParameterValue(TEXT("Speed"),SpeedKmh);Dashboard->SetScalarParameterValue(TEXT("Gear"),Dynamics.Throttle<0?-1:Dynamics.Gear);}
  for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]==-3)Visuals[I]->SetRelativeRotation(FQuat(FVector(.982749939,0,-.184939444),FMath::DegreesToRadians(Dynamics.SteeringDegrees*12)));
  for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]>=0) {
@@ -215,6 +217,6 @@ void ARingHUD::DrawHUD() {
  DrawRect(FLinearColor(0,0,0,.65f),20,20,1500,110);
  DrawText(FString::Printf(TEXT("GOTLANDRING | %.0f km/h | %d RPM | gear %d | contacts %d/4 | slip %.1f deg"),Car->SpeedKmh,int32(Car->Dynamics.Motor.Rpm()),Car->Dynamics.Throttle<0?-1:Car->Dynamics.Gear,Car->GroundedWheels,Car->SideslipDegrees),FLinearColor::White,30,30,nullptr,1.5f);
  DrawText(TEXT("W/Up accelerate   S/Down brake   X reverse   A/D/Arrows steer   SPACE handbrake   R recover   HOME restart"),FLinearColor::White,30,65,nullptr,1.2f);
- DrawText(FString::Printf(TEXT("C view: %s   U mouse steer   P autopilot: %s   ESC pause   M mute   F2 screenshot"),Car->ViewMode==0?TEXT("cockpit"):Car->ViewMode==1?TEXT("bonnet"):TEXT("chase"),Car->Autopilot?TEXT("ON"):TEXT("OFF")),FLinearColor::White,30,95,nullptr,1.2f);
+ DrawText(FString::Printf(TEXT("C view: %s   U mouse steer   P autopilot: %s   ESC pause   M mute   T tyres: %s   F2 screenshot"),Car->ViewMode==0?TEXT("cockpit"):Car->ViewMode==1?TEXT("bonnet"):TEXT("chase"),Car->Autopilot?TEXT("ON"):TEXT("OFF"),Car->TyreSquealEnabled?TEXT("ON"):TEXT("OFF")),FLinearColor::White,30,95,nullptr,1.2f);
 }
 ARingGameMode::ARingGameMode(){DefaultPawnClass=nullptr;HUDClass=ARingHUD::StaticClass();}

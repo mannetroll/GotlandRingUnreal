@@ -1,0 +1,33 @@
+{
+    "host":  "fractal",
+    "engine":  "5.8.4",
+    "source_mixer_sha256":  "6227DD907331C96E23C7DCFD625B18CE944942872C3D6B0C4D450332E783333B",
+    "portable_results":  [
+                             "engine_rows=4000 max_rpm_error=0.0009765625 max_torque_error_nm=0.0002746582031 audio_peak=0.3272165954 audio_max_sample_error=2.980232239e-07 audio_relative_rms_error=4.08259131e-07 muted_peak=0",
+                             "PASS drivetrain, tire budgets, reverse, brake cut, audio rates and source parity",
+                             "PASS source mixer parity at 44100/48000/96000 Hz; max_error=0 relative_rms=0 peak=0.375812; mute, loaded slip, airborne and loose-surface gates"
+                         ],
+    "collision":  {
+                      "probes":  7218,
+                      "misses":  0,
+                      "max_height_error_cm":  2.50002,
+                      "passed":  true
+                  },
+    "driving":  {
+                    "max_speed_kmh":  37.028347015380859,
+                    "brake_start_kmh":  36.684383392333984,
+                    "brake_end_kmh":  0.11205951124429703,
+                    "distance_m":  16.406774520874023,
+                    "steering_yaw_change_deg":  10.976778030395508,
+                    "grounded_wheels_before_reset":  4,
+                    "reset_position_error_cm":  0,
+                    "passed":  true
+                },
+    "audio":  {
+                  "passed":  true,
+                  "samples":  1345536,
+                  "sample_rate":  48000,
+                  "peak":  0.34527367,
+                  "peak_tyre_squeal":  0.88457245
+              }
+}

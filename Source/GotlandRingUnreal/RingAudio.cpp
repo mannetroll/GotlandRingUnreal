@@ -9,7 +9,7 @@ public:
  FRingGenerator(TSharedPtr<FRingAudioState,ESPMode::ThreadSafe> InState,const FSoundGeneratorInitParams& P):State(InState),Rate(int32(P.SampleRate)),Channels(P.NumChannels){State->Rate.store(Rate);}
  int32 GetNumChannels()const override{return Channels;}
  int32 OnGenerateAudio(float* Out,int32 Count)override{
-  Mixer.Render(Out,Count,Channels,Rate,State->Rpm.load(),State->Load.load(),State->Speed.load(),State->Muted.load());
+  Mixer.Render(Out,Count,Channels,Rate,State->Rpm.load(),State->Load.load(),State->Speed.load(),State->Squeal.load(),State->Muted.load());
   int32 Written=State->Written.load(std::memory_order_relaxed);
   int32 Copy=FMath::Min(Count,int32(State->Capture.size())-Written);
   if(Copy>0){FMemory::Memcpy(State->Capture.data()+Written,Out,Copy*sizeof(float));State->Written.store(Written+Copy,std::memory_order_release);}
@@ -18,7 +18,7 @@ public:
 };
 URingAudio::URingAudio(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer){NumChannels=2;bAllowSpatialization=false;bAutoActivate=false;State=MakeShared<FRingAudioState,ESPMode::ThreadSafe>();}
 void URingAudio::CaptureTestAudio(){State->Capture.resize(96000*2*20);}
-void URingAudio::SetEngine(float Rpm,float Load,float Speed,bool Muted){State->Rpm.store(Rpm);State->Load.store(Load);State->Speed.store(Speed);State->Muted.store(Muted);}
+void URingAudio::SetEngine(float Rpm,float Load,float Speed,float Squeal,bool Muted){State->Rpm.store(Rpm);State->Load.store(Load);State->Speed.store(Speed);State->Squeal.store(Squeal);State->Muted.store(Muted);}
 ISoundGeneratorPtr URingAudio::CreateSoundGenerator(const FSoundGeneratorInitParams& Params){return MakeShared<FRingGenerator,ESPMode::ThreadSafe>(State,Params);}
 bool URingAudio::SaveCapture(const FString& Filename,float& Peak,int32& Samples){
  Samples=State->Written.load(std::memory_order_acquire);int32 Rate=State->Rate.load();Peak=0;
