@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>GotlandRingUnreal-Portable</AssemblyName>
+    <ApplicationIcon>Impreza.ico</ApplicationIcon>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <Version>0.3.4</Version>
+    <InformationalVersion>unreal.8</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <Company>Mannetroll Solutions AB</Company>
+    <Product>Gotland Ring Unreal</Product>
+    <GamePayload Condition="'$(GamePayload)' == ''">$(MSBuildProjectDirectory)\..\Saved\SingleFile\Game.zip</GamePayload>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(GamePayload)" LogicalName="Game.zip" />
+  </ItemGroup>
+</Project>

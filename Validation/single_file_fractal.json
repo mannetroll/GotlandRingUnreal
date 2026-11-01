@@ -1,0 +1,17 @@
+﻿{
+    "cached_launch_seconds":  0.3491564,
+    "cache_reused":  true,
+    "single_exe_only":  true,
+    "passed":  true,
+    "self_contained_runtime":  true,
+    "sha256":  "77f66eaf999c9dd1d8423437ec2c028cf7e82f7d1292b526f81bf340cc861bae",
+    "concurrent_cold_extraction":  true,
+    "gameplay":  {
+                     "Driving":  true,
+                     "Instruments":  true,
+                     "Migration":  true
+                 },
+    "forwarded_arguments_with_spaces":  true,
+    "extracted_files_checked":  42,
+    "cold_seconds":  1.0358912999999998
+}

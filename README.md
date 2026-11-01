@@ -1,85 +1,283 @@
-# GotlandRingUnreal
+# Gotland Ring / Impreza — Unreal Engine
 
-Full-circuit UE 5.8.4 migration, imported and rendered on EXCAVATOR: 7,214.397 m of the existing GotlandRing road with 3 m gravel aprons. Includes Unity’s existing meadow, quarry piles, woodland, building, barriers, turbines, markings and signs. Surrounding ground is an authored approximation, not surveyed terrain.
+![Unreal cockpit with live Plesse instruments and animated driver hands](Renders/DriverHands.png)
 
-Build the C++ editor target, then open `GotlandRingUnreal.uproject` with UE 5.8; `/Game/Migration/Prototype` is the startup level. Saved Unreal assets are included under `Content/Migration`.
+| SADAIR’S SPEAR reference lap | Gotland Ring scenery |
+|---|---|
+| ![Unreal reference lap with bonnet view, live cockpit and lap clock](Renders/ReferenceLap.png) | ![Main building and surrounding circuit scenery rendered in Unreal](Renders/SceneryView01.png) |
 
-To rebuild:
+**Drive a rally Impreza around a Baltic circuit, with a live cockpit, open practice and a reference-lap viewer.**
 
-1. Keep `GotlandRingUnity` beside this directory and run `python3 Scripts/export_scene.py` followed by `python3 Scripts/export_scenery.py` and `python3 Scripts/export_vehicle.py` here. Run `python3 Scripts/export_instruments.py` to export the original analogue cluster and artwork, and `python3 Scripts/export_cockpit.py` to regenerate the compiled racing line and source-controller fixtures. The scenery exporter uses the existing Unity editor in an isolated copy.
-2. In Unreal's Python console run `exec(open(unreal.Paths.project_dir() + 'Scripts/import_scene.py').read())`.
-3. For an automated 2560×1440 capture, launch the Editor with `-ExecutePythonScript=<absolute-project-path>/Scripts/render_scene.py`. Output: `Saved/GotlandRing.png`.
+**Game source:** [unreal.8](https://github.com/mannetroll/GotlandRingUnreal/tree/unreal.8) · **Published downloads:** [Releases](https://github.com/mannetroll/GotlandRingUnreal/releases) · **Unity project:** [GotlandRing](https://github.com/mannetroll/GotlandRing)
 
-The importer replaces its generated level and assets. EXCAVATOR engine: `D:/UE_5.8`; project: `D:/Dev/GotlandRing/GotlandRingUnreal`.
+An Unreal Engine **5.8** driving prototype using the original GotlandRing road geometry, scenery, car textures and Impreza engine recordings. The approximately **7.214 km** circuit includes banked asphalt, gravel aprons, woodland, limestone quarry banks, barriers, buildings, numbered signs and twelve rotating wind turbines.
 
-See [MIGRATION_REPORT.md](MIGRATION_REPORT.md) for coordinates, commands, attribution and limitations, [validation](Validation/import_validation.json) for measured bounds, and [render](Renders/GotlandRing.png) for the actual Unreal image.
+The current build includes **AWD physics and arcade handling**, an animated driver with steering and regrips, the Plesse analogue cluster, rebindable controls, four driving cameras, **15 scenery views**, and **SADAIR’S SPEAR • REFERENCE LAP**. The game is implemented in native C++ and renders through Unreal; Unity is only needed when regenerating source assets.
 
-For a close-up of the saved scenery, use `Scripts/render_detail.py` as the ExecutePythonScript target. See [detail render](Renders/GotlandRingDetail.png) and [scenery validation](Validation/scenery_validation.json).
+## Get behind the wheel
 
-## Driving
+**Windows x64:** double-click **GotlandRingUnreal-Portable.exe**. Copy that one file when moving the game to another computer. The game, its runtime DLLs and the launcher's .NET runtime are bundled; no Unreal Editor, separate .NET installation or installer is required.
 
-Press Play in `/Game/Migration/Prototype`, then click the viewport, or run `Scripts/Drive.ps1` on EXCAVATOR. W/Up accelerates, S/Down brakes, X brakes forward travel then reverses, A/D or Left/Right steers, Space applies the rear handbrake, R recovers to the nearest road section, Home restarts at start/finish, M mutes all audio, and T toggles and saves tyre squeal (off until enabled). F1 or F3 opens the driving setup menu. C cycles cockpit, bonnet, chase and drone views. Mouse motion looks around; U switches to mouse steering and right-click recentres. P alone toggles autopilot; manual driving inputs do not cancel it. Escape opens the pause menu; F switches fullscreen/windowed, J hides the HUD, and F2 saves a screenshot under Saved. Forward throttle takes priority over X. The HUD shows speed, engine RPM, boost, gear, body sideslip, lap timing and a banking-coloured minimap. The original analogue cluster also appears in exterior camera views.
+First launch extracts the game to `%LOCALAPPDATA%\Mannetroll\GotlandRingUnreal\<payload hash>`. Subsequent launches reuse that version. The current EXE is approximately **388 MB**; allow space for both the EXE and the approximately **494 MB** extracted game.
 
-The native vehicle ports Unity’s independent flywheel, torque curve, automatic clutch, five forward ratios, reverse, shift delay/cooldown and throttle blips. It also ports the 50:50 AWD torque budget, traction control, ABS, combined-grip reduction, powered rear slip curve, doubled lift-off grip, off-road multiplier, anti-roll, drag and rolling resistance. Four rotating raycast tires apply these forces to Chaos. Tire contact/rotation is an Unreal solver implementation, not Unity’s proprietary WheelCollider solver; matching tuning does not establish identical handling or real-car fidelity. No detailed differential, tire temperature or wear model exists in the Unity source.
+**macOS Apple Silicon:** open **GotlandRingUnreal.app**. The complete game is inside the app bundle; no Unreal Editor is required. The current build targets **macOS 14 or newer** on an Apple Silicon Mac. Keep the accompanying asset credits when sharing a packaged build.
 
-Engine audio uses the three existing owner-recorded Impreza cycles with the ported phase-locked mixer, RPM pitch, load crossfade/filtering, lift-off air, DC filtering and mute fades. The audio renderer owns its playback state; the game thread supplies engine RPM, load and speed. The cockpit uses the original camera anchors, hides the driver head, rotates the steering wheel, applies acceleration lean and road vibration, and displays live analogue RPM/speed needles, gear and trip distance on Unity’s Plesse cluster artwork. Autopilot follows Unity’s exported racing line and speed plan through ordinary steering/throttle/brake inputs, including its AWD sideslip/yaw correction. Unity’s load-weighted asphalt tyre squeal is included in the audio mixer, with its original pitch wander, noise filters, attack/release and low-speed gate. Airborne and loose-surface wheels contribute no squeal. The AWD setup menu includes grip, front torque share, low/high-speed steering angles, steering rate, traction control and tyre squeal. Apply saves to `Saved/DrivingSettings.json`; Cancel discards edits; Restore defaults changes the draft until Apply is pressed. The menu restores the prior pause state when closed. Resets and road recovery preserve the applied setup. Animated driver-hand IK, distinct kerb vibration and the arcade comparison controller remain outside this migration.
+The current single-file Windows EXE and macOS app are local build outputs. The published [v0.1.0 release](https://github.com/mannetroll/GotlandRingUnreal/releases/tag/v0.1.0) contains earlier Windows ZIP and installer builds. Use the build instructions below to reproduce the current game.
 
-Build on EXCAVATOR:
+| Control | Action |
+|---|---|
+| W / Up arrow | Accelerate |
+| S / Down arrow | Brake and cut drive |
+| A / D or Left / Right arrows | Steer in keyboard mode |
+| X | Reverse; brakes forward travel before reversing |
+| Space | Rear handbrake while driving |
+| U | Toggle keyboard / mouse steering |
+| Mouse | Look around or orbit in keyboard mode; steer in mouse mode |
+| Right mouse | Centre the view and mouse steering |
+| P | Toggle Auto(P)ilot |
+| C | Cycle cockpit / bonnet / chase / drone views |
+| V | Cycle 15 scenery views; C or Escape returns to the saved drive |
+| O | Open / leave the SADAIR’S SPEAR reference lap |
+| H | Switch AWD / arcade handling and restart the lap |
+| F3 / F1 | Open driving, view, sound and drone settings |
+| R | Recover to the nearest road section |
+| Home | Restart at start/finish |
+| Escape | Open / close the pause menu |
+| F | Toggle fullscreen / windowed while driving or in menus |
+| J | Show / hide the driving HUD |
+| M | Mute / unmute sound |
+| T | Toggle and save tyre squeal; off by default |
+| F2 | Save a driving, scenery or reference-lap screenshot |
+
+These are the default bindings. **Escape → Keyboard help & setup** lets you change, clear, restore and save driving keys. On-screen hints follow saved bindings. On compact Mac keyboards, Home is usually **Fn + Left arrow**; function keys may require Fn.
+
+## Inside the prototype
+
+- A textured Impreza rally coupe in Splash red, with a cockpit, roll cage, single driver and rotating/steering road wheels.
+- Animated arms and hands using the source driver mesh and seven-bone skin. Elbows bend and hands release and regrip as the steering wheel turns.
+- Live Plesse speed and RPM needles, gear, fuel indication and trip distance. The cluster also appears as an overlay in exterior driving views.
+- A complete circuit reconstructed from the supplied 3 m surface CSV, including asymmetric widths, banking and crown/hollow profiles.
+- Imported limestone ground, quarry piles, pit building, catch fencing, Armco and concrete barriers, edge markings, kerbs and **10,595 mapped pine trees**.
+- **42 numbered track signs** with centred Swedish names, white lettering and navy/blue panels.
+- **Twelve wind turbines** using the supplied positions and dimensions. Rotors face west and turn clockwise from the front at **10 RPM**.
+- A photographic HDR sky with the original white clouds, reused road and car textures, and fixed daylight exposure with bloom and lens flare disabled.
+- An independent engine/flywheel model, automatic clutch, five-speed gearbox, reverse, turbo boost, four-wheel drive, suspension and tyre forces.
+- Autopilot using the exported racing line and speed plan through ordinary steering, throttle and brake inputs.
+- A live reference-lap viewer with bonnet and cockpit views, a lap clock, animated driver and estimated Impreza engine controls.
+- Recorded engine-cycle audio with RPM/load blending, plus separate asphalt, kerb and loose-ground rolling sounds.
+- A banking-coloured minimap, live car marker, start/finish checker, FPS/frame time and checkpoint-gated lap timing.
+
+## Driving environment
+
+The saved startup level is **`/Game/Migration/Prototype`**. Driving starts in the cockpit with autopilot off. **C** switches to bonnet, chase and drone views; mouse movement changes the view, and right-click recentres it.
+
+Press **V** for the scenery tour: the main building, turbine 2, fencing, Gutemålrakan, the quarry, kerbs, three turbine groups and the circuit overview. Each press advances; the fifteenth view is followed by a return to your car. **C** or **Escape** exits early. Position, momentum, handling mode, autopilot and lap timing are preserved. Turbines continue rotating during the tour.
+
+The minimap uses all **2,405 road sections** and a symmetric **±5.8°** banking legend. Blue indicates negative banking, red positive banking, and positive banking raises the right edge. Ordered quarter-circuit gates prevent reverse crossings and recovery jumps from awarding a lap. **Home** restarts the timer while preserving the session best; changing handling mode with **H** also clears the best time.
+
+This Unreal build has one drivable Impreza. Unity's training pad, second-car selection, paint cycling and Desktop screenshots with embedded metadata are not included.
+
+### Driving dynamics
+
+**F3** pauses driving and opens settings. AWD exposes tyre grip, front torque share, steering angles, steering rate and traction control. Defaults include **50:50 torque distribution**, **42° low-speed / 19° high-speed steering**, and a **90 degrees/s** steering rate.
+
+The arcade comparison uses Unity's bicycle-model controller, with editable cornering grip, lateral grip, steering response, acceleration, braking and off-road grip. **H** switches between AWD and arcade and restarts the lap.
+
+The **View & sound** tab controls cockpit movement and surface sound, defaulting to **50%** and **65%**. Drone settings control height (**5–60 m**, default **30 m**) and follow distance (**5–120 m**, default **40 m**). **Apply & close** saves; **Cancel** discards edits; **Restore defaults** changes the draft until applied. Settings preserve the prior pause state.
+
+AWD engine RPM follows combustion torque, flywheel inertia and clutch load rather than being set directly from road speed. The drivetrain includes automatic gear changes, shift delays and rev matching. Four raycast tyre contacts apply suspension and combined longitudinal/lateral forces to **Chaos**, with traction control, ABS, powered slip and increased lift-off grip.
+
+The contact solver is an Unreal implementation, so matching source parameters does not establish identical Unity handling or calibrated real-car behaviour. Circuit dimensions, scenery heights and vehicle response remain prototype approximations. Damage, opponents, tyre temperature/wear, fuel consumption and coolant simulation are not implemented; fuel and coolant indications use the source defaults.
+
+### Mouse steering
+
+Press **U** to hold steering with horizontal mouse movement. **W/Up**, **S/Down** and **X** remain the pedals and reverse control. Keyboard steering is ignored in mouse mode, and right-click centres steering. Switch back to keyboard mode to use mouse look and orbit.
+
+### Reference lap viewer
+
+Press **O** for **SADAIR’S SPEAR • REFERENCE LAP**, matched to the [onboard reference](https://youtu.be/fSb8Rx1OKHI). It renders the circuit live, with a bonnet view above a **GAME COCKPIT** inset and reference clock.
+
+| Replay control | Action |
+|---|---|
+| O | Return to the saved drive or its pause menu |
+| Space / Escape | Pause / resume playback |
+| Home | Restart playback |
+| M | Toggle sound |
+| F2 | Save the composed view |
+
+The **3:06 sequence** contains **4,464 samples at 24 Hz**, including an approach and a **2:55.88 reference lap**. Playback stops at the end. Driving time does not advance while watching, and returning restores the car's position, momentum, handling mode, autopilot and lap progress.
+
+This is a position-matched rendering with estimated engine controls, rather than a physics lap or measured Subaru telemetry. It uses the same car artwork, animated hands and instrument display as driving. No source video or video decoder is required to play it.
+
+### Auto(P)ilot
+
+**P** hands steering, throttle and braking to the circuit controller; press it again for manual driving. Manual pedal and steering inputs do not cancel autopilot. Camera selection, mouse look, pause and settings remain available.
+
+The controller follows the exported racing line and speed plan, previews braking and corrects AWD sideslip/yaw error. It drives through the same force path as keyboard input. Engaging while facing away from the road or entering a corner too fast can still run wide.
+
+## Build it
+
+**Game:** Unreal Engine **5.8**, native C++ and Chaos. Packaged builds are Windows x64 and macOS ARM64/Metal. The tested Mac engine is **5.8.4**.
+
+**Windows single-file launcher:** .NET **10**, published self-contained for Windows x64. The SDK is needed to build the launcher, not to run it.
+
+Open **`GotlandRingUnreal.uproject`**, build its C++ editor target and open **`/Game/Migration/Prototype`**. Saved road, scenery, sky and vehicle assets are committed under `Content/Migration`; normal game builds do not need Unity or the source recordings.
+
+### macOS (Apple Silicon)
+
+Install Unreal Engine 5.8 and Xcode, then run from the repository root:
+
+```bash
+bash Scripts/PackageMac.sh "$PWD/../Releases/unreal.8-macOS"
+open ../Releases/unreal.8-macOS/Mac/GotlandRingUnreal.app
+```
+
+The script detects Unreal at `~/Epic Games/UE_5.8`. For another installation:
+
+```bash
+UE_MAC_ROOT="/path/to/UE_5.8" bash Scripts/PackageMac.sh "$PWD/../Releases/unreal.8-macOS"
+```
+
+It builds, cooks, stages and packages the app, applies the mirrored Unity Impreza icon, and copies the asset credits. The local app is ad-hoc signed; public distribution signing/notarization is separate.
+
+### Windows (x64)
+
+Install Unreal Engine 5.8, Visual Studio C++ Build Tools and a Windows SDK. Run from the repository root in PowerShell. Set the engine path for your machine; Fractal uses `C:\UE_5.8`.
 
 ```powershell
-& D:/UE_5.8/Engine/Build/BatchFiles/Build.bat GotlandRingUnrealEditor Win64 Development -Project=D:/Dev/GotlandRing/GotlandRingUnreal/GotlandRingUnreal.uproject -WaitMutex
+$UE = 'C:\UE_5.8'
+$Project = Join-Path $PWD 'GotlandRingUnreal.uproject'
+& "$UE\Engine\Build\BatchFiles\Build.bat" GotlandRingUnrealEditor Win64 Development "-Project=$Project" -WaitMutex
 ```
 
-Validation:
+To make a portable game folder, stage the Microsoft C++ runtime DLLs alongside the game:
 
-- `Scripts/ValidateInstruments.ps1`: GPU pixel checks for idle/fast speed and RPM needles, full/low fuel, reverse gear and trip state; saves a cockpit capture plus 1200×400 cluster renders under `Saved`.
-
-- `Scripts/ValidateSettings.ps1`: checks cancel/apply/defaults persistence, reset behavior, pause restoration, world-level drone positioning and disabled cockpit movement, and captures `Saved/GotlandRingSettings.png` and `Saved/GotlandRingDrone.png`. Uses a separate temporary settings file. Defaults to fractal’s `C:\UE_5.8`; pass `-EngineRoot D:\UE_5.8` on EXCAVATOR.
-
-- `Scripts/ValidatePilot.ps1`: full-circuit autopilot run and cockpit/bonnet/chase captures; writes `Saved/pilot_validation.json` and telemetry. Source-controller parity: compile `Scripts/validate_pilot.cpp` with C++17 and run it with `Validation/pilot_reference.csv`.
-- `Scripts/ValidateDriving.ps1`: rendered circuit collision, acceleration, braking, steering, reset and live audio check.
-- `Scripts/ValidateDynamics.ps1`: temporary flat-pad acceleration/gear changes, braking torque cut, powered steering reversals, lift recovery and reverse. The pad exists only during the test and is not saved into the circuit.
-- `Scripts/TestPortable.cmd`: MSVC tests against the original Unity engine/audio outputs, tire budgets, TC/ABS, downshift and reverse. It also compiles the sibling Unity project’s unmodified `ImprezaEngineMixer.cs` and compares tyre audio at 44.1, 48 and 96 kHz, including mute and surface/contact gates. Requires the sibling Unity checkout and Visual Studio C++ Build Tools. On macOS use `clang++ -std=c++17 -O2 -ffp-contract=off -I Source/GotlandRingUnreal Tests/dynamics.cpp -o /tmp/ring-dynamics-test`, then `/tmp/ring-dynamics-test Validation/UnityReference`.
-- `Scripts/export_dynamics_reference.py`: regenerate reference outputs with the original Unity classes in the isolated staging project. `Scripts/export_engine_audio.py` regenerates compiled PCM cycles from the three original WAV files.
-
-[Cockpit](Renders/GotlandRingCockpit.png) · [Bonnet](Renders/GotlandRingBonnet.png) · [Chase](Renders/GotlandRingChase.png) · [Autopilot lap](Validation/pilot_validation.json) · [Driving render](Renders/GotlandRingDriving.png) · [Engine audio capture](Renders/GotlandRingEngine.wav) · [Circuit check](Validation/driving_validation.json) · [Dynamics check](Validation/dynamics_validation.json) · [Source parity](Validation/portable_validation.txt)
-
-The Subaru and reused cockpit/driver assets are **CC BY-NC 4.0**, separate from the code’s MIT license. Preserve [vehicle credits](VEHICLE_ASSET_CREDITS.md). The owner-recorded engine cycles are MIT-licensed; see [audio credits](ENGINE_AUDIO_CREDITS.md).
-
-The drone camera uses Unity v0.3.4’s world-up follow pose and half-angle downward pitch. F1 camera settings save height (5–60 m, default 30), follow distance (5–120 m, default 40) and cockpit movement (0–1, default 0.5). Right-click recentres the view. These settings share Apply/Cancel/Restore defaults with the driving setup.
-
-The analogue cluster uses the existing Unity mounting mesh and face texture. Fuel and coolant show Unity’s default values (full and midpoint); fuel consumption and coolant simulation are not implemented. Trip distance accumulates while driving for the current session. To update only the instruments, run `Scripts/export_instruments.py`, then run `Scripts/import_instruments.py` through Unreal Editor Python.
-
-## Signs, minimap and menus
-
-The 42 numbered Unity signs retain their original exported anchors, names and navy panels. At runtime, each of the 84 name/number labels is fitted to its Unity panel area. `Scripts/update_sign_material.py` updates the saved navy material and is also called by the scenery importer.
-
-The minimap uses all 2,405 road sections and Unity’s surface banking formula, including width asymmetry. It displays the same coolwarm scale (±5.8°), start/finish checker and live car position. Lap timing uses ordered quarter-circuit gates; reversing, recovering and skipping gates do not award a completed lap. Restart clears the current timer and preserves the session best.
-
-Escape opens Resume, Restart lap, Driving dynamics, View & sound, Drone camera, Keyboard help & setup, and Quit. Keyboard setup supports primary/alternate keys, conflict checks, unassigned keys, defaults, cancel and save to `Saved/KeyboardBindings.json`. Escape remains reserved for menu/back. Autopilot defaults to **P**. Driving, view/sound and drone settings share Apply/Cancel and persist across launches. O opens SADAIR’S SPEAR reference lap: the source 4,464-frame timeline, bonnet/cockpit composition, animated driver, racing engine and surface audio, pause, restart, mute and 175.88-second lap clock. O returns to the preserved drive. V cycles 15 Unity scenery views; C or Escape returns to the car. H switches AWD physics and Unity arcade handling. The sky reuses Unity’s photographic HDR. Unity’s training area and paint/car selection are not yet included.
-
-Regenerate the presentation data from the unchanged Unity checkout and existing scenery export:
-
-```sh
-python3 Scripts/export_presentation.py --scenery Export/Scenery/scenery.json
-clang++ -std=c++17 -I Source/GotlandRingUnreal Tests/lap.cpp -o /tmp/ring-lap-test
-/tmp/ring-lap-test
+```powershell
+$vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+$vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+$redist = Get-ChildItem "$vs\VC\Redist\MSVC" -Directory |
+    Where-Object { $_.Name -match '^\d+\.' } |
+    Sort-Object { [version]$_.Name } -Descending | Select-Object -First 1
+$deps = Join-Path $PWD 'Saved\PortableDependencies'
+$crt = Join-Path $deps 'Win64\x64\Microsoft.VC143.CRT'
+New-Item -ItemType Directory -Force $crt | Out-Null
+Copy-Item "$($redist.FullName)\x64\Microsoft.VC143.CRT\*.dll" $crt -Force
+$output = Join-Path $PWD '..\Releases\unreal.8-portable'
+& "$UE\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun "-project=$Project" `
+    -noP4 -platform=Win64 -clientconfig=Shipping -build -cook `
+    -map=/Game/Migration/Prototype -stage -pak -iostore -archive `
+    "-archivedirectory=$output" "-applocaldirectory=$deps" -nodebuginfo -unattended
+Copy-Item LICENSE,DATA_LICENSES.md,VEHICLE_ASSET_CREDITS.md,ENGINE_AUDIO_CREDITS.md "$output\Windows"
 ```
 
-Run `Scripts/ValidatePresentation.ps1` on Windows, or launch the macOS game with `-RingPresentationTest -windowed -ResX=1600 -ResY=900`. It checks all sign bounds, minimap bounds, reserved/conflicting key assignments, persistence and pause-menu navigation, and writes `Saved/presentation_validation.json` plus HUD/menu/keyboard screenshots. `Scripts/ValidateSettings.ps1` remains the settings regression check.
+The result is **`<output>\Windows\GotlandRingUnreal.exe`** with its adjacent game data. Keep that complete folder together.
 
-## macOS build
+To wrap it in one portable EXE, install the .NET 10 SDK and run:
 
-Use `Scripts/PackageMac.sh <output-directory>` on Apple Silicon with UE 5.8.4 and Xcode installed. Set `UE_MAC_ROOT` if Unreal is outside `~/Epic Games/UE_5.8`. The script builds, cooks and packages the complete app, including its game data, and copies the asset credits. Launch `Mac/GotlandRingUnreal.app` from the output directory. The local build targets macOS 14 or newer; signing/notarization for public distribution is separate.
+```powershell
+.\Scripts\PackageSingleFile.ps1 `
+    -PackageDirectory "$output\Windows" `
+    -OutputDirectory "$PWD\..\Releases\unreal.8-single-file"
+```
 
-## Wind turbines
+The result is **`GotlandRingUnreal-Portable.exe`**, plus a checksum file and build metadata. Only the EXE is needed to play. `--extract-only` prepares its cache without starting the game; other arguments are forwarded unchanged.
 
-All twelve Unity turbines retain their original blade/hub geometry and placement. Rotors turn clockwise from their west-facing front at 10 RPM, with independent initial phases. Pause and settings menus freeze the rotors; resuming continues their rotation. Towers and nacelles remain fixed.
+### Project layout
 
-After exporting scenery, run `python3 Scripts/export_wind_rotors.py` to separate the original rotor geometry. The scene importer imports the resulting meshes and movable actors. To update an existing level, run `Scripts/import_wind_rotors.py` through Unreal Editor Python. Launch with `-RingWindTest` to validate all twelve fixed pivots, speed, direction and pause/resume and capture `Saved/WindRotorStart.png` and `Saved/WindRotorMoving.png`.
+| Location | Purpose |
+|---|---|
+| `GotlandRingUnreal.uproject` / `Content/Migration/Prototype.umap` | Project and startup driving level |
+| `Content/Migration/` | Saved road, gravel aprons, scenery, sky, vehicle meshes and textures |
+| `Source/GotlandRingUnreal/RingCar.cpp` | Driving pawn, input and Chaos force integration |
+| `RingDynamics.h` / `RingCarSettings.cpp` / `RingArcade.cpp` in `Source/GotlandRingUnreal/` | AWD drivetrain/tyres, saved settings and arcade handling |
+| `RingCarView.cpp` / `RingDriver.cpp` / `RingInstruments.cpp` in the same source folder | Cameras, skinned driver and live cluster |
+| `RingReference.cpp` / `RingSceneryViews.cpp` / `RingWind.cpp` in the same source folder | Reference lap, 15-view tour and rotor animation |
+| `RingMenu.cpp` / `RingPresentation.cpp` in the same source folder | Pause/settings menus, keyboard setup, HUD, signs and minimap |
+| `RingAudio.cpp` / `RingEngineMixer.h` / `RingSurfaceMixer.h` in the same source folder | Recorded engine cycles and surface sound |
+| `Scripts/` | Asset export/import, rendering, packaging and validation tools |
+| `PortableLauncher/` | Self-contained Windows launcher and application icon |
+| `Tests/` / `Validation/` | Source comparisons, standalone checks and recorded results |
+| `Renders/` | Captures from the Unreal game |
 
-All 42 roadside signs use their Unity label anchors with centred number/name text. Exposure-compensated unlit navy faces, blue number panels and white lettering preserve the sign palette and contrast under bright scene lighting. Run `Scripts/update_signs.py` through Unreal Editor Python to update an existing level, or use the full scenery importer. `-RingSignsTest` validates the size and centre of all 84 labels and captures six signs, including multiline names and Swedish characters, under `Saved/TrackSignNN.png`.
+Asset regeneration tools use a sibling **`GotlandRingUnity`** checkout and an isolated Unity staging project under the ignored `Export/` directory. They reuse the source road samples, runtime scenery construction, car assets, driver weights and replay timeline. This is separate from compiling the committed Unreal project.
 
-Driving and exterior cameras share fixed daylight exposure with bloom, lens flare and motion blur disabled. Softer afternoon sunlight and sky fill preserve road and cockpit contrast. Asphalt uses Unity’s 0.78 roughness; gravel aprons use 0.95 roughness, with reduced specular reflection. `Scripts/update_lighting.py` updates the saved level and road materials and is included in the full scene importer.
+## Verification
 
-Run `python3 Scripts/export_reference.py` to compile the source timeline and seven-bone driver skin from an isolated Unity staging project. Run `Scripts/update_reference_presentation.py` through Unreal Editor Python to import the photographic sky and current rally car surfaces. The glass and live instrument material retain their existing setup. `-RingMigrationTest` validates the reference path, replay pause/end, eight saved-drive restoration cases, animated skin, all 15 scenery cameras, and arcade acceleration/braking/switching. Reports and captures are written to Saved.
+The current packaged game passes **five rendered checks on macOS and five on Windows/Fractal**. Windows checks run in an interactive Windows 11 session; Windows 10 runtime testing has not been performed.
+
+| Check | macOS | Fractal / Windows |
+|---|---|---|
+| Reference lap, animated driver, 15 views, arcade handling and menu restoration | [Pass](Validation/migration_reference_macos.json) | [Pass](Validation/migration_reference_fractal.json) |
+| GPU-rendered instrument needles, gear/trip state and steering-wheel direction | [Pass](Validation/instruments_reference_macos.json) | [Pass](Validation/instruments_reference_fractal.json) |
+| Settings persistence, pause restoration and drone/cockpit camera settings | [Pass](Validation/settings_reference_macos.json) | [Pass](Validation/settings_reference_fractal.json) |
+| Acceleration, braking, steering, road contact and reset | [Pass](Validation/driving_reference_macos.json) | [Pass](Validation/driving_reference_fractal.json) |
+| Twelve rotors: speed, direction, fixed hubs and pause/resume | [Pass](Validation/wind_reference_macos.json) | [Pass](Validation/wind_reference_fractal.json) |
+
+The [source/asset comparison](Validation/reference_source_fractal.json) confirms that **188 game source and asset files** match across the two machines. [Audio comparisons](Validation/reference_audio_parity.json) match the current Unity engine and surface mixers at **44.1, 48 and 96 kHz**.
+
+The [single-file EXE check](Validation/single_file_fractal.json) runs from a folder containing only the EXE. It verifies concurrent first-launch extraction, all **42 extracted files** against the original package, cache reuse, argument forwarding with spaces, and the migration, instrument and driving checks through the launcher.
+
+For a rendered test, launch a packaged game with one of these switches:
+
+```text
+-RingMigrationTest
+-RingInstrumentsTest
+-RingSettingsTest
+-RingDrivingTest
+-RingWindTest
+-RingSignsTest
+-RingPresentationTest
+-RingPilotTest
+-RingDynamicsTest
+```
+
+For example, on macOS:
+
+```bash
+open -n -W ../Releases/unreal.8-macOS/Mac/GotlandRingUnreal.app --args \
+    -RingMigrationTest -windowed -ResX=1600 -ResY=900
+```
+
+The packaged checks above write JSON results and captures under the game's Saved directory. Inspect the report's `passed` field. Windows editor runners are in `Scripts/Validate*.ps1`. `Scripts/TestPortable.cmd` compares C++ engine/audio behaviour with the sibling Unity source and checks drivetrain, tyre and surface-audio behaviour; it requires Visual Studio C++ Build Tools. `Scripts/ValidateSingleFile.ps1` runs the single-EXE checks in an interactive Windows session with a fresh payload cache.
+
+### Settings and captures
+
+Settings are stored as `DrivingSettings.json` and `KeyboardBindings.json`. F2 screenshots and test reports use the same Saved directory:
+
+| Build | Saved directory |
+|---|---|
+| Unreal Editor | `<project>/Saved` |
+| Packaged Windows | `%LOCALAPPDATA%\GotlandRingUnreal\Saved` |
+| Current packaged macOS app | `~/Library/Containers/com.YourCompany.GotlandRingUnreal/Data/Library/Application Support/Epic/GotlandRingUnreal/Saved` |
+
+`-UserDir=<path>` redirects the game's user directory for isolated Windows checks. The portable launcher's extraction cache is separate from these saved preferences.
+
+## Visuals
+
+The environment reuses the source photographic HDR, asphalt, gravel, woodland and vehicle artwork. Road roughness is **0.78** and apron roughness **0.95**. Daylight uses fixed exposure, softer sun/sky fill and no bloom, lens flare or motion blur.
+
+The cockpit wheel uses the source **12:1 visual steering ratio**, following the applied front-wheel angle in manual driving, autopilot and replay. Only the driver's head is hidden in cockpit view. The hands, arms and body remain visible, with procedural steering poses and regrips.
+
+Signs retain their source anchors and fitted text areas. Unlit, exposure-compensated navy faces, blue number panels and white labels keep the text readable in daylight. Turbine hubs remain fixed while their original rotor geometry turns; pause/settings menus freeze them, and accumulated rotation preserves small updates at high frame rates.
+
+Surrounding ground, quarry shapes, building dimensions, tree placement and barrier runs are authored visual approximations. The scene is not surveyed terrain or a calibrated simulator.
+
+## Licensing
+
+Original project code and the derived owner-recorded Impreza engine cycles are covered by the [MIT License](LICENSE), except where another notice applies. See [engine audio credits](ENGINE_AUDIO_CREDITS.md).
+
+The car, cockpit and driver assets have separate **CC BY-NC 4.0** licensing. Preserve the author credits and noncommercial restriction described in [vehicle and visual asset credits](VEHICLE_ASSET_CREDITS.md). HDR/scanned material sources and other visual attributions are documented there as well. Unreal Engine and third-party runtime components retain their own licensing terms.
+
+Track and derived geospatial data have separate attribution and licensing requirements, including OpenStreetMap and Lantmäteriet sources; see [DATA_LICENSES.md](DATA_LICENSES.md).
+
+This is an unofficial fan-made prototype, unaffiliated with GotlandRing or Subaru. Their names and marks remain the property of their respective owners.
+
+## CSV track reconstruction
+
+The road follows the source **3 m surface CSV**, with **2,405 unique cross-sections** and a repeated closing section. Horizontal circuit length is **7,214.397 m**. Start/finish and the spawn use point **284** on Gutemålrakan.
+
+The migration retains the supplied centerline, asymmetric asphalt widths, cross-slope and quadratic crown/hollow profile, with **16 subdivisions across the asphalt**. Banking is encoded in the surface heights and is not added as a second rotation. Three-metre gravel aprons share the road-edge vertices.
+
+Unity's metre coordinates map to Unreal centimetres as **`(X, Y, Z) = (z, x, y) × 100`**. Row zero remains the coordinate origin. The larger meadow, shoulders and quarry are reused source meshes rather than newly acquired terrain data.
+
+AWD wheel rays contact the Unreal collision geometry; arcade driving follows the surface. [Import bounds](Validation/import_validation.json) and [scenery bounds/counts](Validation/scenery_validation.json) are recorded alongside the current rendered driving checks. These source estimates do not establish surveyed elevations, banking or real-car performance.
