@@ -47,6 +47,15 @@ public:
  void ToggleFullscreen();
 private:
  friend class ARingHUD;
+ TArray<TWeakObjectPtr<AActor>> WindRotors;
+ void InitializeWindRotors();
+ void AnimateWindRotors(float Dt);
+ void RunWindTest(float Dt);
+ bool WindTest=false,WindPassed=true;
+ int32 WindPhase=0;
+ float WindSeconds=0;
+ TArray<FQuat> WindStartRotations;
+ TArray<FVector> WindHubPositions;
  TSharedPtr<class SWidget> MenuWidget;
  TMap<FKey,FKey> KeyBindings,KeyDraft;
  FKey CapturingKey;
@@ -63,6 +72,9 @@ private:
  bool Pressed(FKey Original)const;
  void MenuBack();
  void InitializeSigns();
+ bool SignsTest=false;
+ int32 SignsPhase=0;
+ void RunSignsTest();
  void UpdateLap(float Dt);
  bool PresentationTest=false;
  int32 PresentationTestPhase=0,SignLabelsFitted=0;

@@ -78,7 +78,7 @@ void ARingCar::BeginPlay() {
   FFileHelper::SaveStringToFile(Result,*(FPaths::ProjectSavedDir()/TEXT("collision_validation.json")));
  }
  PresentationTest=FParse::Param(FCommandLine::Get(),TEXT("RingPresentationTest"));
- InitializeSigns();if(!PresentationTest)LoadKeys();
+ SignsTest=FParse::Param(FCommandLine::Get(),TEXT("RingSignsTest"));WindTest=FParse::Param(FCommandLine::Get(),TEXT("RingWindTest"));InitializeSigns();InitializeWindRotors();if(!PresentationTest)LoadKeys();
  if(DynamicsTest)SetupDynamicsTest();
  if(auto* PC=Cast<APlayerController>(GetController())) {PC->SetViewTarget(this);PC->SetInputMode(FInputModeGameOnly());PC->bShowMouseCursor=false;}
 }
@@ -88,7 +88,8 @@ void ARingCar::ResetCar() {
  SetActorTransform(StartPose,false,nullptr,ETeleportType::TeleportPhysics);Chassis->WakeAllRigidBodies();Dynamics=Ring::Dynamics();ApplyDrivingSettings();Pilot->Reset();PreviousVelocity=ViewAcceleration=ViewLean=ViewTilt=FVector::ZeroVector;
 }
 void ARingCar::Tick(float Dt) {
- Super::Tick(Dt);Elapsed+=Dt;
+ Super::Tick(Dt);Elapsed+=Dt;if(WindTest){RunWindTest(Dt);return;}AnimateWindRotors(Dt);
+ if(SignsTest){RunSignsTest();return;}
  if(InstrumentsTest){RunInstrumentsTest();return;}
  if(SettingsTest)RunSettingsTest();
  if(PresentationTest){RunPresentationTest();return;}

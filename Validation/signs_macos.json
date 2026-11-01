@@ -1,0 +1,7 @@
+{
+	"boards": 42,
+	"labels": 84,
+	"max_centre_or_overflow_error_cm": 6.103515625e-05,
+	"unlit_white_labels": 84,
+	"passed": true
+}

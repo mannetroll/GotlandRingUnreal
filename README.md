@@ -70,4 +70,14 @@ Run `Scripts/ValidatePresentation.ps1` on Windows, or launch the macOS game with
 
 ## macOS build
 
-Use `Scripts/PackageMac.sh <output-directory>` on Apple Silicon with UE 5.8.4 and Xcode installed. Set `UE_MAC_ROOT` if Unreal is outside `~/Epic Games/UE_5.8`. The script builds, cooks and packages the complete app, including its game data, and copies the asset credits. Launch `Mac/GotlandRingUnreal-Mac-Shipping.app` from the output directory. The local build targets macOS 14 or newer; signing/notarization for public distribution is separate.
+Use `Scripts/PackageMac.sh <output-directory>` on Apple Silicon with UE 5.8.4 and Xcode installed. Set `UE_MAC_ROOT` if Unreal is outside `~/Epic Games/UE_5.8`. The script builds, cooks and packages the complete app, including its game data, and copies the asset credits. Launch `Mac/GotlandRingUnreal.app` from the output directory. The local build targets macOS 14 or newer; signing/notarization for public distribution is separate.
+
+## Wind turbines
+
+All twelve Unity turbines retain their original blade/hub geometry and placement. Rotors turn clockwise from their west-facing front at 10 RPM, with independent initial phases. Pause and settings menus freeze the rotors; resuming continues their rotation. Towers and nacelles remain fixed.
+
+After exporting scenery, run `python3 Scripts/export_wind_rotors.py` to separate the original rotor geometry. The scene importer imports the resulting meshes and movable actors. To update an existing level, run `Scripts/import_wind_rotors.py` through Unreal Editor Python. Launch with `-RingWindTest` to validate all twelve fixed pivots, speed, direction and pause/resume and capture `Saved/WindRotorStart.png` and `Saved/WindRotorMoving.png`.
+
+All 42 roadside signs use their Unity label anchors with centred number/name text. Exposure-compensated unlit navy faces, blue number panels and white lettering preserve the sign palette and contrast under bright scene lighting. Run `Scripts/update_signs.py` through Unreal Editor Python to update an existing level, or use the full scenery importer. `-RingSignsTest` validates the size and centre of all 84 labels and captures six signs, including multiline names and Swedish characters, under `Saved/TrackSignNN.png`.
+
+Driving and exterior cameras share fixed daylight exposure with bloom, lens flare and motion blur disabled. Softer afternoon sunlight and sky fill preserve road and cockpit contrast. Asphalt uses Unity’s 0.78 roughness; gravel aprons use 0.95 roughness, with reduced specular reflection. `Scripts/update_lighting.py` updates the saved level and road materials and is included in the full scene importer.

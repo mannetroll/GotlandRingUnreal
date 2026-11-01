@@ -29,14 +29,16 @@ struct FMapLayout {
 const FMapLayout Map;
 }
 void ARingCar::InitializeSigns(){
+ auto* SignMaterial=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/Migration/Scenery/M_SignText.M_SignText"));
  for(TActorIterator<ATextRenderActor> It(GetWorld());It;++It){auto* Text=It->GetTextRender();const FString Value=Text->Text.ToString().Replace(TEXT("<br>"),TEXT("\n"));
   for(const auto& Layout:Ring::SignLayouts)if(Value==Layout.Text){
    Text->SetText(FText::FromString(Value.Replace(TEXT("\n"),TEXT("<br>"))));Text->SetWorldSize(100);
    Text->SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);Text->SetVerticalAlignment(EVerticalTextAligment::EVRTA_TextCenter);
    const FVector Size=Text->GetTextLocalSize();const float Factor=FMath::Min(Layout.Width/Size.Y,Layout.Height/Size.Z);
-   Text->SetWorldSize(100*Factor);
-   FVector Center,Extent;It->GetActorBounds(false,Center,Extent);
-   It->SetActorLocation(It->GetActorLocation()+FVector(Layout.X,Layout.Y,Layout.Z)-Center);
+   Text->SetWorldSize(100*Factor);Text->SetTextRenderColor(FColor::White);Text->SetTextMaterial(SignMaterial);
+   const FVector Anchor(Layout.X,Layout.Y,Layout.Z);
+   It->SetActorLocation(Anchor);Text->UpdateBounds();
+   SignFitError=FMath::Max(SignFitError,float(FVector::Dist(Text->Bounds.Origin,Anchor)));
    const auto Actual=Text->GetTextLocalSize();SignFitError=FMath::Max(SignFitError,float(FMath::Max(Actual.Y-Layout.Width,Actual.Z-Layout.Height)));
    SignLabelsFitted++;break;
   }
@@ -112,4 +114,34 @@ void ARingCar::RunPresentationTest(){
  else if(PresentationTestPhase==4&&Elapsed>6){OpenKeyboard();PresentationTestPhase=5;}
  else if(PresentationTestPhase==5&&Elapsed>7){FScreenshotRequest::RequestScreenshot(FPaths::ProjectSavedDir()/TEXT("GotlandRingKeys.png"),true,false);PresentationTestPhase=6;}
  else if(PresentationTestPhase==6&&Elapsed>8){FGenericPlatformMisc::RequestExit(false);}
+}
+
+#include "Camera/CameraComponent.h"
+#include "Materials/Material.h"
+void ARingCar::RunSignsTest(){
+ if(Elapsed<2+SignsPhase)return;
+ const TCHAR* Numbers[]={TEXT("07"),TEXT("03"),TEXT("11"),TEXT("31"),TEXT("35"),TEXT("42")};
+ if(SignsPhase==0){
+  SetDrivePaused(true);Camera->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+  int32 UnlitWhite=0;
+  for(TActorIterator<ATextRenderActor> It(GetWorld());It;++It){auto* T=It->GetTextRender();
+   if(T->GetMaterial(0)&&T->GetMaterial(0)->GetPathName().Contains(TEXT("M_SignText"))&&T->GetMaterial(0)->GetMaterial()->GetShadingModels().HasShadingModel(MSM_Unlit)&&T->TextRenderColor==FColor::White)UnlitWhite++;
+  }
+  auto J=MakeShared<FJsonObject>();J->SetNumberField(TEXT("boards"),42);J->SetNumberField(TEXT("labels"),SignLabelsFitted);J->SetNumberField(TEXT("max_centre_or_overflow_error_cm"),SignFitError);J->SetNumberField(TEXT("unlit_white_labels"),UnlitWhite);
+  J->SetBoolField(TEXT("passed"),SignLabelsFitted==84&&UnlitWhite==84&&SignFitError<.1);
+  FString Out;auto Writer=TJsonWriterFactory<>::Create(&Out);FJsonSerializer::Serialize(J,Writer);FFileHelper::SaveStringToFile(Out,*(FPaths::ProjectSavedDir()/TEXT("signs_validation.json")));
+ }
+ if(SignsPhase>=12){FGenericPlatformMisc::RequestExit(false);return;}
+ const int32 I=SignsPhase/2;
+ if(SignsPhase%2==0){
+  for(TActorIterator<ATextRenderActor> It(GetWorld());It;++It)if(It->GetTextRender()->Text.ToString()==Numbers[I]){
+   const FVector Number=It->GetActorLocation();FVector Name=Number;double Best=BIG_NUMBER;
+   for(const auto& L:Ring::SignLayouts)if(!FString(L.Text).IsNumeric()){
+    FVector P(L.X,L.Y,L.Z);double D=FVector::DistSquared(P,Number);if(D<Best){Best=D;Name=P;}
+   }
+   const FVector Centre=Number+(Name-Number)*(3.45/4.2),Position=Centre+It->GetActorForwardVector()*1400+FVector(0,0,60);
+   Camera->SetWorldLocationAndRotation(Position,(Centre-Position).Rotation());break;
+  }
+ }else FScreenshotRequest::RequestScreenshot(FPaths::ProjectSavedDir()/FString::Printf(TEXT("TrackSign%s.png"),Numbers[I]),false,false);
+ SignsPhase++;
 }

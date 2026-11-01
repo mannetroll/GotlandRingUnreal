@@ -93,3 +93,5 @@ unreal.log(f'Imported {len(checks)} scenery groups, {manifest["trees"]} mapped t
 # Apply the source sign colour after importing the scenery material groups.
 import runpy
 runpy.run_path(str(root/"Scripts/update_sign_material.py"))
+
+runpy.run_path(str(root/"Scripts/fit_signs.py"))

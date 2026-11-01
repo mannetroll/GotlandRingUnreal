@@ -102,3 +102,7 @@ unreal.EditorAssetLibrary.save_directory('/Game/Migration')
 unreal.log('Import finished. Verify scale, winding, UV orientation and lighting in the viewport.')
 
 exec(compile((root/'Scripts/import_vehicle.py').read_text(), str(root/'Scripts/import_vehicle.py'), 'exec'))
+
+exec(compile((root/'Scripts/import_wind_rotors.py').read_text(), str(root/'Scripts/import_wind_rotors.py'), 'exec'))
+
+exec(compile((root/'Scripts/update_lighting.py').read_text(), str(root/'Scripts/update_lighting.py'), 'exec'))
