@@ -89,3 +89,7 @@ for label in manifest['labels']:
     actor.set_actor_location(position+(position-center), False, False)
 (root/'Saved/scenery_validation.json').write_text(json.dumps(dict(trees=manifest['trees'],labels=len(manifest['labels']),meshes=checks),indent=2))
 unreal.log(f'Imported {len(checks)} scenery groups, {manifest["trees"]} mapped trees')
+
+# Apply the source sign colour after importing the scenery material groups.
+import runpy
+runpy.run_path(str(root/"Scripts/update_sign_material.py"))

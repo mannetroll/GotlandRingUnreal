@@ -7,3 +7,5 @@ Binaries/
 .vs/
 *.sln
 Validation/*.log
+Build/Mac/
+Build/Windows/FileOpenOrder/

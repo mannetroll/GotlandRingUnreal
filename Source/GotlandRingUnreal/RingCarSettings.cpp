@@ -13,6 +13,9 @@
 #include "Dom/JsonObject.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SBox.h"
+#include "Widgets/Layout/SScaleBox.h"
+#include "Brushes/SlateRoundedBoxBrush.h"
+#include "Framework/Application/SlateApplication.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/SOverlay.h"
 #include "Widgets/Text/STextBlock.h"
@@ -60,13 +63,25 @@ void ARingCar::SetDrivePaused(bool Paused){
 }
 void ARingCar::OpenSettings(){
  SettingsWasPaused=DrivePaused;SetDrivePaused(true);SettingsOpen=true;DraftSettings=Settings;SettingsStatus.Empty();
+ BuildSettings();
+}
+void ARingCar::BuildSettings(){
+ if(SettingsWidget.IsValid())GetWorld()->GetGameViewport()->RemoveViewportWidgetContent(SettingsWidget.ToSharedRef());
+ static const FSlateRoundedBoxBrush Background(FLinearColor(.012f,.017f,.026f,1),14.f);
+ static const FTextBlockStyle ButtonText=FTextBlockStyle(FCoreStyle::Get().GetWidgetStyle<FTextBlockStyle>("NormalText")).SetFont(FCoreStyle::GetDefaultFontStyle("Regular",14));
  auto Panel=SNew(SVerticalBox);
- Panel->AddSlot().AutoHeight().Padding(0,0,0,10)[SNew(STextBlock).Text(FText::FromString(TEXT("DRIVING & CAMERA SETTINGS"))).Font(FCoreStyle::GetDefaultFontStyle("Bold",24))];
- Panel->AddSlot().AutoHeight().Padding(0,0,0,20)[SNew(STextBlock).Text(FText::FromString(TEXT("Driving is paused. Apply saves your setup for the next launch.")))];
- for(const auto Field:Fields){
+ Panel->AddSlot().AutoHeight().Padding(0,0,0,10)[SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Regular",14)).Text(FText::FromString(TEXT("DRIVING & CAMERA SETTINGS"))).Font(FCoreStyle::GetDefaultFontStyle("Bold",24))];
+ Panel->AddSlot().AutoHeight().Padding(0,0,0,20)[SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Regular",14)).Text(FText::FromString(TEXT("Driving is paused. Apply saves your setup for the next launch.")))];
+ auto Tabs=SNew(SHorizontalBox);
+ const TCHAR* Names[]={TEXT("Driving"),TEXT("View & sound"),TEXT("Drone camera")};
+ for(int32 I=0;I<3;I++)Tabs->AddSlot().FillWidth(1).Padding(3)[SNew(SButton).TextStyle(&ButtonText).HAlign(HAlign_Center).VAlign(VAlign_Center).ContentPadding(FMargin(10,8)).Text(FText::FromString(Names[I])).ButtonColorAndOpacity(SettingsPage==I?FLinearColor(.08,.25,.55):FLinearColor(.06,.08,.11)).OnClicked_Lambda([this,I](){SettingsPage=I;BuildSettings();return FReply::Handled();})];
+ Panel->AddSlot().AutoHeight().Padding(0,0,0,12)[Tabs];
+ for(int32 I=0;I<UE_ARRAY_COUNT(Fields);I++){
+  if((SettingsPage==0&&I>=5)||(SettingsPage==1&&I!=7)||(SettingsPage==2&&(I<5||I>6)))continue;
+  const auto Field=Fields[I];
   Panel->AddSlot().AutoHeight().Padding(0,6)[SNew(SHorizontalBox)
-   +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(STextBlock).Text(FText::FromString(Field.Label))]
-   +SHorizontalBox::Slot().AutoWidth()[SNew(SBox).WidthOverride(160)[SNew(SSpinBox<float>)
+   +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Regular",14)).Text(FText::FromString(Field.Label))]
+   +SHorizontalBox::Slot().AutoWidth()[SNew(SBox).WidthOverride(160)[SNew(SSpinBox<float>).Font(FCoreStyle::GetDefaultFontStyle("Regular",14))
     .MinValue(Field.Min).MaxValue(Field.Max).MinSliderValue(Field.Min).MaxSliderValue(Field.Max)
     .Value_Lambda([this,Field](){return DraftSettings.*(Field.Member);})
     .OnValueChanged_Lambda([this,Field](float Value){DraftSettings.*(Field.Member)=Value;})]]];
@@ -75,18 +90,20 @@ void ARingCar::OpenSettings(){
   Panel->AddSlot().AutoHeight().Padding(0,10)[SNew(SCheckBox)
    .IsChecked_Lambda([this,Member](){return DraftSettings.*Member?ECheckBoxState::Checked:ECheckBoxState::Unchecked;})
    .OnCheckStateChanged_Lambda([this,Member](ECheckBoxState State){DraftSettings.*Member=State==ECheckBoxState::Checked;})
-   [SNew(STextBlock).Text(FText::FromString(Label))]];
+   [SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Regular",14)).Text(FText::FromString(Label))]];
  };
- Toggle(TEXT("Traction control assistance"),&Ring::DrivingSettings::TractionControl);
- Toggle(TEXT("Tyre squeal"),&Ring::DrivingSettings::TyreSqueal);
- Panel->AddSlot().AutoHeight().Padding(0,10)[SNew(STextBlock).Text(FText::FromString(TEXT("Five-speed AWD. ABS is enabled. Tyres, suspension and clutch are approximate."))).AutoWrapText(true)];
- Panel->AddSlot().AutoHeight()[SNew(STextBlock).ColorAndOpacity(FLinearColor(1,.4f,.3f)).Text_Lambda([this](){return FText::FromString(SettingsStatus);})];
+ if(SettingsPage==0)Toggle(TEXT("Traction control assistance"),&Ring::DrivingSettings::TractionControl);
+ if(SettingsPage==1)Toggle(TEXT("Tyre squeal"),&Ring::DrivingSettings::TyreSqueal);
+ Panel->AddSlot().AutoHeight().Padding(0,10)[SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Regular",14)).Text(FText::FromString(TEXT("Restore defaults changes this draft. Cancel keeps your current setup."))).AutoWrapText(true)];
+ Panel->AddSlot().AutoHeight()[SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Regular",14)).ColorAndOpacity(FLinearColor(1,.4f,.3f)).Text_Lambda([this](){return FText::FromString(SettingsStatus);})];
  Panel->AddSlot().AutoHeight().Padding(0,18,0,0)[SNew(SHorizontalBox)
-  +SHorizontalBox::Slot().FillWidth(1).Padding(0,0,8,0)[SNew(SButton).Text(FText::FromString(TEXT("Restore defaults"))).OnClicked_Lambda([this](){DraftSettings=Ring::DrivingSettings();return FReply::Handled();})]
-  +SHorizontalBox::Slot().FillWidth(1).Padding(0,0,8,0)[SNew(SButton).Text(FText::FromString(TEXT("Cancel"))).OnClicked_Lambda([this](){CloseSettings(false);return FReply::Handled();})]
-  +SHorizontalBox::Slot().FillWidth(1)[SNew(SButton).Text(FText::FromString(TEXT("Apply & close"))).OnClicked_Lambda([this](){CloseSettings(true);return FReply::Handled();})]];
- SettingsWidget=SNew(SOverlay)+SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center)
-  [SNew(SBox).WidthOverride(700)[SNew(SBorder).Padding(28).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(.025f,.035f,.05f,.98f))[Panel]]];
+  +SHorizontalBox::Slot().FillWidth(1).Padding(0,0,8,0)[SNew(SButton).TextStyle(&ButtonText).HAlign(HAlign_Center).VAlign(VAlign_Center).ContentPadding(FMargin(10,8)).Text(FText::FromString(TEXT("Restore defaults"))).OnClicked_Lambda([this](){DraftSettings=Ring::DrivingSettings();return FReply::Handled();})]
+  +SHorizontalBox::Slot().FillWidth(1).Padding(0,0,8,0)[SNew(SButton).TextStyle(&ButtonText).HAlign(HAlign_Center).VAlign(VAlign_Center).ContentPadding(FMargin(10,8)).Text(FText::FromString(TEXT("Cancel"))).OnClicked_Lambda([this](){CloseSettings(false);return FReply::Handled();})]
+  +SHorizontalBox::Slot().FillWidth(1)[SNew(SButton).TextStyle(&ButtonText).HAlign(HAlign_Center).VAlign(VAlign_Center).ContentPadding(FMargin(10,8)).Text(FText::FromString(TEXT("Apply & close"))).OnClicked_Lambda([this](){CloseSettings(true);return FReply::Handled();})]];
+ SettingsWidget=SNew(SOverlay)
+  +SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(0,0,0,.65f))]
+  +SOverlay::Slot().Padding(20)[SNew(SScaleBox).Stretch(EStretch::ScaleToFit).StretchDirection(EStretchDirection::DownOnly)
+   [SNew(SBox).WidthOverride(850)[SNew(SBorder).Padding(32).BorderImage(&Background)[Panel]]]];
  GetWorld()->GetGameViewport()->AddViewportWidgetContent(SettingsWidget.ToSharedRef(),100);
  auto* PC=Cast<APlayerController>(GetController());FInputModeGameAndUI Mode;Mode.SetHideCursorDuringCapture(false);Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);PC->SetInputMode(Mode);PC->bShowMouseCursor=true;
 }
@@ -95,10 +112,14 @@ void ARingCar::CloseSettings(bool Apply){
  GetWorld()->GetGameViewport()->RemoveViewportWidgetContent(SettingsWidget.ToSharedRef());SettingsWidget.Reset();SettingsOpen=false;
  SetDrivePaused(SettingsWasPaused);IgnoreMouseFrames=2;HadMouseCapture=false;
  auto* PC=Cast<APlayerController>(GetController());PC->SetInputMode(FInputModeGameOnly());PC->bShowMouseCursor=false;
+ FSlateApplication::Get().SetAllUserFocusToGameViewport();
+ if(ReturnToMenu){ReturnToMenu=false;OpenMenu();}
 }
 void ARingCar::EndPlay(const EEndPlayReason::Type Reason){
  if(SettingsWidget.IsValid()&&GetWorld()->GetGameViewport())GetWorld()->GetGameViewport()->RemoveViewportWidgetContent(SettingsWidget.ToSharedRef());
- SettingsWidget.Reset();Super::EndPlay(Reason);
+ SettingsWidget.Reset();
+ if(MenuWidget.IsValid()&&GetWorld()->GetGameViewport())GetWorld()->GetGameViewport()->RemoveViewportWidgetContent(MenuWidget.ToSharedRef());
+ MenuWidget.Reset();Super::EndPlay(Reason);
 }
 void ARingCar::RunSettingsTest(){
  if(Elapsed<1)return;

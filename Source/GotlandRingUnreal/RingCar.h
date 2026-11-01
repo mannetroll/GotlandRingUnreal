@@ -6,6 +6,7 @@
 #include "RingDynamics.h"
 #include "RingPilot.h"
 #include "RingDrivingSettings.h"
+#include "RingLap.h"
 #include "RingCar.generated.h"
 class UBoxComponent;
 class USpringArmComponent;
@@ -35,13 +36,45 @@ public:
  bool Autopilot=false,TyreSquealEnabled=false;
  int32 ViewMode=0;
  float PilotTarget=0,PilotError=0;
+ Ring::LapClock Laps;
+ bool HideHUD=false;
+ bool IsDrivePaused()const{return DrivePaused;}
+ bool IsMouseSteering()const{return MouseControl;}
+ UMaterialInstanceDynamic* InstrumentMaterial()const{return Dashboard;}
+ FString KeyHint(FKey Original)const;
+ void OpenMenu();
+ void CloseMenu();
+ void ToggleFullscreen();
 private:
+ friend class ARingHUD;
+ TSharedPtr<class SWidget> MenuWidget;
+ TMap<FKey,FKey> KeyBindings,KeyDraft;
+ FKey CapturingKey;
+ FString KeyboardStatus;
+ int32 MenuPage=0,SettingsPage=0;
+ bool ReturnToMenu=false;
+ void BuildMenu();
+ void OpenKeyboard();
+ void LoadKeys();
+ bool SaveKeys();
+ bool BindKey(FKey Original,FKey Replacement);
+ FKey ResolveKey(FKey Original)const;
+ bool Held(FKey Original)const;
+ bool Pressed(FKey Original)const;
+ void MenuBack();
+ void InitializeSigns();
+ void UpdateLap(float Dt);
+ bool PresentationTest=false;
+ int32 PresentationTestPhase=0,SignLabelsFitted=0;
+ float SignFitError=0;
+ void RunPresentationTest();
  Ring::DrivingSettings Settings,DraftSettings;
  TSharedPtr<class SWidget> SettingsWidget;
  bool SettingsOpen=false,SettingsWasPaused=false,SettingsTest=false;
  int32 SettingsTestPhase=0;
  FString SettingsStatus;
  void OpenSettings();
+ void BuildSettings();
  void CloseSettings(bool Apply);
  void ApplyDrivingSettings();
  void SetDrivePaused(bool Paused);

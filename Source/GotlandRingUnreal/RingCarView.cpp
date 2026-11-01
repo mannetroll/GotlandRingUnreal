@@ -12,7 +12,7 @@ void ARingCar::UpdateView(float Dt,APlayerController* PC){
   float X,Y;PC->GetInputMouseDelta(X,Y);X*=.1f;Y*=.1f; // Unity InputManager mouse sensitivity.
   auto* Viewport=GetWorld()->GetGameViewport()->Viewport;
   bool Captured=Viewport->HasFocus()&&Viewport->HasMouseCapture();
-  if(!Captured||!HadMouseCapture||PC->WasInputKeyJustPressed(EKeys::U)||PC->WasInputKeyJustPressed(EKeys::C)||PC->WasInputKeyJustPressed(EKeys::Escape))IgnoreMouseFrames=2;
+  if(!Captured||!HadMouseCapture||Pressed(EKeys::U)||Pressed(EKeys::C)||PC->WasInputKeyJustPressed(EKeys::Escape))IgnoreMouseFrames=2;
   HadMouseCapture=Captured;
   if(IgnoreMouseFrames>0){X=Y=0;IgnoreMouseFrames--;}
 
@@ -58,6 +58,7 @@ void ARingCar::UpdateView(float Dt,APlayerController* PC){
  for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]==-2)Visuals[I]->SetVisibility(ViewMode!=0);
 }
 void ARingCar::RecoverCar(){
+ Laps.Discontinuity();
  FVector P=GetActorLocation()/100;float Fraction,Offset;bool OnRoad;
  int I=Pilot->Nearest({float(P.X),float(P.Y)},Fraction,Offset,OnRoad),J=Pilot->Next(I);
  const auto& R=Pilot->Rows[I];const auto& N=Pilot->Rows[J];

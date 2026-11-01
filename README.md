@@ -18,7 +18,7 @@ For a close-up of the saved scenery, use `Scripts/render_detail.py` as the Execu
 
 ## Driving
 
-Press Play in `/Game/Migration/Prototype`, then click the viewport, or run `Scripts/Drive.ps1` on EXCAVATOR. W/Up accelerates, S/Down brakes, X brakes forward travel then reverses, A/D or Left/Right steers, Space applies the rear handbrake, R recovers to the nearest road section, Home restarts at start/finish, M mutes all audio, and T toggles and saves tyre squeal (off until enabled). F1 opens the driving setup menu. C cycles cockpit, bonnet, chase and drone views. Mouse motion looks around; U switches to mouse steering and right-click recentres. P alone toggles autopilot; manual driving inputs do not cancel it. Escape freezes/resumes the car, and F2 saves a screenshot under Saved. Forward throttle takes priority over X. The HUD shows speed, engine RPM, gear, tire contacts and body sideslip.
+Press Play in `/Game/Migration/Prototype`, then click the viewport, or run `Scripts/Drive.ps1` on EXCAVATOR. W/Up accelerates, S/Down brakes, X brakes forward travel then reverses, A/D or Left/Right steers, Space applies the rear handbrake, R recovers to the nearest road section, Home restarts at start/finish, M mutes all audio, and T toggles and saves tyre squeal (off until enabled). F1 or F3 opens the driving setup menu. C cycles cockpit, bonnet, chase and drone views. Mouse motion looks around; U switches to mouse steering and right-click recentres. P alone toggles autopilot; manual driving inputs do not cancel it. Escape opens the pause menu; F switches fullscreen/windowed, J hides the HUD, and F2 saves a screenshot under Saved. Forward throttle takes priority over X. The HUD shows speed, engine RPM, boost, gear, body sideslip, lap timing and a banking-coloured minimap. The original analogue cluster also appears in exterior camera views.
 
 The native vehicle ports Unity’s independent flywheel, torque curve, automatic clutch, five forward ratios, reverse, shift delay/cooldown and throttle blips. It also ports the 50:50 AWD torque budget, traction control, ABS, combined-grip reduction, powered rear slip curve, doubled lift-off grip, off-road multiplier, anti-roll, drag and rolling resistance. Four rotating raycast tires apply these forces to Chaos. Tire contact/rotation is an Unreal solver implementation, not Unity’s proprietary WheelCollider solver; matching tuning does not establish identical handling or real-car fidelity. No detailed differential, tire temperature or wear model exists in the Unity source.
 
@@ -49,3 +49,25 @@ The Subaru and reused cockpit/driver assets are **CC BY-NC 4.0**, separate from 
 The drone camera uses Unity v0.3.4’s world-up follow pose and half-angle downward pitch. F1 camera settings save height (5–60 m, default 30), follow distance (5–120 m, default 40) and cockpit movement (0–1, default 0.5). Right-click recentres the view. These settings share Apply/Cancel/Restore defaults with the driving setup.
 
 The analogue cluster uses the existing Unity mounting mesh and face texture. Fuel and coolant show Unity’s default values (full and midpoint); fuel consumption and coolant simulation are not implemented. Trip distance accumulates while driving for the current session. To update only the instruments, run `Scripts/export_instruments.py`, then run `Scripts/import_instruments.py` through Unreal Editor Python.
+
+## Signs, minimap and menus
+
+The 42 numbered Unity signs retain their original exported anchors, names and navy panels. At runtime, each of the 84 name/number labels is fitted to its Unity panel area. `Scripts/update_sign_material.py` updates the saved navy material and is also called by the scenery importer.
+
+The minimap uses all 2,405 road sections and Unity’s surface banking formula, including width asymmetry. It displays the same coolwarm scale (±5.8°), start/finish checker and live car position. Lap timing uses ordered quarter-circuit gates; reversing, recovering and skipping gates do not award a completed lap. Restart clears the current timer and preserves the session best.
+
+Escape opens Resume, Restart lap, Driving dynamics, View & sound, Drone camera, Keyboard help & setup, and Quit. Keyboard setup supports primary/alternate keys, conflict checks, unassigned keys, defaults, cancel and save to `Saved/KeyboardBindings.json`. Escape remains reserved for menu/back. Autopilot defaults to **P**. Driving, view/sound and drone settings share Apply/Cancel and persist across launches. The menu exposes the migrated features; Unity’s training, replay, paint selection and arcade mode are not yet included.
+
+Regenerate the presentation data from the unchanged Unity checkout and existing scenery export:
+
+```sh
+python3 Scripts/export_presentation.py --scenery Export/Scenery/scenery.json
+clang++ -std=c++17 -I Source/GotlandRingUnreal Tests/lap.cpp -o /tmp/ring-lap-test
+/tmp/ring-lap-test
+```
+
+Run `Scripts/ValidatePresentation.ps1` on Windows, or launch the macOS game with `-RingPresentationTest -windowed -ResX=1600 -ResY=900`. It checks all sign bounds, minimap bounds, reserved/conflicting key assignments, persistence and pause-menu navigation, and writes `Saved/presentation_validation.json` plus HUD/menu/keyboard screenshots. `Scripts/ValidateSettings.ps1` remains the settings regression check.
+
+## macOS build
+
+Use `Scripts/PackageMac.sh <output-directory>` on Apple Silicon with UE 5.8.4 and Xcode installed. Set `UE_MAC_ROOT` if Unreal is outside `~/Epic Games/UE_5.8`. The script builds, cooks and packages the complete app, including its game data, and copies the asset credits. Launch `Mac/GotlandRingUnreal-Mac-Shipping.app` from the output directory. The local build targets macOS 14 or newer; signing/notarization for public distribution is separate.

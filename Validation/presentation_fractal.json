@@ -1,0 +1,40 @@
+﻿{
+    "checks":  {
+                   "presentation":  {
+                                        "sign_labels":  84,
+                                        "sign_overflow_cm":  6.103515625E-05,
+                                        "bank_limit_deg":  5.778261661529541,
+                                        "map_sections":  2405,
+                                        "key_conflict_rejected":  true,
+                                        "escape_reserved":  true,
+                                        "keys_persist":  true,
+                                        "menu_pause_back_resume":  true,
+                                        "map_fits":  true,
+                                        "passed":  true
+                                    },
+                   "driving":  {
+                                   "max_speed_kmh":  36.990592956542969,
+                                   "brake_start_kmh":  36.931957244873047,
+                                   "brake_end_kmh":  0.11205752193927765,
+                                   "distance_m":  16.392576217651367,
+                                   "steering_yaw_change_deg":  10.943349838256836,
+                                   "grounded_wheels_before_reset":  4,
+                                   "reset_position_error_cm":  0,
+                                   "passed":  true
+                               },
+                   "settings":  {
+                                    "cancel_preserves_settings":  true,
+                                    "apply_persists":  true,
+                                    "reset_preserves_setup":  true,
+                                    "restores_prior_pause":  true,
+                                    "defaults_persist":  true,
+                                    "drone_world_pose":  true,
+                                    "cockpit_movement_disabled":  true,
+                                    "passed":  true
+                                }
+               },
+    "platform":  "Windows Win64 / Fractal",
+    "standalone_shipping":  true,
+    "engine":  "5.8.4",
+    "validated_utc":  "2026-11-01T12:51:27.2585469Z"
+}

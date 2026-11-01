@@ -77,10 +77,13 @@ void ARingCar::BeginPlay() {
   FString Result=FString::Printf(TEXT("{\"probes\":%d,\"misses\":%d,\"max_height_error_cm\":%.5f,\"passed\":%s}"),Probes.Num(),Misses,Worst,(Probes.Num()==7218&&Misses==0&&Worst<5)?TEXT("true"):TEXT("false"));
   FFileHelper::SaveStringToFile(Result,*(FPaths::ProjectSavedDir()/TEXT("collision_validation.json")));
  }
+ PresentationTest=FParse::Param(FCommandLine::Get(),TEXT("RingPresentationTest"));
+ InitializeSigns();if(!PresentationTest)LoadKeys();
  if(DynamicsTest)SetupDynamicsTest();
  if(auto* PC=Cast<APlayerController>(GetController())) {PC->SetViewTarget(this);PC->SetInputMode(FInputModeGameOnly());PC->bShowMouseCursor=false;}
 }
 void ARingCar::ResetCar() {
+ Laps.Restart();PauseVelocity=PauseAngular=FVector::ZeroVector;
  Chassis->SetPhysicsLinearVelocity(FVector::ZeroVector);Chassis->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
  SetActorTransform(StartPose,false,nullptr,ETeleportType::TeleportPhysics);Chassis->WakeAllRigidBodies();Dynamics=Ring::Dynamics();ApplyDrivingSettings();Pilot->Reset();PreviousVelocity=ViewAcceleration=ViewLean=ViewTilt=FVector::ZeroVector;
 }
@@ -88,30 +91,33 @@ void ARingCar::Tick(float Dt) {
  Super::Tick(Dt);Elapsed+=Dt;
  if(InstrumentsTest){RunInstrumentsTest();return;}
  if(SettingsTest)RunSettingsTest();
+ if(PresentationTest){RunPresentationTest();return;}
  auto* PC=Cast<APlayerController>(GetController());
- if(PC&&PC->WasInputKeyJustPressed(EKeys::F1)){if(SettingsOpen)CloseSettings(false);else OpenSettings();}
+ if(PC&&Pressed(EKeys::Escape)){MenuBack();}
+ if(Pressed(EKeys::F1)||Pressed(EKeys::F3)){if(SettingsOpen)CloseSettings(false);else if(!MenuWidget.IsValid())OpenSettings();}
+ if(Pressed(EKeys::F))ToggleFullscreen();
+ if(MenuWidget.IsValid()){EngineAudio->SetEngine(Dynamics.Motor.Rpm(),0,0,0,true);return;}
  if(SettingsOpen){EngineAudio->SetEngine(Dynamics.Motor.Rpm(),0,0,0,true);return;}
  float Throttle=0, Brake=0, Steering=0;bool Handbrake=false,ReverseRequest=false;
  if(PC) {
-  Throttle=(PC->IsInputKeyDown(EKeys::W)||PC->IsInputKeyDown(EKeys::Up))?1.f:0.f;
-  ReverseRequest=PC->IsInputKeyDown(EKeys::X);
-  Brake=(PC->IsInputKeyDown(EKeys::S)||PC->IsInputKeyDown(EKeys::Down))?1.f:0.f;
-  Steering=((PC->IsInputKeyDown(EKeys::D)||PC->IsInputKeyDown(EKeys::Right))?1.f:0.f)-((PC->IsInputKeyDown(EKeys::A)||PC->IsInputKeyDown(EKeys::Left))?1.f:0.f);
-  Handbrake=PC->IsInputKeyDown(EKeys::SpaceBar);
-  if(PC->WasInputKeyJustPressed(EKeys::R))RecoverCar();
-  if(PC->WasInputKeyJustPressed(EKeys::Home))ResetCar();
-  if(PC->WasInputKeyJustPressed(EKeys::P)){Autopilot=!Autopilot;Pilot->Reset();UE_LOG(LogTemp,Display,TEXT("Ring autopilot %s via P"),Autopilot?TEXT("ON"):TEXT("OFF"));}
-  if(PC->WasInputKeyJustPressed(EKeys::C)){ViewMode=(ViewMode+1)%4;LookYaw=LookPitch=0;}
-  if(PC->WasInputKeyJustPressed(EKeys::U)){MouseControl=!MouseControl;MouseSteering=0;LookYaw=LookPitch=0;}
-  if(PC->WasInputKeyJustPressed(EKeys::F2))FScreenshotRequest::RequestScreenshot(FPaths::ProjectSavedDir()/TEXT("GotlandRingCockpit.png"),true,false);
-  if(PC->WasInputKeyJustPressed(EKeys::Escape)){
-   SetDrivePaused(!DrivePaused);
-  }
-  if(PC->WasInputKeyJustPressed(EKeys::M))Muted=!Muted;
-  if(PC->WasInputKeyJustPressed(EKeys::T)){TyreSquealEnabled=!TyreSquealEnabled;Settings.TyreSqueal=TyreSquealEnabled;SaveDrivingSettings(Settings);}
+  Throttle=(Held(EKeys::W)||Held(EKeys::Up))?1.f:0.f;
+  ReverseRequest=Held(EKeys::X);
+  Brake=(Held(EKeys::S)||Held(EKeys::Down))?1.f:0.f;
+  Steering=((Held(EKeys::D)||Held(EKeys::Right))?1.f:0.f)-((Held(EKeys::A)||Held(EKeys::Left))?1.f:0.f);
+  Handbrake=Held(EKeys::SpaceBar);
+  if(Pressed(EKeys::R))RecoverCar();
+  if(Pressed(EKeys::Home))ResetCar();
+  if(Pressed(EKeys::P)){Autopilot=!Autopilot;Pilot->Reset();UE_LOG(LogTemp,Display,TEXT("Ring autopilot %s via P"),Autopilot?TEXT("ON"):TEXT("OFF"));}
+  if(Pressed(EKeys::C)){ViewMode=(ViewMode+1)%4;LookYaw=LookPitch=0;}
+  if(Pressed(EKeys::U)){MouseControl=!MouseControl;MouseSteering=0;LookYaw=LookPitch=0;}
+  if(Pressed(EKeys::F2))FScreenshotRequest::RequestScreenshot(FPaths::ProjectSavedDir()/TEXT("GotlandRingCockpit.png"),true,false);
+  if(Pressed(EKeys::J))HideHUD=!HideHUD;
+  if(Pressed(EKeys::M))Muted=!Muted;
+  if(Pressed(EKeys::T)){TyreSquealEnabled=!TyreSquealEnabled;Settings.TyreSqueal=TyreSquealEnabled;SaveDrivingSettings(Settings);}
  }
  UpdateView(Dt,PC);
  if(DrivePaused){EngineAudio->SetEngine(Dynamics.Motor.Rpm(),0,0,0,true);return;}
+ UpdateLap(Dt);
  if(MouseControl)Steering=MouseSteering;
  if(DynamicsTest)RunDynamicsTest(Throttle,Brake,Steering);
  // A reproducible standalone physics smoke test uses the same force path as keyboard driving.
@@ -219,12 +225,5 @@ void ARingCar::Tick(float Dt) {
  }
 
  if(PilotTest)RunPilotTest(Dt);
-}
-void ARingHUD::DrawHUD() {
- Super::DrawHUD();auto* Car=Cast<ARingCar>(GetOwningPawn());if(!Car)return;
- DrawRect(FLinearColor(0,0,0,.65f),20,20,1500,110);
- DrawText(FString::Printf(TEXT("GOTLANDRING | %.0f km/h | %d RPM | gear %d | contacts %d/4 | slip %.1f deg"),Car->SpeedKmh,int32(Car->Dynamics.Motor.Rpm()),Car->Dynamics.Throttle<0?-1:Car->Dynamics.Gear,Car->GroundedWheels,Car->SideslipDegrees),FLinearColor::White,30,30,nullptr,1.5f);
- DrawText(TEXT("W/Up accelerate   S/Down brake   X reverse   A/D/Arrows steer   SPACE handbrake   R recover   HOME restart"),FLinearColor::White,30,65,nullptr,1.2f);
- DrawText(FString::Printf(TEXT("C view: %s   U mouse steer   P autopilot: %s   ESC pause   M mute   T tyres: %s   F1 settings   F2 screenshot"),Car->ViewMode==0?TEXT("cockpit"):Car->ViewMode==1?TEXT("bonnet"):Car->ViewMode==2?TEXT("chase"):TEXT("drone"),Car->Autopilot?TEXT("ON"):TEXT("OFF"),Car->TyreSquealEnabled?TEXT("ON"):TEXT("OFF")),FLinearColor::White,30,95,nullptr,1.2f);
 }
 ARingGameMode::ARingGameMode(){DefaultPawnClass=nullptr;HUDClass=ARingHUD::StaticClass();}

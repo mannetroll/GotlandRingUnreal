@@ -1,0 +1,40 @@
+{
+  "platform": "macOS arm64",
+  "engine": "5.8.4",
+  "validated_utc": "2026-11-01T12:51:23.694062+00:00",
+  "standalone_shipping": true,
+  "checks": {
+    "presentation": {
+      "sign_labels": 84,
+      "sign_overflow_cm": 6.103515625e-05,
+      "bank_limit_deg": 5.778261661529541,
+      "map_sections": 2405,
+      "key_conflict_rejected": true,
+      "escape_reserved": true,
+      "keys_persist": true,
+      "menu_pause_back_resume": true,
+      "map_fits": true,
+      "passed": true
+    },
+    "settings": {
+      "cancel_preserves_settings": true,
+      "apply_persists": true,
+      "reset_preserves_setup": true,
+      "restores_prior_pause": true,
+      "defaults_persist": true,
+      "drone_world_pose": true,
+      "cockpit_movement_disabled": true,
+      "passed": true
+    },
+    "driving": {
+      "max_speed_kmh": 37.115631103515625,
+      "brake_start_kmh": 36.89801788330078,
+      "brake_end_kmh": 0.11205662041902542,
+      "distance_m": 16.503952026367188,
+      "steering_yaw_change_deg": 11.023726463317871,
+      "grounded_wheels_before_reset": 4,
+      "reset_position_error_cm": 0,
+      "passed": true
+    }
+  }
+}
