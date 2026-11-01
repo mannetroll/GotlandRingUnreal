@@ -47,6 +47,9 @@ void ARingCar::BeginPlay() {
  PilotTest=FParse::Param(FCommandLine::Get(),TEXT("RingPilotTest"));Autopilot=PilotTest;
  DynamicsTest=FParse::Param(FCommandLine::Get(),TEXT("RingDynamicsTest"));
  TestMode=DynamicsTest||FParse::Param(FCommandLine::Get(),TEXT("RingDrivingTest"));
+ InstrumentsTest=FParse::Param(FCommandLine::Get(),TEXT("RingInstrumentsTest"));
+ SettingsTest=FParse::Param(FCommandLine::Get(),TEXT("RingSettingsTest"));
+ Settings=(TestMode||PilotTest||SettingsTest||InstrumentsTest)?Ring::DrivingSettings():LoadDrivingSettings();ApplyDrivingSettings();
  for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It){
   auto* Mesh=It->GetStaticMeshComponent();
   if(Mesh->GetStaticMesh()&&Mesh->GetStaticMesh()->GetName()==TEXT("Road"))RoadSurface=Mesh;
@@ -57,7 +60,9 @@ void ARingCar::BeginPlay() {
  for(int32 I=0;I<VisualMeshes.Num();I++) {
   auto* V=NewObject<UStaticMeshComponent>(this); V->SetupAttachment(Chassis);
   V->SetStaticMesh(VisualMeshes[I]);
-  if(V->GetMaterial(0)&&V->GetMaterial(0)->GetName()==TEXT("M_Vehicle_16"))Dashboard=V->CreateDynamicMaterialInstance(0);V->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  float InstrumentTrip;
+  if(V->GetMaterial(0)&&V->GetMaterial(0)->GetScalarParameterValue(FMaterialParameterInfo(TEXT("TripKm")),InstrumentTrip))Dashboard=V->CreateDynamicMaterialInstance(0);
+  V->SetCollisionEnabled(ECollisionEnabled::NoCollision);
   V->RegisterComponent();AddInstanceComponent(V);Visuals.Add(V);
   V->SetRelativeLocation((VisualWheels[I]==-3?FVector(28.58618,-38.799202,83.9761047):(VisualWheels[I]<0?FVector::ZeroVector:WheelCenters[VisualWheels[I]]))-FVector(0,0,48));
  }
@@ -77,11 +82,15 @@ void ARingCar::BeginPlay() {
 }
 void ARingCar::ResetCar() {
  Chassis->SetPhysicsLinearVelocity(FVector::ZeroVector);Chassis->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
- SetActorTransform(StartPose,false,nullptr,ETeleportType::TeleportPhysics);Chassis->WakeAllRigidBodies();Dynamics=Ring::Dynamics();Pilot->Reset();PreviousVelocity=ViewAcceleration=ViewLean=ViewTilt=FVector::ZeroVector;
+ SetActorTransform(StartPose,false,nullptr,ETeleportType::TeleportPhysics);Chassis->WakeAllRigidBodies();Dynamics=Ring::Dynamics();ApplyDrivingSettings();Pilot->Reset();PreviousVelocity=ViewAcceleration=ViewLean=ViewTilt=FVector::ZeroVector;
 }
 void ARingCar::Tick(float Dt) {
  Super::Tick(Dt);Elapsed+=Dt;
+ if(InstrumentsTest){RunInstrumentsTest();return;}
+ if(SettingsTest)RunSettingsTest();
  auto* PC=Cast<APlayerController>(GetController());
+ if(PC&&PC->WasInputKeyJustPressed(EKeys::F1)){if(SettingsOpen)CloseSettings(false);else OpenSettings();}
+ if(SettingsOpen){EngineAudio->SetEngine(Dynamics.Motor.Rpm(),0,0,0,true);return;}
  float Throttle=0, Brake=0, Steering=0;bool Handbrake=false,ReverseRequest=false;
  if(PC) {
   Throttle=(PC->IsInputKeyDown(EKeys::W)||PC->IsInputKeyDown(EKeys::Up))?1.f:0.f;
@@ -92,16 +101,14 @@ void ARingCar::Tick(float Dt) {
   if(PC->WasInputKeyJustPressed(EKeys::R))RecoverCar();
   if(PC->WasInputKeyJustPressed(EKeys::Home))ResetCar();
   if(PC->WasInputKeyJustPressed(EKeys::P)){Autopilot=!Autopilot;Pilot->Reset();UE_LOG(LogTemp,Display,TEXT("Ring autopilot %s via P"),Autopilot?TEXT("ON"):TEXT("OFF"));}
-  if(PC->WasInputKeyJustPressed(EKeys::C)){ViewMode=(ViewMode+1)%3;LookYaw=LookPitch=0;}
+  if(PC->WasInputKeyJustPressed(EKeys::C)){ViewMode=(ViewMode+1)%4;LookYaw=LookPitch=0;}
   if(PC->WasInputKeyJustPressed(EKeys::U)){MouseControl=!MouseControl;MouseSteering=0;LookYaw=LookPitch=0;}
   if(PC->WasInputKeyJustPressed(EKeys::F2))FScreenshotRequest::RequestScreenshot(FPaths::ProjectSavedDir()/TEXT("GotlandRingCockpit.png"),true,false);
   if(PC->WasInputKeyJustPressed(EKeys::Escape)){
-   DrivePaused=!DrivePaused;
-   if(DrivePaused){PauseVelocity=Chassis->GetPhysicsLinearVelocity();PauseAngular=Chassis->GetPhysicsAngularVelocityInRadians();Chassis->SetSimulatePhysics(false);}
-   else{Chassis->SetSimulatePhysics(true);Chassis->SetPhysicsLinearVelocity(PauseVelocity);Chassis->SetPhysicsAngularVelocityInRadians(PauseAngular);}
+   SetDrivePaused(!DrivePaused);
   }
   if(PC->WasInputKeyJustPressed(EKeys::M))Muted=!Muted;
-  if(PC->WasInputKeyJustPressed(EKeys::T))TyreSquealEnabled=!TyreSquealEnabled;
+  if(PC->WasInputKeyJustPressed(EKeys::T)){TyreSquealEnabled=!TyreSquealEnabled;Settings.TyreSqueal=TyreSquealEnabled;SaveDrivingSettings(Settings);}
  }
  UpdateView(Dt,PC);
  if(DrivePaused){EngineAudio->SetEngine(Dynamics.Motor.Rpm(),0,0,0,true);return;}
@@ -203,7 +210,8 @@ void ARingCar::Tick(float Dt) {
  if(GroundedWheels)Chassis->AddForce(-Forward*FMath::Clamp(Speed,-1.f,1.f)*.012f*1360*981);
  float Squeal=TyreSquealEnabled?Dynamics.TyreSqueal():0;PeakTyreSqueal=FMath::Max(PeakTyreSqueal,Squeal);
  EngineAudio->SetEngine(Dynamics.Motor.Rpm(),FMath::Abs(Dynamics.Throttle),Velocity.Size()/100,Squeal,Muted);
- if(Dashboard){Dashboard->SetScalarParameterValue(TEXT("Rpm"),Dynamics.Motor.Rpm());Dashboard->SetScalarParameterValue(TEXT("Speed"),SpeedKmh);Dashboard->SetScalarParameterValue(TEXT("Gear"),Dynamics.Throttle<0?-1:Dynamics.Gear);}
+ TripKm+=Velocity.Size()/100*Dt/1000;
+ UpdateInstruments(Dynamics.Motor.Rpm(),Velocity.Size()/100,Dynamics.Throttle<0?-1:Dynamics.Gear);
  for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]==-3)Visuals[I]->SetRelativeRotation(FQuat(FVector(.982749939,0,-.184939444),FMath::DegreesToRadians(Dynamics.SteeringDegrees*12)));
  for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]>=0) {
   int32 W=VisualWheels[I];Visuals[I]->SetRelativeLocation(WheelCenters[W]-FVector(0,0,48-Extensions[W]));
@@ -217,6 +225,6 @@ void ARingHUD::DrawHUD() {
  DrawRect(FLinearColor(0,0,0,.65f),20,20,1500,110);
  DrawText(FString::Printf(TEXT("GOTLANDRING | %.0f km/h | %d RPM | gear %d | contacts %d/4 | slip %.1f deg"),Car->SpeedKmh,int32(Car->Dynamics.Motor.Rpm()),Car->Dynamics.Throttle<0?-1:Car->Dynamics.Gear,Car->GroundedWheels,Car->SideslipDegrees),FLinearColor::White,30,30,nullptr,1.5f);
  DrawText(TEXT("W/Up accelerate   S/Down brake   X reverse   A/D/Arrows steer   SPACE handbrake   R recover   HOME restart"),FLinearColor::White,30,65,nullptr,1.2f);
- DrawText(FString::Printf(TEXT("C view: %s   U mouse steer   P autopilot: %s   ESC pause   M mute   T tyres: %s   F2 screenshot"),Car->ViewMode==0?TEXT("cockpit"):Car->ViewMode==1?TEXT("bonnet"):TEXT("chase"),Car->Autopilot?TEXT("ON"):TEXT("OFF"),Car->TyreSquealEnabled?TEXT("ON"):TEXT("OFF")),FLinearColor::White,30,95,nullptr,1.2f);
+ DrawText(FString::Printf(TEXT("C view: %s   U mouse steer   P autopilot: %s   ESC pause   M mute   T tyres: %s   F1 settings   F2 screenshot"),Car->ViewMode==0?TEXT("cockpit"):Car->ViewMode==1?TEXT("bonnet"):Car->ViewMode==2?TEXT("chase"):TEXT("drone"),Car->Autopilot?TEXT("ON"):TEXT("OFF"),Car->TyreSquealEnabled?TEXT("ON"):TEXT("OFF")),FLinearColor::White,30,95,nullptr,1.2f);
 }
 ARingGameMode::ARingGameMode(){DefaultPawnClass=nullptr;HUDClass=ARingHUD::StaticClass();}

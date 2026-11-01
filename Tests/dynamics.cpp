@@ -1,4 +1,5 @@
 #include "RingDynamics.h"
+#include "RingDrivingSettings.h"
 #include "RingEngineMixer.h"
 #include <fstream>
 #include <sstream>
@@ -63,5 +64,18 @@ int main(int argc,char** argv){
  down.Step(.002f,1,0,0,10,10,false);assert(down.Gear<4&&down.ShiftDelay>0&&down.ClutchTorque==0);
  assert(std::abs(Ring::Friction(.6f,.2f,.6f,.5f)-.5f)<.0001f);
  assert(std::abs(Ring::Friction(.6f,.2f,.6f,.98f)-.98f)<.0001f);
+ Ring::DrivingSettings settings;settings.Steering=48;settings.HighSpeedSteering=22;settings.SteeringRate=120;
+ settings.FrontTorque=.6f;settings.Grip=1.2f;settings.TractionControl=false;
+ Ring::Dynamics configured;settings.Apply(configured);
+ configured.Step(.1f,0,0,1,0,0,false);assert(std::abs(configured.SteeringDegrees-12)<.001f);
+ for(int n=0;n<10;n++)configured.Step(.1f,0,0,1,0,0,false);
+ assert(std::abs(configured.SteeringDegrees-48)<.001f);
+ for(int n=0;n<10;n++)configured.Step(.1f,0,0,1,65,65,false);
+ assert(std::abs(configured.SteeringDegrees-22)<.001f);
+ assert(std::abs(configured.Wheels[0].Grip-2.4f)<.001f);
+ settings.Grip=9;settings.FrontTorque=-1;settings.Steering=100;settings.HighSpeedSteering=0;settings.SteeringRate=999;settings.ClampValues();
+ settings.Apply(configured);configured.SteeringDegrees=0;configured.Step(.1f,0,0,1,0,0,false);
+ assert(configured.GripSetting==1.3f&&configured.FrontShare==.1f&&configured.LowSpeedSteering==55&&configured.HighSpeedSteering==8&&configured.SteeringDegrees==15);
+ std::cout<<"PASS driving setup: steering rate, low/high-speed limits, grip and saved-value bounds\n";
  std::cout<<"PASS drivetrain, tire budgets, reverse, brake cut, audio rates and source parity\n";
 }

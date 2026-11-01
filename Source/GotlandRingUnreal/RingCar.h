@@ -5,6 +5,7 @@
 #include "GameFramework/HUD.h"
 #include "RingDynamics.h"
 #include "RingPilot.h"
+#include "RingDrivingSettings.h"
 #include "RingCar.generated.h"
 class UBoxComponent;
 class USpringArmComponent;
@@ -17,6 +18,7 @@ class GOTLANDRINGUNREAL_API ARingCar : public APawn {
 public:
  ARingCar();
  virtual void BeginPlay() override;
+ virtual void EndPlay(const EEndPlayReason::Type Reason) override;
  virtual void Tick(float Dt) override;
  UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UBoxComponent> Chassis;
  UPROPERTY(VisibleAnywhere) TObjectPtr<USpringArmComponent> Boom;
@@ -34,8 +36,26 @@ public:
  int32 ViewMode=0;
  float PilotTarget=0,PilotError=0;
 private:
+ Ring::DrivingSettings Settings,DraftSettings;
+ TSharedPtr<class SWidget> SettingsWidget;
+ bool SettingsOpen=false,SettingsWasPaused=false,SettingsTest=false;
+ int32 SettingsTestPhase=0;
+ FString SettingsStatus;
+ void OpenSettings();
+ void CloseSettings(bool Apply);
+ void ApplyDrivingSettings();
+ void SetDrivePaused(bool Paused);
+ Ring::DrivingSettings LoadDrivingSettings()const;
+ bool SaveDrivingSettings(const Ring::DrivingSettings& Values)const;
+ FString DrivingSettingsPath()const;
+ void RunSettingsTest();
  TArray<TObjectPtr<UStaticMeshComponent>> Visuals;
  UPROPERTY() TObjectPtr<UMaterialInstanceDynamic> Dashboard;
+ bool InstrumentsTest=false;
+ int32 InstrumentsTestPhase=0;
+ float TripKm=0;
+ void UpdateInstruments(float Rpm,float MetresPerSecond,int32 Gear,float Fuel=1);
+ void RunInstrumentsTest();
  TUniquePtr<Ring::Pilot> Pilot;
  void UpdateView(float Dt,APlayerController* PC);
  void RecoverCar();

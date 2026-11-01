@@ -96,8 +96,26 @@ Vehicle artwork remains CC BY-NC 4.0; see VEHICLE_ASSET_CREDITS.md. The owner-re
 
 ## Cockpit, controls and autopilot
 
-The Subaru cockpit and bonnet use the source prefab anchors. C cycles cockpit, bonnet and chase cameras, with mouse look, source FOV/sideslip response, acceleration lean and asphalt/loose-surface vibration. The cockpit hides the driver head; the steering wheel rotates at the source 12:1 visual ratio. The original LCD shader is ported to an Unreal custom material and receives live RPM, speed and gear. Driver-hand IK and distinct kerb vibration are not migrated.
+The Subaru cockpit and bonnet use the source prefab anchors. C cycles cockpit, bonnet, chase and drone cameras, with mouse look, source FOV/sideslip response, acceleration lean and asphalt/loose-surface vibration. The cockpit hides the driver head; the steering wheel rotates at the source 12:1 visual ratio. The original Plesse analogue shader and face texture are ported to an Unreal custom material with live RPM/speed needles, gear and trip distance. Driver-hand IK and distinct kerb vibration are not migrated.
 
 P alone toggles autopilot. Unity’s optimized racing line and speed envelope are exported by `Scripts/export_cockpit.py` from the isolated Unity staging copy and compiled into `RingRouteData.h`. `RingPilot.h` ports pursuit steering, preview braking, line-error reduction, pedal filtering and AWD sideslip/yaw correction. The controller supplies normal driving inputs; it does not move the car or bypass tire forces. Manual pedals/steering do not cancel autopilot. R recovers to the nearest road section; Home restarts at start/finish. Escape freezes and restores chassis motion. U selects mouse steering, right-click recentres, M mutes audio, and F2 captures the current view.
 
 `Validation/pilot_source_parity.txt` compares 500 original Unity control outputs. `Scripts/ValidatePilot.ps1` runs a complete circuit lap with telemetry and three rendered camera captures. The physics solver remains the existing Unreal raycast implementation, so source-controller parity does not imply identical Unity vehicle motion.
+
+## Driving setup
+
+F1 opens the AWD driving settings menu and pauses the vehicle. Unity’s default values and limits are retained: grip 0.7–1.3, front torque share 0.1–0.9, low-speed steering 25–55 degrees, high-speed steering 8–25 degrees and steering rate 40–150 degrees/s, plus traction control and tyre squeal. Apply saves the draft to Saved/DrivingSettings.json; Cancel discards it. Restore defaults only changes the draft. Closing restores the preceding pause state and mouse capture. Reset and road recovery retain the applied setup. T also persists the tyre-squeal toggle. The arcade comparison controller remains outside this migration.
+
+Scripts/ValidateSettings.ps1 exercises apply/cancel, file persistence, defaults, reset retention and pause restoration in the actual pawn, using an isolated test file. Portable tests exercise the adjusted steering speed/limits and grip.
+
+## Camera settings
+
+Unity v0.3.4 (`2b465af`) supplies the drone pose: world-up height, yaw-only follow offset, and downward pitch equal to half atan2(height, distance). The camera stays level independently of chassis roll and pitch. F1 settings persist drone height (5–60 m), distance (5–120 m) and cockpit movement (0–1); defaults are 30 m, 40 m and 0.5. Zero movement removes cockpit/bonnet feedback without changing chase or drone poses.
+
+`Scripts/ValidateSettings.ps1` validates save/cancel/defaults, pause restoration, reset retention, the drone pose on a tilted chassis with mouse-look offsets, and zero cockpit movement. It captures both the settings panel and drone view. Remappable keys, scenery-view navigation, and the Unity mode/replay menus remain pending.
+
+## Analogue instruments
+
+`Scripts/export_instruments.py` reads the existing serialized cluster mesh and composes its Subaru prefab transform without modifying Unity or regenerating artwork. It exports the original 46 × 15.333 cm mounting face and copies PlesseCluster.png, recording source hashes. `Scripts/import_instruments.py` replaces the existing vehicle instrument mesh/material and checks imported bounds within 0.01 cm. The full vehicle importer invokes the same instrument import.
+
+The HLSL ports Unity’s analogue gauge angles and colours, reverse glyph, trip display and low-fuel lamp. Live speed uses velocity magnitude, including sideways/reverse motion. Fuel/coolant remain at source defaults; no consumption or thermal model is added. `Scripts/ValidateInstruments.ps1` checks GPU-rendered needles using Unity’s ten-point sampling cases, reverse/trip parameters, six-digit trip leading zeros and changed gear pixels, and captures the cockpit.

@@ -53,6 +53,7 @@ struct Dynamics {
  float Throttle=0,ShiftDelay=0,ShiftCooldown=0,SteeringDegrees=0,ClutchTorque=0,Boost=0;
  bool TractionControl=true;
  float FrontShare=.5f,GripSetting=1;
+ float LowSpeedSteering=42,HighSpeedSteering=19,SteeringRate=90;
  // Unity's load-weighted asphalt scrub. Airborne/loose-surface tires contribute nothing.
  float TyreSqueal()const{
   float sum=0;
@@ -66,7 +67,7 @@ struct Dynamics {
   return std::sqrt(sum*.25f);
  }
  void Step(float dt,float pedal,float brake,float steering,float speed,float magnitude,bool handbrake){
-  SteeringDegrees=Move(SteeringDegrees,Clamp(steering,-1,1)*Lerp(42,19,Clamp(magnitude/65,0,1)),90*dt);
+  SteeringDegrees=Move(SteeringDegrees,Clamp(steering,-1,1)*Lerp(LowSpeedSteering,HighSpeedSteering,Clamp(magnitude/65,0,1)),SteeringRate*dt);
   if(pedal==0||pedal*Throttle<0)Throttle=0;
   Throttle=Move(Throttle,Clamp(pedal,-1,1),dt*3);
   bool reverse=Throttle<0;float absSpeed=std::abs(speed);

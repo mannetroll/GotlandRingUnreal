@@ -69,26 +69,10 @@ for item in manifest['meshes']:
         edit.connect_material_property(alpha,'',unreal.MaterialProperty.MP_OPACITY)
         edit.recompile_material(material)
     if item['material']=='lcd_screen':
-        edit.delete_all_material_expressions(material)
-        material.set_editor_property('shading_model',unreal.MaterialShadingModel.MSM_UNLIT)
-        custom=edit.create_material_expression(material,unreal.MaterialExpressionCustom)
-        custom.set_editor_property('code',(root/'Scripts/CockpitDisplay.hlsl').read_text())
-        custom.set_editor_property('output_type',unreal.CustomMaterialOutputType.CMOT_FLOAT3)
-        inputs=[]
-        for input_name in ['UV','Rpm','Speed','Gear']:
-            item_input=unreal.CustomInput()
-            item_input.set_editor_property('input_name',input_name)
-            inputs.append(item_input)
-        custom.set_editor_property('inputs',inputs)
-        uv=edit.create_material_expression(material,unreal.MaterialExpressionTextureCoordinate)
-        edit.connect_material_expressions(uv,'',custom,'UV')
-        for key,value in [('Rpm',900),('Speed',0),('Gear',1)]:
-            param=edit.create_material_expression(material,unreal.MaterialExpressionScalarParameter)
-            param.set_editor_property('parameter_name',key)
-            param.set_editor_property('default_value',value)
-            edit.connect_material_expressions(param,'',custom,key)
-        edit.connect_material_property(custom,'',unreal.MaterialProperty.MP_EMISSIVE_COLOR)
-        edit.recompile_material(material)
+        import importlib.util
+        spec=importlib.util.spec_from_file_location('ring_instruments',root/'Scripts/import_instruments.py')
+        instruments=importlib.util.module_from_spec(spec);spec.loader.exec_module(instruments)
+        instruments.import_cluster(name)
     checks.append(dict(name=name,triangles=item['triangles']))
 car_class=unreal.load_class(None,'/Script/GotlandRingUnreal.RingCar')
 for actor in actors.get_all_level_actors():

@@ -32,7 +32,6 @@ public static class ExportPilot {
    foreach(var t in new[]{model.cockpitView,model.bonnetView,model.steeringWheel}){
     var p=t.position;var f=t.forward;var u=t.up;w.WriteLine(string.Join(",",t==model.cockpitView?"cockpit":t==model.bonnetView?"bonnet":"wheel",F(p.z*100),F(p.x*100),F(p.y*100),F(f.z),F(f.x),F(f.y),F(u.z),F(u.x),F(u.y)));
    }
-   Debug.Log("COCKPIT_LCD_UV "+model.instruments.uvRect+" screen="+model.instruments.screen.name);
   }
   PrefabUtility.UnloadPrefabContents(car);Debug.Log("PILOT_EXPORTED");
  }

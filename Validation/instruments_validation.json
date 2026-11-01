@@ -1,0 +1,13 @@
+{
+	"live_material": true,
+	"trip_leading_zero_pixels": true,
+	"idle_rpm_hits": 10,
+	"stopped_speed_hits": 10,
+	"full_fuel_hits": 10,
+	"fast_rpm_hits": 10,
+	"fast_speed_hits": 10,
+	"low_fuel_hits": 10,
+	"reverse_and_trip_state": true,
+	"reverse_gear_changed_pixels": 258,
+	"passed": true
+}
