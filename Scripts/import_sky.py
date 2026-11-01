@@ -23,5 +23,5 @@ actors=unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
 for actor in actors.get_all_level_actors():
  if actor.get_class().get_name() in ['SkyAtmosphere','VolumetricCloud'] or actor.actor_has_tag('RingPhotographicSky'):actors.destroy_actor(actor)
 actor=actors.spawn_actor_from_class(unreal.StaticMeshActor,unreal.Vector());actor.set_actor_label('Unity photographic sky / white clouds');actor.set_editor_property('tags',['RingPhotographicSky'])
-c=actor.static_mesh_component;c.set_static_mesh(unreal.load_asset('/Engine/BasicShapes/Sphere'));c.set_material(0,material);c.set_collision_profile_name('NoCollision');c.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION);actor.set_actor_enable_collision(False);c.set_cast_shadow(False);actor.set_actor_scale3d(unreal.Vector(10000,10000,10000))
+c=actor.static_mesh_component;c.set_static_mesh(unreal.load_asset('/Engine/BasicShapes/Sphere'));c.set_material(0,material);c.set_collision_profile_name('NoCollision');c.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION);actor.set_actor_enable_collision(False);c.set_cast_shadow(False);actor.set_actor_scale3d(unreal.Vector(100000,100000,100000))
 unreal.EditorAssetLibrary.save_directory(folder);level.save_current_level();unreal.log('UNITY_SKY_IMPORTED')

@@ -1,0 +1,7 @@
+{
+	"limit_fps": 60,
+	"driving_fps": 59.999480505315248,
+	"paused_menu_fps": 59.998334036832389,
+	"resumed_fps": 59.999331019827196,
+	"passed": true
+}

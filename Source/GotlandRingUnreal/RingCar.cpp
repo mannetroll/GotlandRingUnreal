@@ -38,34 +38,33 @@ ARingCar::ARingCar() {
  Camera->PostProcessSettings.AutoExposureMethod=EAutoExposureMethod::AEM_Manual;
  Camera->PostProcessSettings.bOverride_AutoExposureApplyPhysicalCameraExposure=true;
  Camera->PostProcessSettings.AutoExposureApplyPhysicalCameraExposure=false;
+ Camera->PostProcessSettings.bOverride_MotionBlurAmount=true;
+ Camera->PostProcessSettings.MotionBlurAmount=0;
  EngineAudio=CreateDefaultSubobject<URingAudio>(TEXT("EngineAudio"));EngineAudio->SetupAttachment(Chassis);
  AutoPossessPlayer=EAutoReceiveInput::Player0;
  WheelCenters={FVector(126,-73,30.57),FVector(126,73,30.57),FVector(-126,-73,30.57),FVector(-126,73,30.57)};
 }
 void ARingCar::BeginPlay() {
+ GEngine->SetMaxFPS(60);
+ CompleteTest=FParse::Param(FCommandLine::Get(),TEXT("RingCompleteTest"));
+ FrameRateTest=FParse::Param(FCommandLine::Get(),TEXT("RingFrameRateTest"));
+ WheelViewTest=FParse::Param(FCommandLine::Get(),TEXT("RingWheelViewTest"));
  Super::BeginPlay(); Chassis->SetMassOverrideInKg(NAME_None,1360,true);Chassis->SetCenterOfMass(FVector((.58f-.5f)*252,0,0));Pilot=MakeUnique<Ring::Pilot>(Ring::RouteData,UE_ARRAY_COUNT(Ring::RouteData)); StartPose=GetActorTransform(); TestStart=GetActorLocation();
  PilotTest=FParse::Param(FCommandLine::Get(),TEXT("RingPilotTest"));Autopilot=PilotTest;
  DynamicsTest=FParse::Param(FCommandLine::Get(),TEXT("RingDynamicsTest"));
- TestMode=DynamicsTest||FParse::Param(FCommandLine::Get(),TEXT("RingDrivingTest"));
+ TestMode=DynamicsTest||WheelViewTest||FParse::Param(FCommandLine::Get(),TEXT("RingDrivingTest"));
  InstrumentsTest=FParse::Param(FCommandLine::Get(),TEXT("RingInstrumentsTest"));
  SettingsTest=FParse::Param(FCommandLine::Get(),TEXT("RingSettingsTest"));
  Settings=(TestMode||PilotTest||SettingsTest||InstrumentsTest)?Ring::DrivingSettings():LoadDrivingSettings();ApplyDrivingSettings();if(!Settings.AwdMode)Chassis->SetSimulatePhysics(false);
+ if(WheelViewTest){ViewMode=2;LookYaw=65;LookPitch=-5;}
  for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It){
   auto* Mesh=It->GetStaticMeshComponent();
-  if(Mesh->GetStaticMesh()&&Mesh->GetStaticMesh()->GetName()==TEXT("Road"))RoadSurface=Mesh;
+  if(Mesh->GetStaticMesh()&&Mesh->GetStaticMesh()->GetName()==TEXT("Road"))RoadSurface=CircuitRoad=Mesh;
  }
  checkf(RoadSurface.IsValid(),TEXT("The driving level must contain the migrated Road mesh"));
  if(TestMode){TyreSquealEnabled=true;EngineAudio->CaptureTestAudio();}
  EngineAudio->Start();
- for(int32 I=0;I<VisualMeshes.Num();I++) {
-  auto* V=NewObject<UStaticMeshComponent>(this); V->SetupAttachment(Chassis);
-  V->SetStaticMesh(VisualMeshes[I]);
-  float InstrumentTrip;
-  if(V->GetMaterial(0)&&V->GetMaterial(0)->GetScalarParameterValue(FMaterialParameterInfo(TEXT("TripKm")),InstrumentTrip))Dashboard=V->CreateDynamicMaterialInstance(0);
-  V->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-  V->RegisterComponent();AddInstanceComponent(V);Visuals.Add(V);
-  V->SetRelativeLocation((VisualWheels[I]==-3?FVector(28.58618,-38.799202,83.9761047):(VisualWheels[I]<0?FVector::ZeroVector:WheelCenters[VisualWheels[I]]))-FVector(0,0,48));
- }
+ check(Models.Num()==2);for(const auto& Model:Models){PaintSelections.Add(Model.InitialPaint);ModelTrips.Add(0);}InitializeCarVisuals();
  InitializeDriver();
  if(TestMode) {
   FString Data;FFileHelper::LoadFileToString(Data,*(FPaths::ProjectDir()/TEXT("Validation/collision_probes.json")));
@@ -82,19 +81,23 @@ void ARingCar::BeginPlay() {
  SignsTest=FParse::Param(FCommandLine::Get(),TEXT("RingSignsTest"));WindTest=FParse::Param(FCommandLine::Get(),TEXT("RingWindTest"));InitializeSigns();InitializeWindRotors();if(!PresentationTest)LoadKeys();
  MigrationTest=FParse::Param(FCommandLine::Get(),TEXT("RingMigrationTest"));
  if(DynamicsTest)SetupDynamicsTest();
- if(auto* PC=Cast<APlayerController>(GetController())) {PC->SetViewTarget(this);PC->SetInputMode(FInputModeGameOnly());PC->bShowMouseCursor=false;}
+ if(auto* PC=Cast<APlayerController>(GetController())) {PC->SetViewTarget(this);PC->SetInputMode(FInputModeGameOnly());PC->bShowMouseCursor=false;PC->bEnableClickEvents=true;}
 }
 void ARingCar::ResetCar() {
+ if(Training){RecoverTrainingCar();return;}
  ArcadeVelocity=FVector::ZeroVector;ArcadeSteer=ArcadeBoost=0;ArcadeRpm=900;ArcadeReverse=false;
  Laps.Restart();PauseVelocity=PauseAngular=FVector::ZeroVector;
  Chassis->SetPhysicsLinearVelocity(FVector::ZeroVector);Chassis->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
  SetActorTransform(StartPose,false,nullptr,ETeleportType::TeleportPhysics);Chassis->WakeAllRigidBodies();Dynamics=Ring::Dynamics();ApplyDrivingSettings();Pilot->Reset();PreviousVelocity=ViewAcceleration=ViewLean=ViewTilt=FVector::ZeroVector;
 }
 void ARingCar::Tick(float Dt) {
+ if(FrameRateTest)RunFrameRateTest();
+ if(CompleteTest)RunCompleteMigrationTest();
  Super::Tick(Dt);Elapsed+=Dt;if(MigrationTest){RunMigrationTest(Dt);return;}if(WindTest){RunWindTest(Dt);return;}if(!ReferenceActive)AnimateWindRotors(Dt);
  if(SignsTest){RunSignsTest();return;}
  if(InstrumentsTest){RunInstrumentsTest();return;}
  if(SettingsTest)RunSettingsTest();
+ if(Pressed(EKeys::F))ToggleFullscreen();
  if(PresentationTest){RunPresentationTest();return;}
  auto* PC=Cast<APlayerController>(GetController());
  if(!SettingsOpen&&(!MenuWidget.IsValid()||MenuPage==0)&&Pressed(EKeys::O)){
@@ -115,7 +118,6 @@ void ARingCar::Tick(float Dt) {
  }
  if(PC&&Pressed(EKeys::Escape)){MenuBack();}
  if(Pressed(EKeys::F1)||Pressed(EKeys::F3)){if(SettingsOpen)CloseSettings(false);else if(!MenuWidget.IsValid())OpenSettings();}
- if(Pressed(EKeys::F))ToggleFullscreen();
  if(MenuWidget.IsValid()){EngineAudio->SetEngine(Dynamics.Motor.Rpm(),0,0,0,true);return;}
  if(SettingsOpen){EngineAudio->SetEngine(Dynamics.Motor.Rpm(),0,0,0,true);return;}
  float Throttle=0, Brake=0, Steering=0;bool Handbrake=false,ReverseRequest=false;
@@ -134,7 +136,10 @@ void ARingCar::Tick(float Dt) {
   if(Pressed(EKeys::F2))FScreenshotRequest::RequestScreenshot(FPaths::ProjectSavedDir()/TEXT("GotlandRingCockpit.png"),true,false);
   if(Pressed(EKeys::J))HideHUD=!HideHUD;
   if(Pressed(EKeys::M))Muted=!Muted;
-  if(Pressed(EKeys::T)){TyreSquealEnabled=!TyreSquealEnabled;Settings.TyreSqueal=TyreSquealEnabled;SaveDrivingSettings(Settings);}
+  if(Pressed(EKeys::Y))SwitchCarModel();
+  if(Pressed(EKeys::T))CyclePaint();
+  if(Pressed(EKeys::Z))ToggleTrainingArea();
+  if(Pressed(EKeys::K))SaveDesktopScreenshot();
  }
  UpdateView(Dt,PC);
  if(DrivePaused){EngineAudio->SetEngine(Dynamics.Motor.Rpm(),0,0,0,true);return;}
@@ -143,6 +148,7 @@ void ARingCar::Tick(float Dt) {
  if(DynamicsTest)RunDynamicsTest(Throttle,Brake,Steering);
  // A reproducible standalone physics smoke test uses the same force path as keyboard driving.
  if(TestMode&&!DynamicsTest) {
+  if(WheelViewTest&&Elapsed>3.8f&&!WheelCaptureTaken){FScreenshotRequest::RequestScreenshot(FPaths::ProjectSavedDir()/TEXT("WheelsMoving.png"),true,false);WheelCaptureTaken=true;}
   Throttle=(Elapsed>2&&Elapsed<4)?1.f:((Elapsed>9&&Elapsed<12)?.35f:0.f);
   Brake=(Elapsed>=4&&Elapsed<8)?1:0;
   Steering=(Elapsed>9&&Elapsed<12)?.2f:0;
@@ -175,10 +181,10 @@ void ARingCar::Tick(float Dt) {
  SideslipDegrees=FMath::RadiansToDegrees(FMath::Atan2(FVector::DotProduct(Velocity,GetActorRightVector())/100,FMath::Max(1.f,FMath::Abs(Speed))));
  if(Autopilot){
   FVector P=GetActorLocation()/100;float Fraction,Offset;bool OnRoad;
-  int Segment=Pilot->Nearest({float(P.X),float(P.Y)},Fraction,Offset,OnRoad);
+  int Segment=Pilot->Nearest({float(P.X),float(P.Y)},Fraction,Offset,OnRoad);if(Training)OnRoad=OnDrivingRoad(P*100);
   auto C=Pilot->Drive({float(P.X),float(P.Y)},GetActorRotation().Yaw,{float(Velocity.X/100),float(Velocity.Y/100)},Segment,OnRoad,Dt,Velocity.Size()/100);
   if(Settings.AwdMode)Pilot->Correct(C,Speed,SideslipDegrees,FVector::DotProduct(Chassis->GetPhysicsAngularVelocityInRadians(),Up),Velocity.Size()/100,Dt);
-  Throttle=C.Throttle;Brake=C.Brake;Steering=C.Steering;Handbrake=false;PilotTarget=C.Target*3.6f;PilotError=C.Error;
+  LivePilot=C;Throttle=C.Throttle;Brake=C.Brake;Steering=C.Steering;Handbrake=false;PilotTarget=C.Target*3.6f;PilotError=C.Error;
  }
  if(!Settings.AwdMode){StepArcade(Dt,Throttle,Brake,Steering,ReverseRequest);return;}
  GroundedWheels=0;
@@ -197,8 +203,7 @@ void ARingCar::Tick(float Dt) {
   if(!W.Grounded){W.Load=0;continue;}
   GroundedWheels++;Contacts[I]=Hit.ImpactPoint;Normals[I]=Hit.Normal;
   // Unity's grip classification follows the circuit footprint, not scenery materials.
-  FHitResult RoadHit;
-  W.Asphalt=Hit.GetActor()->ActorHasTag(TEXT("ValidationAsphalt"))||RoadSurface->LineTraceComponent(RoadHit,Hit.ImpactPoint+FVector(0,0,10000),Hit.ImpactPoint-FVector(0,0,10000),Query);
+  W.Asphalt=Hit.GetActor()->ActorHasTag(TEXT("ValidationAsphalt"))||OnDrivingRoad(Hit.ImpactPoint);
   FVector PointVelocity=Chassis->GetPhysicsLinearVelocityAtPoint(Anchors[I])/100;
   float Load=1360*9.81f*(Front?.58f:.42f)/2;
   W.Load=FMath::Clamp(Load+(Front?34000:29000)*Extensions[I]/100-(Front?3800:3200)*FVector::DotProduct(PointVelocity,Up),0.f,Load*4);
@@ -258,5 +263,5 @@ ARingGameMode::ARingGameMode(){DefaultPawnClass=nullptr;HUDClass=ARingHUD::Stati
 void ARingCar::AnimateCockpitSteering(float RoadDegrees){
  AnimateDriver(RoadDegrees);
  for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]==-3)
-  Visuals[I]->SetRelativeRotation(FQuat(FVector(.982749939,0,-.184939444),FMath::DegreesToRadians(-RoadDegrees*12)));
+  Visuals[I]->SetRelativeRotation(FQuat(Models[SelectedCar].SteeringAxis,FMath::DegreesToRadians(-RoadDegrees*12)));
 }

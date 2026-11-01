@@ -59,7 +59,7 @@ void ARingCar::TickReference(float Dt){
  const float Distance=FMath::Lerp(A.Distance,B.Distance,T),Speed=FMath::Lerp(A.Speed,B.Speed,T),Rpm=FMath::Lerp(A.Rpm,B.Rpm,T),Load=FMath::Lerp(A.Load,B.Load,T);
  FVector Position=ReferencePoint(Distance),Normal=FVector::UpVector;
  FHitResult Hit;FCollisionQueryParams Query(SCENE_QUERY_STAT(RingReferenceSurface),true,this);
- if(RoadSurface->LineTraceComponent(Hit,Position+FVector(0,0,2000),Position-FVector(0,0,2000),Query)){Position.Z=Hit.ImpactPoint.Z;Normal=Hit.Normal;}
+ if(CircuitRoad->LineTraceComponent(Hit,Position+FVector(0,0,2000),Position-FVector(0,0,2000),Query)){Position.Z=Hit.ImpactPoint.Z;Normal=Hit.Normal;}
  FVector Forward=FVector::VectorPlaneProject(ReferencePoint(Distance+3)-ReferencePoint(Distance-3),Normal).GetSafeNormal();
  Position+=Normal*52;SetActorLocationAndRotation(Position,FRotationMatrix::MakeFromXZ(Forward,Normal).Rotator(),false,nullptr,ETeleportType::TeleportPhysics);
  FVector Before=Position-Normal*52-ReferencePoint(Distance-6),After=ReferencePoint(Distance+6)-(Position-Normal*52);Before.Z=After.Z=0;

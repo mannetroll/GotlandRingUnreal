@@ -20,7 +20,7 @@ The current build includes **AWD physics and arcade handling**, an animated driv
 
 **Windows 10/11 x64:** double-click **GotlandRingUnreal-Portable.exe**. Copy that one file when moving the game to another computer. The game, its runtime DLLs and the launcher's .NET runtime are bundled; no Unreal Editor, separate .NET installation or installer is required.
 
-First launch extracts the game to `%LOCALAPPDATA%\Mannetroll\GotlandRingUnreal\<payload hash>`. Subsequent launches reuse that version. The current EXE is approximately **388 MB**; allow space for both the EXE and the approximately **494 MB** extracted game.
+First launch extracts the game to `%LOCALAPPDATA%\Mannetroll\GotlandRingUnreal\<payload hash>`. Subsequent launches reuse that version. Allow space for both the EXE and its extracted game.
 
 **macOS Apple Silicon:** extract **GotlandRingUnreal-v0.1.0-macOS-arm64.zip**, then open **GotlandRingUnreal.app** inside it. The complete game is inside the app bundle; no Unreal Editor is required. The current build targets **macOS 14 or newer** on an Apple Silicon Mac. Keep the accompanying asset credits when sharing a packaged build.
 
@@ -48,14 +48,18 @@ Download the EXE or ZIP above for **v0.1.0**. A [Windows folder ZIP](https://git
 | F | Toggle fullscreen / windowed while driving or in menus |
 | J | Show / hide the driving HUD |
 | M | Mute / unmute sound |
-| T | Toggle and save tyre squeal; off by default |
+| Y | Switch Impreza Rally / Subaru Impreza, preserving the drive |
+| T | Cycle White / Splash red / Rally blue on Impreza Rally; Subaru retains Blue & gold |
+| Z | Switch circuit / training area |
+| K | Save a Desktop PNG with embedded driving, vehicle, camera and HUD metadata |
 | F2 | Save a driving, scenery or reference-lap screenshot |
 
 These are the default bindings. **Escape → Keyboard help & setup** lets you change, clear, restore and save driving keys. On-screen hints follow saved bindings. On compact Mac keyboards, Home is usually **Fn + Left arrow**; function keys may require Fn.
 
 ## Inside the prototype
 
-- A textured Impreza rally coupe in Splash red, with a cockpit, roll cage, single driver and rotating/steering road wheels.
+- Both Unity car prefabs: Impreza Rally with White, Splash red and Rally blue paint, and Subaru Impreza in Blue & gold. Each retains its own paint selection and instrument trip distance.
+- Cockpits, roll cages, a single animated driver, and rotating/steering road wheels using each prefab’s own material and texture references.
 - Animated arms and hands using the source driver mesh and seven-bone skin. Elbows bend and hands release and regrip as the steering wheel turns.
 - Live Plesse speed and RPM needles, gear, fuel indication and trip distance. The cluster also appears as an overlay in exterior driving views.
 - A complete circuit reconstructed from the supplied 3 m surface CSV, including asymmetric widths, banking and crown/hollow profiles.
@@ -77,7 +81,13 @@ Press **V** for the scenery tour: the main building, turbine 2, fencing, Gutemå
 
 The minimap uses all **2,405 road sections** and a symmetric **±5.8°** banking legend. Blue indicates negative banking, red positive banking, and positive banking raises the right edge. Ordered quarter-circuit gates prevent reverse crossings and recovery jumps from awarding a lap. **Home** restarts the timer while preserving the session best; changing handling mode with **H** also clears the best time.
 
-This Unreal build has one drivable Impreza. Unity's training pad, second-car selection, paint cycling and Desktop screenshots with embedded metadata are not included.
+**Y** switches car models without resetting position, velocity, lap timing, handling mode or autopilot. **T** cycles the Rally car’s paint choices. The factory Blue & gold Subaru has one paint scheme, as in Unity.
+
+**Z** switches to Unity’s **800 × 800 m asphalt training pad**, with 25, 50 and 100 m circles, start markings, a training minimap, AWD/arcade surface grip and a circular autopilot route. **R/Home** recover on the practice pad; **Z** returns to the circuit. Replay and scenery views restore the selected driving environment.
+
+**K** saves a Desktop PNG containing UTF-8 `Software`, `Creation Time`, `Description`, `HUD`, `Vehicle` and `Camera` metadata. HUD visibility follows **J**. The Mac sandbox grants access specifically to Desktop for this feature.
+
+The **v0.1.0 FPS fix** caps rendering at **60 FPS** during driving, paused menus and resume on macOS and Windows. Packaged tests measure actual frames against elapsed wall-clock time on both platforms. Motion blur is disabled to match Unity. Tire squeal remains available in View & sound settings.
 
 ### Driving dynamics
 
@@ -192,53 +202,59 @@ Asset regeneration tools use a sibling **`GotlandRingUnity`** checkout and an is
 
 ## Lines of code
 
-**3,728 code lines across 80 project source files**, counted with [cloc 2.06](https://github.com/AlDanial/cloc/tree/v2.06). These are physical lines containing code; comment-only and blank lines are listed separately.
+**4,121 code lines across 89 project source files**, counted with [cloc 2.06](https://github.com/AlDanial/cloc/tree/v2.06). These are physical lines containing code; comment-only and blank lines are listed separately.
 
 | Component | Language | Files | Code | Comments | Blank |
 |---|---|---:|---:|---:|---:|
-| Unreal module, including in-game checks | C++ / headers | 27 | 1,924 | 18 | 12 |
-| Asset export/import and data tools | Python | 26 | 971 | 35 | 20 |
+| Unreal module, including in-game checks | C++ / headers | 32 | 2,227 | 18 | 15 |
+| Asset export/import and data tools | Python | 28 | 983 | 36 | 23 |
 | Native source comparisons | C++ | 5 | 148 | 1 | 2 |
-| Windows build, packaging and verification | PowerShell | 10 | 218 | 0 | 3 |
+| Windows build, packaging and verification | PowerShell | 11 | 272 | 0 | 3 |
 | Portable EXE launcher | C# | 1 | 74 | 0 | 2 |
-| Unity asset export bridge | C# | 5 | 219 | 1 | 4 |
+| Unity asset export bridge | C# | 6 | 239 | 1 | 4 |
 | Cockpit display shader | HLSL | 1 | 65 | 2 | 0 |
 | C# reference checks | C# | 2 | 41 | 1 | 0 |
 | Windows test runner | Batch | 1 | 25 | 0 | 0 |
-| macOS packaging and icon tools | Bash | 2 | 43 | 0 | 0 |
-| **Total** | | **80** | **3,728** | **58** | **43** |
+| macOS packaging and icon tools | Bash | 2 | 47 | 0 | 0 |
+| **Total** | | **89** | **4,121** | **59** | **49** |
 
-Generated track, replay, driver-skin, presentation, scenery-view and audio tables add **10,090 source/data lines in seven files**, excluded from the project-code total above. The count also excludes Unreal Engine and other dependencies, build outputs, assets, documentation, project configuration, and the C# `.Build.cs` / `.Target.cs` configuration files.
+Generated track, replay, driver-skin, presentation, scenery-view and audio tables add **10,356 source/data lines in eight files**, excluded from the project-code total above. The count also excludes Unreal Engine and other dependencies, build outputs, assets, documentation, project configuration, and the C# `.Build.cs` / `.Target.cs` configuration files.
 
 To reproduce the project-code count from the repository root with `cloc` and `rg` installed:
 
 ```bash
 git ls-files Source Scripts Tests PortableLauncher \
     | rg '\.(cpp|h|inl|cs|py|ps1|cmd|sh|hlsl)$' \
-    | rg -v '\.(Build|Target)\.cs$|/(EngineCycles|RingDriverData|RingReferenceData|RingRouteData|RingPresentationData)\.h$|/(RingKerbs|RingSceneryViews)\.inl$' \
+    | rg -v '\.(Build|Target)\.cs$|/(EngineCycles|RingDriverData|RingReferenceData|RingRouteData|RingTrainingData|RingPresentationData)\.h$|/(RingKerbs|RingSceneryViews)\.inl$' \
     > /tmp/gotland-unreal-code-files.txt
 cloc --list-file=/tmp/gotland-unreal-code-files.txt --skip-uniqueness
 ```
 
 ## Verification
 
-The current packaged game passes **five rendered checks on macOS and five on Windows/Fractal**. Windows checks run in an interactive Windows 11 session; Windows 10 runtime testing has not been performed.
+The current packaged game passes **seven rendered checks on macOS and seven on Windows/Fractal**. Windows checks run in an interactive Windows 11 session; Windows 10 runtime testing has not been performed.
 
 | Check | macOS | Fractal / Windows |
 |---|---|---|
-| Reference lap, animated driver, 15 views, arcade handling and menu restoration | [Pass](Validation/migration_reference_macos.json) | [Pass](Validation/migration_reference_fractal.json) |
-| GPU-rendered instrument needles, gear/trip state and steering-wheel direction | [Pass](Validation/instruments_reference_macos.json) | [Pass](Validation/instruments_reference_fractal.json) |
-| Settings persistence, pause restoration and drone/cockpit camera settings | [Pass](Validation/settings_reference_macos.json) | [Pass](Validation/settings_reference_fractal.json) |
-| Acceleration, braking, steering, road contact and reset | [Pass](Validation/driving_reference_macos.json) | [Pass](Validation/driving_reference_fractal.json) |
-| Twelve rotors: speed, direction, fixed hubs and pause/resume | [Pass](Validation/wind_reference_macos.json) | [Pass](Validation/wind_reference_fractal.json) |
+| Both cars, paint retention, four cameras, training, fullscreen, replay/view restoration and Desktop capture | [Pass](Validation/complete_complete_macos.json) | [Pass](Validation/complete_complete_fractal.json) |
+| Measured frame rate during driving, paused menu and resume | [Pass](Validation/frame_rate_complete_macos.json) | [Pass](Validation/framerate_complete_fractal.json) |
+| Reference lap, animated driver, 15 views, arcade handling and menu restoration | [Pass](Validation/migration_complete_macos.json) | [Pass](Validation/migration_complete_fractal.json) |
+| GPU-rendered instrument needles, gear/trip state and steering-wheel direction | [Pass](Validation/instruments_complete_macos.json) | [Pass](Validation/instruments_complete_fractal.json) |
+| Settings persistence, pause restoration and drone/cockpit camera settings | [Pass](Validation/settings_complete_macos.json) | [Pass](Validation/settings_complete_fractal.json) |
+| Acceleration, braking, steering, road contact and reset | [Pass](Validation/driving_complete_macos.json) | [Pass](Validation/driving_complete_fractal.json) |
+| Twelve rotors: speed, direction, fixed hubs and pause/resume | [Pass](Validation/wind_complete_macos.json) | [Pass](Validation/wind_complete_fractal.json) |
 
-The [source/asset comparison](Validation/reference_source_fractal.json) confirms that **189 game source and asset files** match across the two machines. [Audio comparisons](Validation/reference_audio_parity.json) match the current Unity engine and surface mixers at **44.1, 48 and 96 kHz**.
+The [car material audit](Validation/car_material_parity.json) checks both prefabs’ actual texture references and material graph connections. Desktop PNG CRCs and UTF-8 metadata pass on [Mac](Validation/desktop_png_macos.json) and [Windows](Validation/desktop_png_fractal.json).
 
-The [single-file EXE check](Validation/single_file_fractal.json) runs from a folder containing only the EXE. It verifies concurrent first-launch extraction, all **42 extracted files** against the original package, cache reuse, argument forwarding with spaces, and the migration, instrument and driving checks through the launcher.
+The [source/asset comparison](Validation/reference_source_fractal.json) confirms that **350 game source and asset files** match across the two machines. [Audio comparisons](Validation/reference_audio_parity.json) match the current Unity engine and surface mixers at **44.1, 48 and 96 kHz**.
+
+The [single-file EXE check](Validation/single_file_fractal.json) runs from a folder containing only the EXE. It verifies concurrent first-launch extraction, all extracted package files against the original package, cache reuse, argument forwarding with spaces, and the complete-feature, migration, instrument and driving checks through the launcher.
 
 For a rendered test, launch a packaged game with one of these switches:
 
 ```text
+-RingCompleteTest
+-RingFrameRateTest
 -RingMigrationTest
 -RingInstrumentsTest
 -RingSettingsTest

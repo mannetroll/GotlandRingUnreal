@@ -1,17 +1,18 @@
 ﻿{
-    "cached_launch_seconds":  0.3399791,
+    "cached_launch_seconds":  0.43121509999999996,
     "cache_reused":  true,
     "single_exe_only":  true,
     "passed":  true,
     "self_contained_runtime":  true,
-    "sha256":  "6d9f8b4b7b5a7b9d4458161a74eb054d5a5614b389fc7f64ff9465e807454cd0",
+    "sha256":  "63f9af0fadf962e475421220ef69dda679f9f3d9dc2049e0e06906b3522f9a78",
     "concurrent_cold_extraction":  true,
     "gameplay":  {
-                     "Driving":  true,
+                     "Complete":  true,
                      "Instruments":  true,
-                     "Migration":  true
+                     "Migration":  true,
+                     "Driving":  true
                  },
     "forwarded_arguments_with_spaces":  true,
-    "extracted_files_checked":  42,
-    "cold_seconds":  1.018594
+    "extracted_files_checked":  40,
+    "cold_seconds":  1.3612511999999999
 }

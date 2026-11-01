@@ -1,0 +1,12 @@
+﻿{
+    "crc_verified":  true,
+    "metadata":  {
+                     "Software":  "Gotland Ring v0.1.0",
+                     "Creation Time":  "Sun, 01 Nov 2026 17:43:26 GMT",
+                     "Description":  "TRAINING AREA / SLIDE PRACTICE\nSubaru Impreza / Blue \u0026 gold\nSpeed 93 km/h · Gear 3\n5265 RPM · Boost 0.86 bar · Handling AWD\nAutopilot ON · Mouse steering OFF\nSide slip 5.1°\nTarget 98 km/h · Gas 95%\nLap 1 · Time 8.00 · Best 123.40\n800 × 800 m / ASPHALT\n60 FPS / 16.7 ms",
+                     "HUD":  "Visible",
+                     "Vehicle":  "Subaru Impreza · Blue \u0026 gold",
+                     "Camera":  "View 2 · Heading 19.388° · Pitch -17.650° · Roll 2.194° · FOV 92.883°"
+                 },
+    "passed":  true
+}

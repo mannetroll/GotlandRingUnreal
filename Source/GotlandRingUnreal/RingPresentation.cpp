@@ -51,6 +51,7 @@ void ARingCar::InitializeSigns(){
  }
 }
 void ARingCar::UpdateLap(float Dt){
+ if(Training){Laps.Seconds+=Dt;return;}
  float Fraction,Offset;bool OnRoad;auto P=GetActorLocation()/100;
  int Index=Pilot->Nearest({float(P.X),float(P.Y)},Fraction,Offset,OnRoad);
  Laps.Step(Dt,Index,Ring::CircuitStart,UE_ARRAY_COUNT(Ring::RouteData),OnRoad);
@@ -107,23 +108,38 @@ void ARingHUD::DrawHUD(){
   Text(Car->SceneryView==14?TEXT("Return to car [V]"):TEXT("Next scenery [V]"),40,169,15,White);Text(TEXT("Return to car [C]"),260,169,15,White);
   AddHitBox(FVector2D(25,160)*S,FVector2D(205,36)*S,TEXT("NextScenery"),true);AddHitBox(FVector2D(245,160)*S,FVector2D(205,36)*S,TEXT("ExitScenery"),true);
   Panel(25,H-81,700,56);Text(TEXT("Drive paused while viewing / Mannetroll Solutions AB"),45,H-72,13,White);
-  Text(TEXT("Rally Car: SpatialNeglect / CC BY-NC 4.0"),45,H-49,13,Muted);return;
+  Text(Car->Models[Car->SelectedCar].Credit,45,H-49,13,Muted);return;
  }
  Panel(25,H-165,365,140);Text(FString::Printf(TEXT("%03d"),FMath::RoundToInt(Car->SpeedKmh)),42,H-161,55,White);
  Text(TEXT("km/h"),175,H-110,19,White);Text(Car->Dynamics.Throttle<0?TEXT("R"):FString::FromInt(Car->Dynamics.Gear),285,H-161,55,White);
  Rect(43,H-84,315,5,Muted);Rect(43,H-84,315*FMath::Clamp((Car->Settings.AwdMode?Car->Dynamics.Motor.Rpm():Car->ArcadeRpm)/7000,0.f,1.f),5,FLinearColor(1,.22,.1));
  Text(FString::Printf(TEXT("%d RPM    BOOST %.2f bar"),int(Car->Settings.AwdMode?Car->Dynamics.Motor.Rpm():Car->ArcadeRpm),Car->Dynamics.Boost*.9f),43,H-74,13,White);
  Text(Car->Settings.AwdMode?TEXT("AWD PHYSICS / H FOR ARCADE"):TEXT("ARCADE HANDLING / H FOR AWD"),43,H-45,13,White);
- const float InfoX=W-450;Panel(InfoX,H-215,425,190);
- Text(TEXT("Gotland Ring · Open practice"),InfoX+18,H-200,22,White);Text(TEXT("Impreza Rally · ")+Ring::VersionLabel(),InfoX+18,H-171,14,Muted);
- Text(FString::Printf(TEXT("Lap %d · %s"),Car->Laps.Lap,*ClockText(Car->Laps.Seconds)),InfoX+18,H-145,21,White);
- Text(Car->Laps.Best>0?TEXT("Best ")+ClockText(Car->Laps.Best):FString::Printf(TEXT("%.3f km"),Ring::CircuitLength/1000),InfoX+255,H-140,13,Muted);
- Text(FString::Printf(TEXT("%.0f FPS / %.1f ms · Side slip %.1f°"),1/FMath::Max(GetWorld()->GetDeltaSeconds(),.001f),GetWorld()->GetDeltaSeconds()*1000,FMath::Abs(Car->SideslipDegrees)),InfoX+18,H-112,13,Muted);
- Text(FString::Printf(TEXT("Dynamics [%s]    Camera [%s]    Menu [Esc]"),*Car->KeyHint(EKeys::F3),*Car->KeyHint(EKeys::C)),InfoX+18,H-85,13,White);
- Text(FString::Printf(TEXT("Autopilot %s [%s]   %s [%s]"),Car->Autopilot?TEXT("on"):TEXT("off"),*Car->KeyHint(EKeys::P),Car->MouseControl?TEXT("Mouse"):TEXT("Keyboard"),*Car->KeyHint(EKeys::U)),InfoX+18,H-62,13,White);
+ const float Extra=(Car->MouseControl?24.f:0)+(Car->Autopilot?116.f:0),InfoBase=H-Extra,InfoX=W-450;Panel(InfoX,InfoBase-215,425,190+Extra);
+ Text(Car->Training?TEXT("Training area · Slide practice"):TEXT("Gotland Ring · Open practice"),InfoX+18,InfoBase-200,22,White);Text(Car->Models[Car->SelectedCar].DisplayName+TEXT(" · ")+Car->PaintName(),InfoX+18,InfoBase-171,14,Muted);
+ Text(Car->Training?TEXT("800 × 800 m / ASPHALT"):FString::Printf(TEXT("Lap %d · %s"),Car->Laps.Lap,*ClockText(Car->Laps.Seconds)),InfoX+18,InfoBase-145,21,White);
+ if(!Car->Training)Text(Car->Laps.Best>0?TEXT("Best ")+ClockText(Car->Laps.Best):FString::Printf(TEXT("%.3f km"),Ring::CircuitLength/1000),InfoX+255,InfoBase-140,13,Muted);
+ Text(FString::Printf(TEXT("%.0f FPS / %.1f ms · Side slip %.1f°"),1/FMath::Max(GetWorld()->GetDeltaSeconds(),.001f),GetWorld()->GetDeltaSeconds()*1000,FMath::Abs(Car->SideslipDegrees)),InfoX+18,InfoBase-112,13,Muted);
+ auto Button=[&](int I,FName Id,const FString& Label){float X=InfoX+14+I*80;Rect(X,InfoBase-86,76,24,FLinearColor(.1,.15,.2));Text(Label,X+4,InfoBase-81,10,White);AddHitBox(FVector2D(X,InfoBase-86)*S,FVector2D(76,24)*S,Id,true);};
+ Button(0,TEXT("Dynamics"),TEXT("Dynamics ")+Car->KeyHint(EKeys::F3));Button(1,TEXT("Fullscreen"),TEXT("Fullscreen ")+Car->KeyHint(EKeys::F));Button(2,TEXT("Pilot"),FString(Car->Autopilot?TEXT("Pilot on "):TEXT("Pilot off "))+Car->KeyHint(EKeys::P));Button(3,TEXT("Input"),FString(Car->MouseControl?TEXT("Mouse "):TEXT("Keyboard "))+Car->KeyHint(EKeys::U));Button(4,TEXT("Training"),FString(Car->Training?TEXT("Ring "):TEXT("Training "))+Car->KeyHint(EKeys::Z));
+ float DetailY=InfoBase-54;
+ if(Car->MouseControl){Rect(InfoX+30,DetailY+6,326,4,Muted);Rect(InfoX+192,DetailY,2,16,White);float Demand=Car->Autopilot||Car->DrivePaused?0:Car->MouseSteering;Rect(InfoX+189+Demand*163,DetailY+2,8,12,FLinearColor(.35,.8,1));DetailY+=24;}
+ if(Car->Autopilot){
+  Text(FString::Printf(TEXT("Target %.0f km/h · Gas %.0f%% · Brake %.0f%%"),Car->PilotTarget,Car->LivePilot.Throttle*100,Car->LivePilot.Brake*100),InfoX+18,DetailY,13,Muted);DetailY+=26;
+  float Active=Car->DrivePaused?0:1;
+  auto Key=[&](FKey K,float X,float Y,float Amount,FLinearColor Color){Rect(X,Y,40,36,FLinearColor(.08,.13,.18));Rect(X,Y+36-36*Amount*Active,40,36*Amount*Active,Color);Text(Car->KeyHint(K),X+12,Y+6,17,White);};
+  Key(EKeys::W,InfoX+64,DetailY,Car->LivePilot.Throttle,FLinearColor(.1,.65,.35));Key(EKeys::A,InfoX+18,DetailY+42,FMath::Max(0.f,-Car->LivePilot.Steering),FLinearColor(.1,.55,.85));Key(EKeys::S,InfoX+64,DetailY+42,Car->LivePilot.Brake,FLinearColor(.95,.4,.12));Key(EKeys::D,InfoX+110,DetailY+42,FMath::Max(0.f,Car->LivePilot.Steering),FLinearColor(.1,.55,.85));
+  Text(Car->DrivePaused?TEXT("Inputs paused"):TEXT("Live inputs"),InfoX+171,DetailY+3,13,Muted);Text(Car->KeyHint(EKeys::W)+TEXT(" gas · ")+Car->KeyHint(EKeys::S)+TEXT(" brake"),InfoX+171,DetailY+28,13,Muted);Text(FString::Printf(TEXT("%s/%s steer %.0f%% %s"),*Car->KeyHint(EKeys::A),*Car->KeyHint(EKeys::D),FMath::Abs(Car->LivePilot.Steering)*100*Active,Car->LivePilot.Steering<0?TEXT("L"):TEXT("R")),InfoX+171,DetailY+53,13,Muted);
+ }
  Text(TEXT("Copyright © Mannetroll Solutions AB"),InfoX+18,H-40,12,Muted);
  if(Car->ViewMode!=0&&Car->Dashboard)DrawMaterial(Car->Dashboard,(W/2-215)*S,(H-155)*S,430*S,143*S,0,0,1,1);
  const float MX=W-260,MY=25,MapSize=235;Rect(MX,MY,MapSize,MapSize,FLinearColor(.015,.03,.04,.88));
+ if(Car->Training){
+  Rect(MX+7,MY+7,MapSize-14,MapSize-14,FLinearColor(.12,.17,.20));
+  auto TP=[&](float X,float Y){return FVector2D(MX+MapSize*.5f+(Y-600000)*MapSize/85000,MY+MapSize*.5f-X*MapSize/85000);};
+  for(float Radius:{2500.f,5000.f,10000.f})for(int I=0;I<128;I++){float A=I*2*PI/128,B=(I+1)*2*PI/128;auto P=TP(FMath::Cos(A)*Radius,600000+FMath::Sin(A)*Radius),Q=TP(FMath::Cos(B)*Radius,600000+FMath::Sin(B)*Radius);DrawLine(P.X*S,P.Y*S,Q.X*S,Q.Y*S,Muted,1*S);}
+  auto P=TP(Car->GetActorLocation().X,Car->GetActorLocation().Y);Rect(P.X-3,P.Y-3,6,6,White);Text(TEXT("TRAINING / ASPHALT"),MX+10,MY+7,12,White);
+ }else{
  auto MP=[&](FVector2D P){return FVector2D(MX,MY)+Map.Project(P)*(MapSize/256);};
  for(int I=0;I<UE_ARRAY_COUNT(Ring::RouteData);I++){const auto&A=Ring::RouteData[I];const auto&B=Ring::RouteData[(I+1)%UE_ARRAY_COUNT(Ring::RouteData)];auto P=MP({A.CX,A.CY}),Q=MP({B.CX,B.CY});DrawLine(P.X*S,P.Y*S,Q.X*S,Q.Y*S,Map.Color(Ring::CircuitBanking[I]),2.4f*S);}
  auto F=Ring::RouteData[Ring::CircuitStart];auto Finish=MP({F.CX,F.CY});for(int I=0;I<4;I++)for(int J=0;J<3;J++)Rect(Finish.X+I*2,Finish.Y+J*2,2,2,(I+J)%2?FLinearColor::Black:White);
@@ -132,7 +148,8 @@ void ARingHUD::DrawHUD(){
  Text(TEXT("BANKING / + right edge higher"),MX+10,MY+7,12,White);
  Text(FString::Printf(TEXT("−%.1f°"),Map.BankLimit),MX+10,MY+204,12,White);Text(TEXT("0°"),MX+110,MY+204,12,White);Text(FString::Printf(TEXT("+%.1f°"),Map.BankLimit),MX+188,MY+204,12,White);
  for(int I=0;I<211;I++)Rect(MX+12+I,MY+225,1,4,Map.Color(FMath::Lerp(-Map.BankLimit,Map.BankLimit,I/210.f)));
- if(Car->Autopilot)Text(FString::Printf(TEXT("Pilot target %.0f km/h · Line error %.1f m"),Car->PilotTarget,Car->PilotError),25,25,16,White);
+ }
+
 }
 void ARingCar::RunPresentationTest(){
  if(Elapsed<2)return;
@@ -189,6 +206,10 @@ void ARingCar::RunSignsTest(){
 }
 
 void ARingHUD::NotifyHitBoxClick(FName BoxName){
- Super::NotifyHitBoxClick(BoxName);auto* Car=Cast<ARingCar>(GetOwningPawn());if(!Car||Car->SceneryView<0)return;
+ Super::NotifyHitBoxClick(BoxName);auto* Car=Cast<ARingCar>(GetOwningPawn());if(!Car)return;
  if(BoxName==TEXT("NextScenery"))Car->NextSceneryView();else if(BoxName==TEXT("ExitScenery"))Car->ExitSceneryViews();
+ else if(Car->SceneryView<0&&!Car->ReferenceActive){
+  if(BoxName==TEXT("Dynamics"))Car->OpenSettings();else if(BoxName==TEXT("Fullscreen"))Car->ToggleFullscreen();else if(BoxName==TEXT("Pilot")){Car->Autopilot=!Car->Autopilot;Car->Pilot->Reset();Car->MouseSteering=0;}
+  else if(BoxName==TEXT("Input")){Car->MouseControl=!Car->MouseControl;Car->MouseSteering=Car->LookYaw=Car->LookPitch=0;}else if(BoxName==TEXT("Training"))Car->ToggleTrainingArea();
+ }
 }

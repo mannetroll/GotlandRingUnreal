@@ -17,5 +17,5 @@ info['CFBundleIconFile']='AppIcon.icns'
 info.pop('CFBundleIconName',None)
 path.write_bytes(plistlib.dumps(info))
 PY
-codesign --force --deep --sign - --preserve-metadata=identifier,entitlements,flags "$app_dir"
+codesign --force --deep --sign - --entitlements "$project_root/Resources/Mac/Gameplay.entitlements" --preserve-metadata=identifier,flags "$app_dir"
 codesign --verify --deep --strict "$app_dir"

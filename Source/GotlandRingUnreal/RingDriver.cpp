@@ -11,9 +11,7 @@ void ARingCar::InitializeDriver(){
  for(const auto& V:Ring::DriverVertices){Positions.Add(V.Position);Normals.Add(V.Normal);UV.Add(V.UV);}
  for(int I=0;I<UE_ARRAY_COUNT(Ring::DriverTriangles);I+=3){Triangles.Add(Ring::DriverTriangles[I]);Triangles.Add(Ring::DriverTriangles[I+2]);Triangles.Add(Ring::DriverTriangles[I+1]);}
  DriverBody->CreateMeshSection_LinearColor(0,Positions,Triangles,Normals,UV,{}, {},false);
- for(int32 I=0;I<Visuals.Num();I++)if(VisualMeshes[I]->GetName()==TEXT("Vehicle_12")){
-  DriverBody->SetMaterial(0,Visuals[I]->GetMaterial(0));Visuals[I]->SetVisibility(false);
- }
+ for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]==-4){DriverBody->SetMaterial(0,Visuals[I]->GetMaterial(0));Visuals[I]->SetVisibility(false);}
  AnimateDriver(0);
 }
 void ARingCar::AnimateDriver(float RoadDegrees){

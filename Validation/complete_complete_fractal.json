@@ -1,0 +1,16 @@
+{
+	"two_models_restore_motion_lap_pilot_and_pause": true,
+	"all_paints_and_per_model_selection": true,
+	"both_models_four_cameras": true,
+	"fullscreen_roundtrip": true,
+	"training_pad_surface_and_route": true,
+	"training_arcade_acceleration_braking": true,
+	"training_awd_speed_kmh": 92.741889953613281,
+	"training_awd_autopilot_contact": true,
+	"training_replay_scenery_restore": true,
+	"desktop_png": "C:\\Users\\torbj\\Desktop/GotlandRing-2026-11-01_18-43-26-CF63F2A24793973D27DBAF94342FF59A.png",
+	"desktop_screenshot_saved": true,
+	"return_to_circuit": true,
+	"training_retains_circuit_best": true,
+	"passed": true
+}

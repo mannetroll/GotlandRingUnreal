@@ -12,11 +12,14 @@ import subprocess
 root=Path(__file__).resolve().parents[1]
 source=root.parent/'GotlandRingUnity'
 stage=root/'Export/UnitySceneryStage'
-output=root/'Export/Vehicle'
+output=root/'Export/Models'
 output.mkdir(parents=True,exist_ok=True)
 shutil.copyfile(root/'Scripts/Unity/ExportVehicle.cs',stage/'Assets/Editor/ExportVehicle.cs')
-editor=source/'Tools/Unity/6000.3.25f1/Unity.app/Contents/MacOS/Unity'
-subprocess.run([str(editor),'-batchmode','-nographics','-projectPath',str(stage),'-executeMethod','ExportVehicle.Run','-quit','-logFile',str(root/'Export/unity_vehicle.log')],env=dict(os.environ,GOTLAND_VEHICLE_OUTPUT=str(output)),check=True)
+for model in ['RallyCar','SubaruImpreza']:
+    shutil.copytree(source/'Assets/Models',stage/'Assets/Models',dirs_exist_ok=True)
+    shutil.copyfile(source/'Assets/Resources'/f'{model}.prefab',stage/'Assets/Resources'/f'{model}.prefab')
+    editor=source/'Tools/Unity/6000.3.25f1/Unity.app/Contents/MacOS/Unity'
+    subprocess.run([str(editor),'-batchmode','-nographics','-projectPath',str(stage),'-executeMethod','ExportVehicle.Run','-quit','-logFile',str(root/'Export'/f'unity_{model}.log')],env=dict(os.environ,GOTLAND_VEHICLE_MODEL=model,GOTLAND_VEHICLE_OUTPUT=str(output/model)),check=True)
 rows=list(csv.DictReader((source/'Assets/Resources/Track/Surface.csv').open()))
 r=rows[284] # TrackLandmarks.StartFinishPoint
 position=[float(r[a])*100 for a in ['z_m','x_m','y_m']]

@@ -44,7 +44,7 @@ try {
     $watch.Stop();$warmSeconds=$watch.Elapsed.TotalSeconds
     if($warm.ExitCode -ne 0 -or (Get-Item $ready).LastWriteTimeUtc -ne $stamp){throw 'The warm launch did not reuse the cache.'}
     $modes=@{}
-    foreach($mode in @('Migration','Instruments','Driving')){
+    foreach($mode in @('Complete','Migration','Instruments','Driving')){
         $report=Join-Path "$work\Saved" ($mode.ToLower()+'_validation.json')
         if(Test-Path $report){Remove-Item $report}
         $p=Start-Process $exe -ArgumentList @("-Ring${mode}Test",'-windowed','-ResX=1600','-ResY=900',"-UserDir=`"$work`"") -PassThru

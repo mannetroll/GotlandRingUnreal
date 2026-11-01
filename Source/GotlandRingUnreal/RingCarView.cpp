@@ -17,7 +17,7 @@ void ARingCar::UpdateView(float Dt,APlayerController* PC){
   if(IgnoreMouseFrames>0){X=Y=0;IgnoreMouseFrames--;}
 
   if(MouseControl){if(!Autopilot)MouseSteering=FMath::Clamp(MouseSteering+X*.04f,-1.f,1.f);}
-  else {LookYaw+=X*2;LookPitch=FMath::Clamp(LookPitch-Y*1.5f,ViewMode>=2?-13.f:-45.f,ViewMode>=2?57.f:40.f);LookYaw=ViewMode>=2?FMath::UnwindDegrees(LookYaw):FMath::Clamp(LookYaw,-115.f,115.f);}
+  else {LookYaw+=X*2;const float DronePitch=FMath::RadiansToDegrees(FMath::Atan2(Settings.DroneHeight,Settings.DroneDistance))*.5f;LookPitch=FMath::Clamp(LookPitch-Y*1.5f,ViewMode==3?-20.f-DronePitch:ViewMode==2?-13.f:-45.f,ViewMode==3?89.f-DronePitch:ViewMode==2?57.f:40.f);LookYaw=ViewMode>=2?FMath::UnwindDegrees(LookYaw):FMath::Clamp(LookYaw,-115.f,115.f);}
   if(PC->WasInputKeyJustPressed(EKeys::RightMouseButton)){LookYaw=LookPitch=MouseSteering=0;}
  }
  FVector Lean=FVector::ZeroVector,Tilt=FVector::ZeroVector;
@@ -50,7 +50,7 @@ void ARingCar::UpdateView(float Dt,APlayerController* PC){
   ChaseYaw=FMath::Lerp(ChaseYaw,SpeedKmh>28.8f?FMath::Clamp(SideslipDegrees,-20.f,20.f):0.f,1-FMath::Exp(-Dt*5));
   Boom->TargetArmLength=550;Boom->SetRelativeLocation(FVector(0,0,22));Boom->SetRelativeRotation(FRotator(-18-LookPitch,LookYaw+ChaseYaw,0));
  }else{
-  Boom->TargetArmLength=0;Boom->SetRelativeLocation(ViewMode==0?FVector(-12.4041891,-38.8264,68.379341):FVector(102,0,54));
+  Boom->TargetArmLength=0;Boom->SetRelativeLocation(ViewMode==0?Models[SelectedCar].Cockpit-FVector(0,0,48):Models[SelectedCar].Bonnet-FVector(0,0,48));
   Boom->SetRelativeLocation(Boom->GetRelativeLocation()+Lean);
   Boom->SetRelativeRotation(FRotator((ViewMode==0?-8.45f:-2.f)-LookPitch+Tilt.X,LookYaw,Tilt.Z));
  }
@@ -61,6 +61,7 @@ void ARingCar::UpdateView(float Dt,APlayerController* PC){
  for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]==-2)Visuals[I]->SetVisibility(ViewMode!=0);
 }
 void ARingCar::RecoverCar(){
+ if(Training){RecoverTrainingCar();return;}
  Laps.Discontinuity();
  FVector P=GetActorLocation()/100;float Fraction,Offset;bool OnRoad;
  int I=Pilot->Nearest({float(P.X),float(P.Y)},Fraction,Offset,OnRoad),J=Pilot->Next(I);

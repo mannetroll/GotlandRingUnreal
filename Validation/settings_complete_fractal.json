@@ -1,0 +1,10 @@
+{
+	"cancel_preserves_settings": true,
+	"apply_persists": true,
+	"reset_preserves_setup": true,
+	"restores_prior_pause": true,
+	"defaults_persist": true,
+	"drone_world_pose": true,
+	"cockpit_movement_disabled": true,
+	"passed": true
+}

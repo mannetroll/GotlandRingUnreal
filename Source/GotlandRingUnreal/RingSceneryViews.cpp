@@ -23,6 +23,6 @@ void ARingCar::NextSceneryView(){
 void ARingCar::ExitSceneryViews(){
  SceneryView=-1;Camera->ProjectionMode=ECameraProjectionMode::Perspective;Camera->AttachToComponent(Boom,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
  SetDrivePaused(SceneryWasPaused);UpdateView(1.f/60,nullptr);
- if(auto* PC=Cast<APlayerController>(GetController())){PC->bShowMouseCursor=DrivePaused;PC->bEnableClickEvents=false;PC->SetInputMode(FInputModeGameOnly());}
+ if(auto* PC=Cast<APlayerController>(GetController())){PC->bShowMouseCursor=DrivePaused;PC->bEnableClickEvents=true;PC->SetInputMode(FInputModeGameOnly());}
  if(MenuWidget.IsValid())BuildMenu();
 }

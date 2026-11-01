@@ -17,6 +17,25 @@ class USpringArmComponent;
 class UCameraComponent;
 class URingAudio;
 class UMaterialInstanceDynamic;
+class UMaterialInterface;
+class FJsonObject;
+USTRUCT()
+struct FRingCarModel {
+ GENERATED_BODY()
+ UPROPERTY(EditAnywhere) FString DisplayName;
+ UPROPERTY(EditAnywhere) FString Credit;
+ UPROPERTY(EditAnywhere) TArray<TObjectPtr<UStaticMesh>> Meshes;
+ UPROPERTY(EditAnywhere) TArray<int32> Wheels;
+ UPROPERTY(EditAnywhere) TArray<FVector> Centers;
+ UPROPERTY(EditAnywhere) FVector Cockpit;
+ UPROPERTY(EditAnywhere) FVector Bonnet;
+ UPROPERTY(EditAnywhere) FVector SteeringPivot;
+ UPROPERTY(EditAnywhere) FVector SteeringAxis;
+ UPROPERTY(EditAnywhere) TArray<FLinearColor> PaintColors;
+ UPROPERTY(EditAnywhere) TArray<FString> PaintNames;
+ UPROPERTY(EditAnywhere) int32 PaintSlot=-1;
+ UPROPERTY(EditAnywhere) int32 InitialPaint=0;
+};
 UCLASS()
 class GOTLANDRINGUNREAL_API ARingCar : public APawn {
  GENERATED_BODY()
@@ -28,9 +47,13 @@ public:
  UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UBoxComponent> Chassis;
  UPROPERTY(VisibleAnywhere) TObjectPtr<USpringArmComponent> Boom;
  UPROPERTY(VisibleAnywhere) TObjectPtr<UCameraComponent> Camera;
- UPROPERTY(EditAnywhere, BlueprintReadWrite) TArray<TObjectPtr<UStaticMesh>> VisualMeshes;
- UPROPERTY(EditAnywhere, BlueprintReadWrite) TArray<int32> VisualWheels;
- UPROPERTY(EditAnywhere, BlueprintReadWrite) TArray<FVector> WheelCenters;
+ UPROPERTY(EditAnywhere) TArray<FRingCarModel> Models;
+ UPROPERTY(EditAnywhere) TObjectPtr<UStaticMesh> TrainingPlaneMesh;
+ UPROPERTY(EditAnywhere) TObjectPtr<UStaticMesh> TrainingCubeMesh;
+ UPROPERTY(EditAnywhere) TArray<TObjectPtr<UMaterialInterface>> TrainingMaterials;
+ UPROPERTY(Transient) TArray<TObjectPtr<UStaticMesh>> VisualMeshes;
+ TArray<int32> VisualWheels;
+ TArray<FVector> WheelCenters;
  UPROPERTY(VisibleAnywhere) TObjectPtr<URingAudio> EngineAudio;
  Ring::Dynamics Dynamics;
  float SideslipDegrees=0;
@@ -40,6 +63,7 @@ public:
  bool Autopilot=false,TyreSquealEnabled=false;
  int32 ViewMode=0;
  float PilotTarget=0,PilotError=0;
+ Ring::PilotControls LivePilot;
  Ring::LapClock Laps;
  bool HideHUD=false;
  bool IsDrivePaused()const{return DrivePaused;}
@@ -51,6 +75,31 @@ public:
  void ToggleFullscreen();
 private:
  friend class ARingHUD;
+ void InitializeCarVisuals();
+ void SwitchCarModel();
+ void CyclePaint();
+ FString PaintName()const;
+ int32 SelectedCar=0;
+ TArray<int32> PaintSelections;
+ TArray<float> ModelTrips;
+ UPROPERTY() TObjectPtr<UMaterialInstanceDynamic> PaintMaterial;
+ bool Training=false;
+ UPROPERTY() TObjectPtr<AActor> TrainingGround;
+ TWeakObjectPtr<UStaticMeshComponent> CircuitRoad,TrainingRoad;
+ TArray<Ring::RouteRow> TrainingRoute;
+ FTransform CircuitStartPose;
+ void MakeTrainingArea();
+ void ToggleTrainingArea();
+ void RecoverTrainingCar();
+ bool OnDrivingRoad(FVector Position)const;
+ void SaveDesktopScreenshot();
+ void CaptureDesktopScreenshot(int32 Width,int32 Height,const TArray<FColor>& Colors);
+ FDelegateHandle DesktopCapture;
+ FString ScreenshotInfo()const;
+ bool CompleteTest=false,CompletePassed=true;
+ TSharedPtr<FJsonObject> CompleteReport;
+ int32 CompletePhase=0;
+ void RunCompleteMigrationTest();
  UPROPERTY() TObjectPtr<UProceduralMeshComponent> DriverBody;
  UPROPERTY() TObjectPtr<USceneCaptureComponent2D> ReplayBonnet;
  UPROPERTY() TObjectPtr<USceneCaptureComponent2D> ReplayCockpit;
@@ -83,6 +132,12 @@ private:
  bool MigrationTest=false;
  int32 MigrationPhase=0;
  void RunMigrationTest(float Dt);
+ bool FrameRateTest=false;
+ bool WheelViewTest=false,WheelCaptureTaken=false;
+ int32 FrameRatePhase=0,FrameRateFrames=0;
+ double FrameRateStart=0;
+ TArray<double> FrameRateSamples;
+ void RunFrameRateTest();
 
  TArray<TWeakObjectPtr<AActor>> WindRotors;
  TArray<FQuat> WindRotations;

@@ -8,16 +8,17 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 
 public static class ExportVehicle {
- [Serializable] public class Item { public string name, material, texture, shader; public float[] color, bounds; public float roughness, metallic; public int objects, triangles; public int wheel=-1; public float[] pivot; }
- [Serializable] public class Manifest { public string source; public List<Item> meshes=new List<Item>(); public float wheelRadius; }
+ [Serializable] public class Item { public string name, material, materialPath, texture, shader; public float[] color, bounds; public float roughness, metallic; public int objects, triangles; public int wheel=-1; public float[] pivot; }
+ [Serializable] public class Manifest { public string source; public List<Item> meshes=new List<Item>(); public float wheelRadius; public string displayName,credit; public string[] paintNames; public float[] paintColors,cockpit,bonnet,steeringAxis; public int initialPaint,paintSlot=-1; }
  class Group { public Item item; public List<Vector3> vertices=new List<Vector3>(), normals=new List<Vector3>(); public List<Vector2> uv=new List<Vector2>(); public List<int> triangles=new List<int>(); }
  static string F(float v)=>v.ToString("R",CultureInfo.InvariantCulture);
  public static void Run(){
   string output=Environment.GetEnvironmentVariable("GOTLAND_VEHICLE_OUTPUT");Directory.CreateDirectory(output);Directory.CreateDirectory(output+"/Textures");
   EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
-  var car=PrefabUtility.LoadPrefabContents("Assets/Resources/SubaruImpreza.prefab");
+  var car=PrefabUtility.LoadPrefabContents("Assets/Resources/"+Environment.GetEnvironmentVariable("GOTLAND_VEHICLE_MODEL")+".prefab");
   var model=car.GetComponent<ImprezaModel>();
-  var manifest=new Manifest{source="Existing Unity SubaruImpreza prefab; CC BY-NC 4.0",wheelRadius=model.wheelRadius};var groups=new Dictionary<string,Group>();
+  var manifest=new Manifest{source="Unity "+Environment.GetEnvironmentVariable("GOTLAND_VEHICLE_MODEL")+" prefab; CC BY-NC 4.0",wheelRadius=model.wheelRadius};var groups=new Dictionary<string,Group>();
+  manifest.displayName=model.displayName;manifest.credit=model.credit;manifest.paintNames=model.paintNames;manifest.initialPaint=model.initialPaint;manifest.paintColors=model.paintColors.SelectMany(c=>new[]{c.r,c.g,c.b,c.a}).ToArray();manifest.cockpit=new[]{model.cockpitView.position.z*100,model.cockpitView.position.x*100,model.cockpitView.position.y*100};manifest.bonnet=new[]{model.bonnetView.position.z*100,model.bonnetView.position.x*100,model.bonnetView.position.y*100};var axis=model.steeringWheel.forward;manifest.steeringAxis=new[]{axis.z,axis.x,axis.y};
   foreach(var renderer in car.GetComponentsInChildren<Renderer>().OrderBy(f=>f.name)){
    if(!renderer.enabled)continue;
    Mesh mesh=null;
@@ -28,6 +29,7 @@ public static class ExportVehicle {
    int wheel=-1;Vector3 pivot=Vector3.zero;
    for(int wi=0;wi<4;wi++)if(renderer.transform.IsChildOf(model.wheelSpin[wi])){wheel=wi;pivot=model.wheelSpin[wi].position;break;}
    if(renderer==model.cockpitHead)wheel=-2;
+   if(renderer==model.driverSteering.body)wheel=-4;
    if(renderer.transform.IsChildOf(model.steeringWheel)){wheel=-3;pivot=model.steeringWheel.position;}
    var v=mesh.vertices;var normals=mesh.normals;var uv=mesh.uv;
 
@@ -37,8 +39,9 @@ public static class ExportVehicle {
     string key=mat.GetInstanceID()+"_"+wheel;
     if(!groups.TryGetValue(key,out var group)){
      string name="Vehicle_"+groups.Count.ToString("D2");Color color=mat.HasProperty("_Color")?mat.color:Color.white;
-     var item=new Item{wheel=wheel,pivot=new[]{pivot.z*100,pivot.x*100,pivot.y*100},name=name,material=mat.name,shader=mat.shader.name,color=new[]{color.r,color.g,color.b,color.a},roughness=mat.HasProperty("_Glossiness")?1-mat.GetFloat("_Glossiness"):.8f,metallic=mat.HasProperty("_Metallic")?mat.GetFloat("_Metallic"):0};
+     var item=new Item{wheel=wheel,pivot=new[]{pivot.z*100,pivot.x*100,pivot.y*100},name=name,material=mat.name,materialPath=AssetDatabase.GetAssetPath(mat),shader=mat.shader.name,color=new[]{color.r,color.g,color.b,color.a},roughness=mat.HasProperty("_Glossiness")?1-mat.GetFloat("_Glossiness"):.8f,metallic=mat.HasProperty("_Metallic")?mat.GetFloat("_Metallic"):0};
      if(mat.mainTexture){string path=AssetDatabase.GetAssetPath(mat.mainTexture);if(!string.IsNullOrEmpty(path)){item.texture="Tex_"+AssetDatabase.AssetPathToGUID(path)+Path.GetExtension(path);File.Copy(path,output+"/Textures/"+item.texture,true);}}
+     if(mat==model.bodyPaint)manifest.paintSlot=groups.Count;
      group=new Group{item=item};groups.Add(key,group);manifest.meshes.Add(item);
     }
     group.item.objects++;

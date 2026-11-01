@@ -1,0 +1,19 @@
+{
+	"game_version": "v0.1.0",
+	"sky_has_no_collision": true,
+	"arcade_start_on_road": true,
+	"arcade_peak_kmh": 86.256340026855469,
+	"arcade_braking_kmh": 0,
+	"menu_modes_restore_pause": true,
+	"reference_frames": 4464,
+	"off_road_reference_frames": 0,
+	"driver_vertices": 2855,
+	"hand_motion_cm": 20.003532409667969,
+	"eight_drive_restoration_cases": true,
+	"pause_and_resume": true,
+	"completion_clock_and_audio": true,
+	"animated_driver": true,
+	"fifteen_views_restore_drive": true,
+	"arcade_acceleration_braking_and_switch": true,
+	"passed": true
+}

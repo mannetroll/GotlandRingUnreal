@@ -1,0 +1,810 @@
+{
+  "passed": true,
+  "models": [
+    "RallyCar",
+    "SubaruImpreza"
+  ],
+  "texture_checks": 100,
+  "textures": [
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_00",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_MainTex",
+      "guid": "bb42acb6a05ff40629837a58bb769703",
+      "sha256": "21c10bccb9b252779c3dd8474b1fdbfdfddf6e6e28350d665532fa9212c92627"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_00",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_BumpMap",
+      "guid": "bf32d1b57fc0b466d895426a9655f8f2",
+      "sha256": "081c184a22e208f4b7efd92989f2caf115193c3ad4a9e0055e5ade39a5b70309"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_00",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "66f9d8c588a8e4c49a6a36fd141950da",
+      "sha256": "4e08b227a0d3806da19a64371ef4980ad9745aedad41ef885fe991a1ac1a6aa2"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_01",
+      "source_material": "Assets/Models/RallyCar/Materials/headlights.mat",
+      "field": "_MainTex",
+      "guid": "2daca93088cb14cd4a568d65eb2040b3",
+      "sha256": "f1b424c2de2fa0eea9626bcc0b699ca3da95d7094fed6c17f6e2b9e5211f4d70"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_01",
+      "source_material": "Assets/Models/RallyCar/Materials/headlights.mat",
+      "field": "_BumpMap",
+      "guid": "edbec3cc5b882488580aa3fa3b722a7b",
+      "sha256": "301af1a8f7be8280824779d7162092d7b718260e7cf869f3d51578e3b89be042"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_02",
+      "source_material": "Assets/Models/RallyCar/Materials/livery.mat",
+      "field": "_MainTex",
+      "guid": "15646ee060a994d589509ebaea9583c7",
+      "sha256": "b8e8b35d947cfcece07936309aa437d6fa33c965d4e7c6c64aec0444e3bee6e0"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_02",
+      "source_material": "Assets/Models/RallyCar/Materials/livery.mat",
+      "field": "_BumpMap",
+      "guid": "d8e49a7ae0b1f440fbd3ca2ab150d56f",
+      "sha256": "be321e445cf0b734d6ca738fda62486bec538d522bd7df0c56070cfab609505e"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_02",
+      "source_material": "Assets/Models/RallyCar/Materials/livery.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "b30d7802f7b0945fd87ca0f6403ca796",
+      "sha256": "731d0f2814dfa2799a78038766a84cc77126dbf4a5e0e7b6945875588e37fe90"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_03",
+      "source_material": "Assets/Models/RallyCar/Materials/interior.mat",
+      "field": "_MainTex",
+      "guid": "ca511e4d9c8bb48b6920ee9594621c13",
+      "sha256": "967f6f530d40485f3e2701633819cbb0e2b799bea3e4cc66e9e7bdc8c7e38cd2"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_03",
+      "source_material": "Assets/Models/RallyCar/Materials/interior.mat",
+      "field": "_BumpMap",
+      "guid": "e0bf1d7465f2d432cab4bd59407e909b",
+      "sha256": "c2d5a986b9e4d28cd85a555f0ed62d7f320f5510cb2fcaea4140625f5cc9559d"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_03",
+      "source_material": "Assets/Models/RallyCar/Materials/interior.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "1e351175b19b84a9197a140fd7d25c11",
+      "sha256": "f0a9827d85e68c139bb94f4e280a273dc7ce2bd01c1a58323ff83562ed31b212"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_04",
+      "source_material": "Assets/Models/RallyCar/Materials/bottom.mat",
+      "field": "_MainTex",
+      "guid": "4a6a273832f1442c6a21412705ff3072",
+      "sha256": "4430890bc711a034163f47c5a2c8f9490b3f184402315dbad32a9ed31dd1ea1b"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_04",
+      "source_material": "Assets/Models/RallyCar/Materials/bottom.mat",
+      "field": "_BumpMap",
+      "guid": "831e30a9700a14ba1b7cc36dfd174053",
+      "sha256": "8d2b348fe20110a7628797fec869e0faf6aac79ef3d2ede631ec95413b61ec91"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_04",
+      "source_material": "Assets/Models/RallyCar/Materials/bottom.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "d759709dea981450a8d5ef8ac31d0ed1",
+      "sha256": "9f71063450d70ba419872d4813dd88f3711a9910a230cdb7d1302a244004e912"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_05",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_MainTex",
+      "guid": "bb42acb6a05ff40629837a58bb769703",
+      "sha256": "21c10bccb9b252779c3dd8474b1fdbfdfddf6e6e28350d665532fa9212c92627"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_05",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_BumpMap",
+      "guid": "bf32d1b57fc0b466d895426a9655f8f2",
+      "sha256": "081c184a22e208f4b7efd92989f2caf115193c3ad4a9e0055e5ade39a5b70309"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_05",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "66f9d8c588a8e4c49a6a36fd141950da",
+      "sha256": "4e08b227a0d3806da19a64371ef4980ad9745aedad41ef885fe991a1ac1a6aa2"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_06",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_MainTex",
+      "guid": "bb42acb6a05ff40629837a58bb769703",
+      "sha256": "21c10bccb9b252779c3dd8474b1fdbfdfddf6e6e28350d665532fa9212c92627"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_06",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_BumpMap",
+      "guid": "bf32d1b57fc0b466d895426a9655f8f2",
+      "sha256": "081c184a22e208f4b7efd92989f2caf115193c3ad4a9e0055e5ade39a5b70309"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_06",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "66f9d8c588a8e4c49a6a36fd141950da",
+      "sha256": "4e08b227a0d3806da19a64371ef4980ad9745aedad41ef885fe991a1ac1a6aa2"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_07",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_MainTex",
+      "guid": "bb42acb6a05ff40629837a58bb769703",
+      "sha256": "21c10bccb9b252779c3dd8474b1fdbfdfddf6e6e28350d665532fa9212c92627"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_07",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_BumpMap",
+      "guid": "bf32d1b57fc0b466d895426a9655f8f2",
+      "sha256": "081c184a22e208f4b7efd92989f2caf115193c3ad4a9e0055e5ade39a5b70309"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_07",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "66f9d8c588a8e4c49a6a36fd141950da",
+      "sha256": "4e08b227a0d3806da19a64371ef4980ad9745aedad41ef885fe991a1ac1a6aa2"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_08",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_MainTex",
+      "guid": "bb42acb6a05ff40629837a58bb769703",
+      "sha256": "21c10bccb9b252779c3dd8474b1fdbfdfddf6e6e28350d665532fa9212c92627"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_08",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_BumpMap",
+      "guid": "bf32d1b57fc0b466d895426a9655f8f2",
+      "sha256": "081c184a22e208f4b7efd92989f2caf115193c3ad4a9e0055e5ade39a5b70309"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_08",
+      "source_material": "Assets/Models/RallyCar/Materials/wheel.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "66f9d8c588a8e4c49a6a36fd141950da",
+      "sha256": "4e08b227a0d3806da19a64371ef4980ad9745aedad41ef885fe991a1ac1a6aa2"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_09",
+      "source_material": "Assets/Models/RallyCar/Materials/buttons.mat",
+      "field": "_MainTex",
+      "guid": "7ec64a963ebe44d87aaf20d04d31bcc0",
+      "sha256": "8995c17b8189afae51548026a4a92048bcee0578b16244bc7c6a0699c8cc710a"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_10",
+      "source_material": "Assets/Models/RallyCar/Materials/clip.mat",
+      "field": "_MainTex",
+      "guid": "e97c824386cb34403a9dcf2214d920da",
+      "sha256": "bdf24f737ef852036148f0abe8fc538eb6c9f0b3d95f271769444db63116578f"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_10",
+      "source_material": "Assets/Models/RallyCar/Materials/clip.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "579c0ae0e05bc4552b765b13412e000a",
+      "sha256": "41dbb3e63b2b042d5968e0b24f909d74bf785ddf5ee89357e199a393e9a52f9a"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_11",
+      "source_material": "Assets/Models/RallyCar/Materials/driver.mat",
+      "field": "_MainTex",
+      "guid": "d02c13247d1c6467c8cf9f456274646a",
+      "sha256": "1645664eec6c09aef88d8b36122d93038dc35f5d7fc3a9961d8fbc0ca044f943"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_11",
+      "source_material": "Assets/Models/RallyCar/Materials/driver.mat",
+      "field": "_BumpMap",
+      "guid": "d2a45e94738ea4eeaa95938bb384fc56",
+      "sha256": "5be0284264a21680af39063a5548d203fdf2b7daa1e97ed36ccb4421d21e11cf"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_12",
+      "source_material": "Assets/Models/RallyCar/Materials/driver.mat",
+      "field": "_MainTex",
+      "guid": "d02c13247d1c6467c8cf9f456274646a",
+      "sha256": "1645664eec6c09aef88d8b36122d93038dc35f5d7fc3a9961d8fbc0ca044f943"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_12",
+      "source_material": "Assets/Models/RallyCar/Materials/driver.mat",
+      "field": "_BumpMap",
+      "guid": "d2a45e94738ea4eeaa95938bb384fc56",
+      "sha256": "5be0284264a21680af39063a5548d203fdf2b7daa1e97ed36ccb4421d21e11cf"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_13",
+      "source_material": "Assets/Models/RallyCar/Materials/fog_lights.mat",
+      "field": "_MainTex",
+      "guid": "7332ea7100bb34a208aac06e0439eedd",
+      "sha256": "5cd7179e54d5bf5b7e27916526719995acdcdffdbf380c3b0121b84a5fe66d06"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_13",
+      "source_material": "Assets/Models/RallyCar/Materials/fog_lights.mat",
+      "field": "_BumpMap",
+      "guid": "a1d8c01ac04c147c5b3dc191bd1b0ba0",
+      "sha256": "ffbc4552a3bda653b62e9d8370a89abebc5a6b7c834a1e33631a42e12fbfa304"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_13",
+      "source_material": "Assets/Models/RallyCar/Materials/fog_lights.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "9acc5648e98904b3d96b2dc2d3698d0b",
+      "sha256": "a46591a63d3ad18ad52badad41a456d4ce11a1fd85819cb3216808939ab1cbde"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_15",
+      "source_material": "Assets/Models/RallyCar/Materials/grill.mat",
+      "field": "_MainTex",
+      "guid": "fe226cc41d22d40c19de37a4df5edb8d",
+      "sha256": "1099fe20ddbfaa18a1f446604a2607a3771095851ef95cb49398f812d2cfdb03"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_16",
+      "source_material": "Assets/Models/RallyCar/Materials/licence_plate.mat",
+      "field": "_MainTex",
+      "guid": "146a9dbe8bc2b4669a7faa8180a579c5",
+      "sha256": "a985d405192e76630b580d03e2a5d8026d3f1f9e0abc43bc0e28285f3a6a9793"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_16",
+      "source_material": "Assets/Models/RallyCar/Materials/licence_plate.mat",
+      "field": "_BumpMap",
+      "guid": "231bdc8b3bb164722a2bb3cddea5f182",
+      "sha256": "9bcd3091d07659f7a3be7303b4517848a050c9e7528f385f1d284db101c18ac9"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_17",
+      "source_material": "Assets/Models/RallyCar/Materials/window_frame.mat",
+      "field": "_MainTex",
+      "guid": "c8158713a7da24fe2b1e8cb62aeea97a",
+      "sha256": "82aa171a6b654fcc3a3758caa26e9ee8fd6940fb38b496c8ac887fa7c4385fd7"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_17",
+      "source_material": "Assets/Models/RallyCar/Materials/window_frame.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "757c47664752548ed81aefc6cca573e1",
+      "sha256": "63ae055b39651544d119cecdfde1a75436bc4506107bbe8d7974aaf4b53f72e0"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_19",
+      "source_material": "Assets/Models/RallyCar/Materials/roll_cage.mat",
+      "field": "_MainTex",
+      "guid": "1789ff9b64acc44f2b1efb09b46de89a",
+      "sha256": "7a5cb29ac80d14291bb77fa11a38630a475f05b9dfa0440a0d22a5d64b2656b0"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_19",
+      "source_material": "Assets/Models/RallyCar/Materials/roll_cage.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "b659d4dbd4b174de59e63b2bf35a62a4",
+      "sha256": "4bb5455ccf8bbfed0cb14b1df4ff45da51fbb8f419a6e90ed86889ee2e7ff675"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_21",
+      "source_material": "Assets/Models/RallyCar/Materials/seat.mat",
+      "field": "_MainTex",
+      "guid": "951a194d49a2547c0a4ef3a7c91e3501",
+      "sha256": "a06a36329e4a25eccab8d6e5f27f058648c717d9a45b4daf36e984bef63c22ed"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_21",
+      "source_material": "Assets/Models/RallyCar/Materials/seat.mat",
+      "field": "_BumpMap",
+      "guid": "64660416de6c8492e8e1df093422b9bc",
+      "sha256": "5b95ef2bcdaaac5a399d9884654f4c63a950010c72b10150782fb6dcc8533e26"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_21",
+      "source_material": "Assets/Models/RallyCar/Materials/seat.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "90b7fde59796542ea94001442eda02e8",
+      "sha256": "34550859143f47ba22d5807fdfe09137a9b2fabd996b66dc802f4e8498703d9c"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_22",
+      "source_material": "Assets/Models/RallyCar/Materials/taillight.mat",
+      "field": "_MainTex",
+      "guid": "e4316b97198464c409b7224616b62bd3",
+      "sha256": "955af5acb214bb4b13a34227898ebd3296350427d0620430b4947b823c145e7a"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_22",
+      "source_material": "Assets/Models/RallyCar/Materials/taillight.mat",
+      "field": "_BumpMap",
+      "guid": "82c5ad30c06e4425893103f26b01436a",
+      "sha256": "a37ba5e22665491fed433efe922c6c211d91ba859d8f252347ce70fb1d214ecb"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_23",
+      "source_material": "Assets/Models/RallyCar/Materials/interior.mat",
+      "field": "_MainTex",
+      "guid": "ca511e4d9c8bb48b6920ee9594621c13",
+      "sha256": "967f6f530d40485f3e2701633819cbb0e2b799bea3e4cc66e9e7bdc8c7e38cd2"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_23",
+      "source_material": "Assets/Models/RallyCar/Materials/interior.mat",
+      "field": "_BumpMap",
+      "guid": "e0bf1d7465f2d432cab4bd59407e909b",
+      "sha256": "c2d5a986b9e4d28cd85a555f0ed62d7f320f5510cb2fcaea4140625f5cc9559d"
+    },
+    {
+      "model": "RallyCar",
+      "mesh": "Vehicle_23",
+      "source_material": "Assets/Models/RallyCar/Materials/interior.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "1e351175b19b84a9197a140fd7d25c11",
+      "sha256": "f0a9827d85e68c139bb94f4e280a273dc7ce2bd01c1a58323ff83562ed31b212"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_00",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_MainTex",
+      "guid": "f99aa6ee22b89482d9a85ef43214099a",
+      "sha256": "357ba88697d4df0ec939091310276ff720d11dbfadef30bb59bf7f1960cf26a8"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_00",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_BumpMap",
+      "guid": "79d3176fe01c84de1bdce0d927014e83",
+      "sha256": "244fd4988f5ab7ec1dbbd1ff832e02ebfcfd59a0199d841e894a8ed9043edaa2"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_00",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "0ea463b1411c9485983caf9594c36847",
+      "sha256": "b7e3042523e7b4aac4a97385d3ac195a914e44a3e2475ee5f9bdb6a516f91db0"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_01",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/headlights.mat",
+      "field": "_MainTex",
+      "guid": "bc5086e7461874ba98e0208befaceb83",
+      "sha256": "674ca0b5bc9a0f5fd019f27be72819c6f00da9beb0b6ba1253ab5678ae6ab3f4"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_01",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/headlights.mat",
+      "field": "_BumpMap",
+      "guid": "94aa8c1a185a947a9b20f1c321e2a4db",
+      "sha256": "78bd8767cd1dee6aee11f2735923955f92bc32e171ee065a1e17d074bd23769d"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_03",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/livery.mat",
+      "field": "_MainTex",
+      "guid": "fad93b57e109e4d22b2f6e1f9d6d2cc4",
+      "sha256": "c6c4f62cb7b6ac7c3efa6c954f040d76cdc066dfd61781115d0227f292f47d48"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_03",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/livery.mat",
+      "field": "_BumpMap",
+      "guid": "5e5f5461aa75847279e18ccd42e82d6d",
+      "sha256": "b43b3e3e873305a90ecfd178b1a1f3ca95bfb53cbed544f488e6e72accbc6fce"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_03",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/livery.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "6ac9cbe21b30941a3b1053a5b1155e4e",
+      "sha256": "8ebe8514fca12dfa1eed838d4be17ec187ecadb4f2654fa806192f0debe20bb4"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_04",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/bottom.mat",
+      "field": "_MainTex",
+      "guid": "d9747c33d1b234dd69ebcc8b3a28c8bf",
+      "sha256": "1bd5269019d94b22fb9d9c84b05d0dc5b5447f0da7914aa4ae19aebd09397ad5"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_04",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/bottom.mat",
+      "field": "_BumpMap",
+      "guid": "7f4865f023e03493e87069a97c5f85c1",
+      "sha256": "ae4768ede644e349274627c61760d851a2b4dbdeb52224c01659e7e4015228e3"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_04",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/bottom.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "a9eb252ab1b0f4629bca2c7849fec67f",
+      "sha256": "aebfdb0a0a19a3744f8ba228f31518ba64246415fd0d2d6175f0da8b8aab6915"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_05",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_MainTex",
+      "guid": "f99aa6ee22b89482d9a85ef43214099a",
+      "sha256": "357ba88697d4df0ec939091310276ff720d11dbfadef30bb59bf7f1960cf26a8"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_05",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_BumpMap",
+      "guid": "79d3176fe01c84de1bdce0d927014e83",
+      "sha256": "244fd4988f5ab7ec1dbbd1ff832e02ebfcfd59a0199d841e894a8ed9043edaa2"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_05",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "0ea463b1411c9485983caf9594c36847",
+      "sha256": "b7e3042523e7b4aac4a97385d3ac195a914e44a3e2475ee5f9bdb6a516f91db0"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_06",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_MainTex",
+      "guid": "f99aa6ee22b89482d9a85ef43214099a",
+      "sha256": "357ba88697d4df0ec939091310276ff720d11dbfadef30bb59bf7f1960cf26a8"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_06",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_BumpMap",
+      "guid": "79d3176fe01c84de1bdce0d927014e83",
+      "sha256": "244fd4988f5ab7ec1dbbd1ff832e02ebfcfd59a0199d841e894a8ed9043edaa2"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_06",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "0ea463b1411c9485983caf9594c36847",
+      "sha256": "b7e3042523e7b4aac4a97385d3ac195a914e44a3e2475ee5f9bdb6a516f91db0"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_07",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_MainTex",
+      "guid": "f99aa6ee22b89482d9a85ef43214099a",
+      "sha256": "357ba88697d4df0ec939091310276ff720d11dbfadef30bb59bf7f1960cf26a8"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_07",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_BumpMap",
+      "guid": "79d3176fe01c84de1bdce0d927014e83",
+      "sha256": "244fd4988f5ab7ec1dbbd1ff832e02ebfcfd59a0199d841e894a8ed9043edaa2"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_07",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "0ea463b1411c9485983caf9594c36847",
+      "sha256": "b7e3042523e7b4aac4a97385d3ac195a914e44a3e2475ee5f9bdb6a516f91db0"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_08",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_MainTex",
+      "guid": "f99aa6ee22b89482d9a85ef43214099a",
+      "sha256": "357ba88697d4df0ec939091310276ff720d11dbfadef30bb59bf7f1960cf26a8"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_08",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_BumpMap",
+      "guid": "79d3176fe01c84de1bdce0d927014e83",
+      "sha256": "244fd4988f5ab7ec1dbbd1ff832e02ebfcfd59a0199d841e894a8ed9043edaa2"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_08",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/wheel.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "0ea463b1411c9485983caf9594c36847",
+      "sha256": "b7e3042523e7b4aac4a97385d3ac195a914e44a3e2475ee5f9bdb6a516f91db0"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_09",
+      "source_material": "Assets/Models/RallyCar/Materials/buttons.mat",
+      "field": "_MainTex",
+      "guid": "7ec64a963ebe44d87aaf20d04d31bcc0",
+      "sha256": "8995c17b8189afae51548026a4a92048bcee0578b16244bc7c6a0699c8cc710a"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_10",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/clip.mat",
+      "field": "_MainTex",
+      "guid": "cadb835f595fd4379852008aada21144",
+      "sha256": "9affca7969b32af1e86538b1057ad4c84159a37cd1010d501b7932bab44a9d88"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_10",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/clip.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "9ee6a1be320334bdc96b128b7e021f52",
+      "sha256": "68ac94558c61a70ac352fcec46ca6bdf43e2369c659f8bec81382c83b7977e01"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_11",
+      "source_material": "Assets/Models/RallyCar/Materials/interior.mat",
+      "field": "_MainTex",
+      "guid": "ca511e4d9c8bb48b6920ee9594621c13",
+      "sha256": "967f6f530d40485f3e2701633819cbb0e2b799bea3e4cc66e9e7bdc8c7e38cd2"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_11",
+      "source_material": "Assets/Models/RallyCar/Materials/interior.mat",
+      "field": "_BumpMap",
+      "guid": "e0bf1d7465f2d432cab4bd59407e909b",
+      "sha256": "c2d5a986b9e4d28cd85a555f0ed62d7f320f5510cb2fcaea4140625f5cc9559d"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_11",
+      "source_material": "Assets/Models/RallyCar/Materials/interior.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "1e351175b19b84a9197a140fd7d25c11",
+      "sha256": "f0a9827d85e68c139bb94f4e280a273dc7ce2bd01c1a58323ff83562ed31b212"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_12",
+      "source_material": "Assets/Models/RallyCar/Materials/driver.mat",
+      "field": "_MainTex",
+      "guid": "d02c13247d1c6467c8cf9f456274646a",
+      "sha256": "1645664eec6c09aef88d8b36122d93038dc35f5d7fc3a9961d8fbc0ca044f943"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_12",
+      "source_material": "Assets/Models/RallyCar/Materials/driver.mat",
+      "field": "_BumpMap",
+      "guid": "d2a45e94738ea4eeaa95938bb384fc56",
+      "sha256": "5be0284264a21680af39063a5548d203fdf2b7daa1e97ed36ccb4421d21e11cf"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_13",
+      "source_material": "Assets/Models/RallyCar/Materials/driver.mat",
+      "field": "_MainTex",
+      "guid": "d02c13247d1c6467c8cf9f456274646a",
+      "sha256": "1645664eec6c09aef88d8b36122d93038dc35f5d7fc3a9961d8fbc0ca044f943"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_13",
+      "source_material": "Assets/Models/RallyCar/Materials/driver.mat",
+      "field": "_BumpMap",
+      "guid": "d2a45e94738ea4eeaa95938bb384fc56",
+      "sha256": "5be0284264a21680af39063a5548d203fdf2b7daa1e97ed36ccb4421d21e11cf"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_15",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/grill.mat",
+      "field": "_MainTex",
+      "guid": "acadf6a2b85e741ed89da4a6a3f6f3b0",
+      "sha256": "65647ab40a1e5aca97f1658716ab1093961cf5d221980e4d43916dd8721da7df"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_15",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/grill.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "4e070167ec39f4900a6572d082230657",
+      "sha256": "6ec82c170902061f9390c25c96200fc5d97e9f13e8295f07a70ead5f392c6464"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_16",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/licence_plate.mat",
+      "field": "_MainTex",
+      "guid": "b16c827f0c59e472ab67c2ca9ab61b97",
+      "sha256": "def4f1248c4435eb04c67f9e695597f88a7c94edc1c48a52fdb91315c5cd10c4"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_16",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/licence_plate.mat",
+      "field": "_BumpMap",
+      "guid": "c03574573ddb34e7fb55f946c78e5d30",
+      "sha256": "cd80671fd07b9bd73f8a26536a10a49f2274df5fa496c12e7ce7ce563db34410"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_18",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/window_frame.mat",
+      "field": "_MainTex",
+      "guid": "9b1df683cdebb44cfa5b4b1c055b4880",
+      "sha256": "088065b01a007a842ea68b0b5d35d3704677dcd5a2bc0cfb5b742535d5f1f2a3"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_18",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/window_frame.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "9d589cc703ce64b38995f04a6fd49c7c",
+      "sha256": "b68365142fa0a30be43ddc90af8b9472ad0b118f01da591146ad7469b23ceefd"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_19",
+      "source_material": "Assets/Models/RallyCar/Materials/roll_cage.mat",
+      "field": "_MainTex",
+      "guid": "1789ff9b64acc44f2b1efb09b46de89a",
+      "sha256": "7a5cb29ac80d14291bb77fa11a38630a475f05b9dfa0440a0d22a5d64b2656b0"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_19",
+      "source_material": "Assets/Models/RallyCar/Materials/roll_cage.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "b659d4dbd4b174de59e63b2bf35a62a4",
+      "sha256": "4bb5455ccf8bbfed0cb14b1df4ff45da51fbb8f419a6e90ed86889ee2e7ff675"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_21",
+      "source_material": "Assets/Models/RallyCar/Materials/seat.mat",
+      "field": "_MainTex",
+      "guid": "951a194d49a2547c0a4ef3a7c91e3501",
+      "sha256": "a06a36329e4a25eccab8d6e5f27f058648c717d9a45b4daf36e984bef63c22ed"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_21",
+      "source_material": "Assets/Models/RallyCar/Materials/seat.mat",
+      "field": "_BumpMap",
+      "guid": "64660416de6c8492e8e1df093422b9bc",
+      "sha256": "5b95ef2bcdaaac5a399d9884654f4c63a950010c72b10150782fb6dcc8533e26"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_21",
+      "source_material": "Assets/Models/RallyCar/Materials/seat.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "90b7fde59796542ea94001442eda02e8",
+      "sha256": "34550859143f47ba22d5807fdfe09137a9b2fabd996b66dc802f4e8498703d9c"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_22",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/taillight.mat",
+      "field": "_MainTex",
+      "guid": "5bd15c3c5d4724ead92ede69199ba6b2",
+      "sha256": "439fbdd12acbbb4921900c9c53ffa7d05d015378003ea0660080106d3992d897"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_22",
+      "source_material": "Assets/Models/SubaruImpreza/Materials/taillight.mat",
+      "field": "_BumpMap",
+      "guid": "71569a11c8aca46a8b3a965ef7c2c0a2",
+      "sha256": "be38150ad44994d17035033765944898d6a5b1b08aabc873be6482f0e8a9b490"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_23",
+      "source_material": "Assets/Models/RallyCar/Materials/interior.mat",
+      "field": "_MainTex",
+      "guid": "ca511e4d9c8bb48b6920ee9594621c13",
+      "sha256": "967f6f530d40485f3e2701633819cbb0e2b799bea3e4cc66e9e7bdc8c7e38cd2"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_23",
+      "source_material": "Assets/Models/RallyCar/Materials/interior.mat",
+      "field": "_BumpMap",
+      "guid": "e0bf1d7465f2d432cab4bd59407e909b",
+      "sha256": "c2d5a986b9e4d28cd85a555f0ed62d7f320f5510cb2fcaea4140625f5cc9559d"
+    },
+    {
+      "model": "SubaruImpreza",
+      "mesh": "Vehicle_23",
+      "source_material": "Assets/Models/RallyCar/Materials/interior.mat",
+      "field": "_MetallicGlossMap",
+      "guid": "1e351175b19b84a9197a140fd7d25c11",
+      "sha256": "f0a9827d85e68c139bb94f4e280a273dc7ce2bd01c1a58323ff83562ed31b212"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 #include "RingCar.h"
 #include "RingAudio.h"
+#include "RingTrainingData.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/BoxComponent.h"
@@ -63,6 +64,7 @@ bool ARingCar::SaveDrivingSettings(const Ring::DrivingSettings& Values)const{
  return Saved;
 }
 void ARingCar::ApplyDrivingSettings(){
+ if(Training)for(int I=0;I<TrainingRoute.Num();I++){TrainingRoute[I]=Settings.AwdMode?Ring::TrainingAwd[I]:Ring::TrainingArcade[I];TrainingRoute[I].Speed*=FMath::Sqrt(Settings.AwdMode?Settings.Grip:Settings.ArcadeGrip/28.f);}
  Settings.Apply(Dynamics);TyreSquealEnabled=TestMode?true:Settings.TyreSqueal;
  if(!DrivePaused){
   if(!Settings.AwdMode&&Chassis->IsSimulatingPhysics()){ArcadeVelocity=Chassis->GetPhysicsLinearVelocity()/100;Chassis->SetSimulatePhysics(false);}
@@ -134,6 +136,7 @@ void ARingCar::CloseSettings(bool Apply){
  if(ReturnToMenu){ReturnToMenu=false;OpenMenu();}
 }
 void ARingCar::EndPlay(const EEndPlayReason::Type Reason){
+ if(DesktopCapture.IsValid())UGameViewportClient::OnScreenshotCaptured().Remove(DesktopCapture);
  if(SettingsWidget.IsValid()&&GetWorld()->GetGameViewport())GetWorld()->GetGameViewport()->RemoveViewportWidgetContent(SettingsWidget.ToSharedRef());
  SettingsWidget.Reset();
  if(MenuWidget.IsValid()&&GetWorld()->GetGameViewport())GetWorld()->GetGameViewport()->RemoveViewportWidgetContent(MenuWidget.ToSharedRef());

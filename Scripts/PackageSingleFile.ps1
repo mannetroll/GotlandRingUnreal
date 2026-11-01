@@ -6,6 +6,7 @@ $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot -Parent
 $PackageDirectory=(Resolve-Path $PackageDirectory).Path
 if(-not(Test-Path "$PackageDirectory\GotlandRingUnreal.exe")){throw 'Build the portable Unreal game folder first.'}
+foreach($credit in @('LICENSE','DATA_LICENSES.md','VEHICLE_ASSET_CREDITS.md','ENGINE_AUDIO_CREDITS.md')){Copy-Item (Join-Path $root $credit) $PackageDirectory -Force}
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $work=Join-Path $root 'Saved\SingleFile'

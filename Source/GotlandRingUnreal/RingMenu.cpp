@@ -40,7 +40,10 @@ const FControl Controls[]={
  {TEXT("Fullscreen"),TEXT("Fullscreen / windowed"),EKeys::F,{}},
  {TEXT("Show / hide HUD"),TEXT("Hide the driving overlays"),EKeys::J,{}},
  {TEXT("Mute sound"),TEXT("Toggle driving sound"),EKeys::M,{}},
- {TEXT("Tyre squeal"),TEXT("Toggle tyre feedback"),EKeys::T,{}},
+ {TEXT("Car model"),TEXT("Switch Impreza Rally / Subaru Impreza"),EKeys::Y,{}},
+ {TEXT("Paint"),TEXT("Change paint where available"),EKeys::T,{}},
+ {TEXT("Training area"),TEXT("Circuit / 800 metre slide-practice pad"),EKeys::Z,{}},
+ {TEXT("Desktop screenshot"),TEXT("PNG with embedded driving metadata"),EKeys::K,{}},
  {TEXT("Screenshot"),TEXT("Save the game view to Saved"),EKeys::F2,{}}
 };
 FString KeyFile(bool Test){return FPaths::ProjectSavedDir()/(Test?TEXT("KeyboardBindingsTest.json"):TEXT("KeyboardBindings.json"));}
