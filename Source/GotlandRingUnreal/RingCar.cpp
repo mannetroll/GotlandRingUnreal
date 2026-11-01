@@ -219,7 +219,7 @@ void ARingCar::Tick(float Dt) {
  EngineAudio->SetEngine(Dynamics.Motor.Rpm(),FMath::Abs(Dynamics.Throttle),Velocity.Size()/100,Squeal,Muted);
  TripKm+=Velocity.Size()/100*Dt/1000;
  UpdateInstruments(Dynamics.Motor.Rpm(),Velocity.Size()/100,Dynamics.Throttle<0?-1:Dynamics.Gear);
- for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]==-3)Visuals[I]->SetRelativeRotation(FQuat(FVector(.982749939,0,-.184939444),FMath::DegreesToRadians(Dynamics.SteeringDegrees*12)));
+ AnimateCockpitSteering(Dynamics.SteeringDegrees);
  for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]>=0) {
   int32 W=VisualWheels[I];Visuals[I]->SetRelativeLocation(WheelCenters[W]-FVector(0,0,48-Extensions[W]));
   Visuals[I]->SetRelativeRotation(FRotator(0,W<2?Dynamics.SteeringDegrees:0,0).Quaternion()*FRotator(-FMath::RadiansToDegrees(Dynamics.Wheels[W].Rotation),0,0).Quaternion());
@@ -228,3 +228,8 @@ void ARingCar::Tick(float Dt) {
  if(PilotTest)RunPilotTest(Dt);
 }
 ARingGameMode::ARingGameMode(){DefaultPawnClass=nullptr;HUDClass=ARingHUD::StaticClass();}
+
+void ARingCar::AnimateCockpitSteering(float RoadDegrees){
+ for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]==-3)
+  Visuals[I]->SetRelativeRotation(FQuat(FVector(.982749939,0,-.184939444),FMath::DegreesToRadians(-RoadDegrees*12)));
+}

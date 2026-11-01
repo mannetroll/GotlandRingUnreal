@@ -1,5 +1,6 @@
 {
 	"live_material": true,
+	"cockpit_steering_direction_and_centre": true,
 	"trip_leading_zero_pixels": true,
 	"idle_rpm_hits": 10,
 	"stopped_speed_hits": 10,

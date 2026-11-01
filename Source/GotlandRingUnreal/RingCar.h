@@ -99,6 +99,7 @@ private:
  bool InstrumentsTest=false;
  int32 InstrumentsTestPhase=0;
  float TripKm=0;
+ void AnimateCockpitSteering(float RoadDegrees);
  void UpdateInstruments(float Rpm,float MetresPerSecond,int32 Gear,float Fuel=1);
  void RunInstrumentsTest();
  TUniquePtr<Ring::Pilot> Pilot;

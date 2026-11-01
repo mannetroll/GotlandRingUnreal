@@ -15,6 +15,7 @@ fi
 app_dir="$output_dir/Mac/GotlandRingUnreal.app"
 rm -rf "$app_dir"
 mv "$output_dir/Mac/GotlandRingUnreal-Mac-Shipping.app" "$app_dir"
+bash "$project_root/Scripts/ApplyMacIcon.sh" "$app_dir"
 for credit in LICENSE DATA_LICENSES.md VEHICLE_ASSET_CREDITS.md ENGINE_AUDIO_CREDITS.md; do
   cp "$project_root/$credit" "$output_dir/"
 done

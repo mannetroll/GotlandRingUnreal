@@ -1,4 +1,5 @@
 #include "RingCar.h"
+#include "Components/StaticMeshComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Kismet/KismetRenderingLibrary.h"
@@ -23,6 +24,19 @@ void ARingCar::RunInstrumentsTest(){
   SetDrivePaused(true);ViewMode=0;LookPitch=15;UpdateView(1.f/60,nullptr);
   auto Report=MakeShared<FJsonObject>();bool Passed=Dashboard!=nullptr;
   Report->SetBoolField(TEXT("live_material"),Passed);
+  bool SteeringChecked=false,SteeringCorrect=true;
+  for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]==-3){
+   SteeringChecked=true;auto* Wheel=Visuals[I].Get();const FVector Centre=Wheel->GetRelativeLocation();
+   const FVector Axis=FVector(.982749939,0,-.184939444).GetSafeNormal();
+   const FVector Top=(FVector::UpVector-Axis*FVector::DotProduct(FVector::UpVector,Axis)).GetSafeNormal();
+   AnimateCockpitSteering(1);SteeringCorrect&=Wheel->GetRelativeRotation().Quaternion().RotateVector(Top).Y>.1;
+   AnimateCockpitSteering(-1);SteeringCorrect&=Wheel->GetRelativeRotation().Quaternion().RotateVector(Top).Y<-.1;
+   AnimateCockpitSteering(0);SteeringCorrect&=Wheel->GetRelativeRotation().IsNearlyZero(.01)&&Wheel->GetRelativeLocation().Equals(Centre,.001);
+  }
+  AnimateCockpitSteering(Dynamics.SteeringDegrees);
+  Passed&=SteeringChecked&&SteeringCorrect;
+  Report->SetBoolField(TEXT("cockpit_steering_direction_and_centre"),SteeringChecked&&SteeringCorrect);
+
   if(Dashboard){
    auto* Target=NewObject<UTextureRenderTarget2D>(this);
    Target->ClearColor=FLinearColor::Black;Target->InitCustomFormat(1200,400,PF_B8G8R8A8,false);Target->UpdateResourceImmediate(true);
