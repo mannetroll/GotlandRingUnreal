@@ -4,14 +4,17 @@
 #include "Components/StaticMeshComponent.h"
 void ARingCar::InitializeWindRotors(){
  for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("RingRotor"))){
-  It->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);WindRotors.Add(*It);
+  It->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);WindRotors.Add(*It);WindRotations.Add(It->GetActorQuat());
  }
 }
 void ARingCar::AnimateWindRotors(float Dt){
- if(DrivePaused)return;
+ if(DrivePaused&&SceneryView<0&&!ReferenceActive)return;
  // Unity's -60 degrees/s around world +X maps to +60 around Unreal +Y.
  const FQuat Delta(FVector::YAxisVector,FMath::DegreesToRadians(60.f*Dt));
- for(auto& Rotor:WindRotors)Rotor->AddActorWorldRotation(Delta);
+ // Keep sub-frame rotations even when SceneComponent filters a tiny update.
+ for(int32 I=0;I<WindRotors.Num();I++){
+  WindRotations[I]=(Delta*WindRotations[I]).GetNormalized();WindRotors[I]->SetActorRotation(WindRotations[I]);
+ }
 }
 
 #include "Camera/CameraComponent.h"
@@ -44,6 +47,8 @@ void ARingCar::RunWindTest(float Dt){
   MaxAngleError=FMath::Max(MaxAngleError,Error);WindPassed&=Error<.05f;
   WindStartRotations[I]=WindRotors[I]->GetActorQuat();
  }
+ FString PhaseReport=FString::Printf(TEXT("{\"phase\":%d,\"angle_error_degrees\":%.9f,\"hub_error_cm\":%.9f,\"seconds\":%.9f}"),WindPhase,MaxAngleError,MaxHubError,WindSeconds);
+ FFileHelper::SaveStringToFile(PhaseReport,*(FPaths::ProjectSavedDir()/FString::Printf(TEXT("wind_phase_%d.json"),WindPhase)));
  UE_LOG(LogTemp,Display,TEXT("Wind phase %d: angle error %f deg, hub error %f cm, seconds %f"),WindPhase,MaxAngleError,MaxHubError,WindSeconds);
  if(WindPhase==1){FScreenshotRequest::RequestScreenshot(FPaths::ProjectSavedDir()/TEXT("WindRotorMoving.png"),false,false);SetDrivePaused(true);}
  if(WindPhase==2)SetDrivePaused(false);

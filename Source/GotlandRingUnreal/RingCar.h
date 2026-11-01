@@ -7,7 +7,11 @@
 #include "RingPilot.h"
 #include "RingDrivingSettings.h"
 #include "RingLap.h"
+#include "RingRide.h"
 #include "RingCar.generated.h"
+class UProceduralMeshComponent;
+class USceneCaptureComponent2D;
+class UTextureRenderTarget2D;
 class UBoxComponent;
 class USpringArmComponent;
 class UCameraComponent;
@@ -47,7 +51,41 @@ public:
  void ToggleFullscreen();
 private:
  friend class ARingHUD;
+ UPROPERTY() TObjectPtr<UProceduralMeshComponent> DriverBody;
+ UPROPERTY() TObjectPtr<USceneCaptureComponent2D> ReplayBonnet;
+ UPROPERTY() TObjectPtr<USceneCaptureComponent2D> ReplayCockpit;
+ UPROPERTY() TObjectPtr<UTextureRenderTarget2D> BonnetTexture;
+ UPROPERTY() TObjectPtr<UTextureRenderTarget2D> CockpitTexture;
+ FRingRide ReplayRide;
+ FVector SurfaceContacts()const;
+ void InitializeDriver();
+ void AnimateDriver(float RoadDegrees);
+ void ToggleReferenceLap();
+ void SeekReference(float Seconds);
+ void TickReference(float Dt);
+ FVector ReferencePoint(float Distance)const;
+ bool ReferenceActive=false,ReferencePaused=false,ReferenceWasPaused=false;
+ float ReferenceSeconds=0,ReferenceClock=0,ReferenceRoll=0;
+ FTransform ReferenceDrivePose;
+ TArray<FTransform> ReferenceVisualPoses;
+ void NextSceneryView();
+ void ExitSceneryViews();
+ int32 SceneryView=-1;
+ bool SceneryWasPaused=false;
+ struct FSceneryView {FString Name;FVector Position;FRotator Rotation;float Size;};
+ TArray<FSceneryView> SceneryViews;
+ void MakeSceneryViews();
+ void ToggleHandling();
+ void StepArcade(float Dt,float Throttle,float Brake,float Steering,bool Reverse);
+ bool ArcadeReverse=false;
+ float ArcadeSteer=0,ArcadeRpm=900,ArcadeBoost=0;
+ FVector ArcadeVelocity=FVector::ZeroVector;
+ bool MigrationTest=false;
+ int32 MigrationPhase=0;
+ void RunMigrationTest(float Dt);
+
  TArray<TWeakObjectPtr<AActor>> WindRotors;
+ TArray<FQuat> WindRotations;
  void InitializeWindRotors();
  void AnimateWindRotors(float Dt);
  void RunWindTest(float Dt);
@@ -133,6 +171,7 @@ UCLASS()
 class GOTLANDRINGUNREAL_API ARingHUD : public AHUD {
  GENERATED_BODY()
  virtual void DrawHUD() override;
+ virtual void NotifyHitBoxClick(FName BoxName) override;
 };
 UCLASS()
 class GOTLANDRINGUNREAL_API ARingGameMode : public AGameModeBase {

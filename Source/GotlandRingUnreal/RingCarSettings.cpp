@@ -27,6 +27,7 @@
 namespace {
 struct FSettingField {const TCHAR* Key;const TCHAR* Label;float Ring::DrivingSettings::*Member;float Min,Max;};
 const FSettingField Fields[]={
+ {TEXT("SurfaceSound"),TEXT("Road, kerb and gravel sound"),&Ring::DrivingSettings::SurfaceSound,0,1},
  {TEXT("Grip"),TEXT("Tyre grip multiplier"),&Ring::DrivingSettings::Grip,.7f,1.3f},
  {TEXT("FrontTorque"),TEXT("Front torque share"),&Ring::DrivingSettings::FrontTorque,.1f,.9f},
  {TEXT("Steering"),TEXT("Low-speed steering (degrees)"),&Ring::DrivingSettings::Steering,25,55},
@@ -34,32 +35,44 @@ const FSettingField Fields[]={
  {TEXT("SteeringRate"),TEXT("Steering speed (degrees/s)"),&Ring::DrivingSettings::SteeringRate,40,150},
  {TEXT("DroneHeight"),TEXT("Drone height (m)"),&Ring::DrivingSettings::DroneHeight,5,60},
  {TEXT("DroneDistance"),TEXT("Drone following distance (m)"),&Ring::DrivingSettings::DroneDistance,5,120},
- {TEXT("CockpitMovement"),TEXT("Cockpit movement"),&Ring::DrivingSettings::CockpitMovement,0,1}
+ {TEXT("CockpitMovement"),TEXT("Cockpit movement"),&Ring::DrivingSettings::CockpitMovement,0,1},
+ {TEXT("ArcadeGrip"),TEXT("Arcade cornering grip"),&Ring::DrivingSettings::ArcadeGrip,10,40},
+ {TEXT("LateralGrip"),TEXT("Arcade lateral grip"),&Ring::DrivingSettings::LateralGrip,10,60},
+ {TEXT("Response"),TEXT("Arcade steering response"),&Ring::DrivingSettings::Response,1,9},
+ {TEXT("Acceleration"),TEXT("Arcade acceleration"),&Ring::DrivingSettings::Acceleration,.5f,1.8f},
+ {TEXT("Braking"),TEXT("Arcade braking"),&Ring::DrivingSettings::Braking,6,20},
+ {TEXT("OffRoadGrip"),TEXT("Arcade off-road grip"),&Ring::DrivingSettings::OffRoadGrip,3,12}
 };
 }
-FString ARingCar::DrivingSettingsPath()const{return FPaths::ProjectSavedDir()/(SettingsTest?TEXT("DrivingSettingsTest.json"):TEXT("DrivingSettings.json"));}
+FString ARingCar::DrivingSettingsPath()const{return FPaths::ProjectSavedDir()/((SettingsTest||MigrationTest)?TEXT("DrivingSettingsTest.json"):TEXT("DrivingSettings.json"));}
 Ring::DrivingSettings ARingCar::LoadDrivingSettings()const{
  Ring::DrivingSettings Result;FString Text;
  if(!FFileHelper::LoadFileToString(Text,*DrivingSettingsPath()))return Result;
  TSharedPtr<FJsonObject> Json;auto Reader=TJsonReaderFactory<>::Create(Text);
  if(!FJsonSerializer::Deserialize(Reader,Json)||!Json.IsValid()){UE_LOG(LogTemp,Warning,TEXT("Cannot read driving settings JSON"));return Result;}
  for(const auto& Field:Fields){double Value;if(Json->TryGetNumberField(Field.Key,Value)&&FMath::IsFinite(Value))Result.*(Field.Member)=float(Value);}
- Json->TryGetBoolField(TEXT("TractionControl"),Result.TractionControl);Json->TryGetBoolField(TEXT("TyreSqueal"),Result.TyreSqueal);
+ Json->TryGetBoolField(TEXT("AwdMode"),Result.AwdMode);Json->TryGetBoolField(TEXT("TractionControl"),Result.TractionControl);Json->TryGetBoolField(TEXT("TyreSqueal"),Result.TyreSqueal);
  Result.ClampValues();return Result;
 }
 bool ARingCar::SaveDrivingSettings(const Ring::DrivingSettings& Values)const{
  auto Json=MakeShared<FJsonObject>();for(const auto& Field:Fields)Json->SetNumberField(Field.Key,Values.*(Field.Member));
- Json->SetBoolField(TEXT("TractionControl"),Values.TractionControl);Json->SetBoolField(TEXT("TyreSqueal"),Values.TyreSqueal);
+ Json->SetBoolField(TEXT("AwdMode"),Values.AwdMode);Json->SetBoolField(TEXT("TractionControl"),Values.TractionControl);Json->SetBoolField(TEXT("TyreSqueal"),Values.TyreSqueal);
  FString Text;auto Writer=TJsonWriterFactory<>::Create(&Text);FJsonSerializer::Serialize(Json,Writer);
  bool Saved=FFileHelper::SaveStringToFile(Text,*DrivingSettingsPath());
  if(!Saved)UE_LOG(LogTemp,Error,TEXT("Could not save driving settings to %s"),*DrivingSettingsPath());
  return Saved;
 }
-void ARingCar::ApplyDrivingSettings(){Settings.Apply(Dynamics);TyreSquealEnabled=TestMode?true:Settings.TyreSqueal;}
+void ARingCar::ApplyDrivingSettings(){
+ Settings.Apply(Dynamics);TyreSquealEnabled=TestMode?true:Settings.TyreSqueal;
+ if(!DrivePaused){
+  if(!Settings.AwdMode&&Chassis->IsSimulatingPhysics()){ArcadeVelocity=Chassis->GetPhysicsLinearVelocity()/100;Chassis->SetSimulatePhysics(false);}
+  else if(Settings.AwdMode&&!Chassis->IsSimulatingPhysics()){Chassis->SetSimulatePhysics(true);Chassis->SetPhysicsLinearVelocity(ArcadeVelocity*100);}
+ }
+}
 void ARingCar::SetDrivePaused(bool Paused){
  if(DrivePaused==Paused)return;DrivePaused=Paused;
  if(Paused){PauseVelocity=Chassis->GetPhysicsLinearVelocity();PauseAngular=Chassis->GetPhysicsAngularVelocityInRadians();Chassis->SetSimulatePhysics(false);}
- else{Chassis->SetSimulatePhysics(true);Chassis->SetPhysicsLinearVelocity(PauseVelocity);Chassis->SetPhysicsAngularVelocityInRadians(PauseAngular);}
+ else{Chassis->SetSimulatePhysics(Settings.AwdMode);Chassis->SetPhysicsLinearVelocity(PauseVelocity);Chassis->SetPhysicsAngularVelocityInRadians(PauseAngular);}
 }
 void ARingCar::OpenSettings(){
  SettingsWasPaused=DrivePaused;SetDrivePaused(true);SettingsOpen=true;DraftSettings=Settings;SettingsStatus.Empty();
@@ -77,7 +90,11 @@ void ARingCar::BuildSettings(){
  for(int32 I=0;I<3;I++)Tabs->AddSlot().FillWidth(1).Padding(3)[SNew(SButton).TextStyle(&ButtonText).HAlign(HAlign_Center).VAlign(VAlign_Center).ContentPadding(FMargin(10,8)).Text(FText::FromString(Names[I])).ButtonColorAndOpacity(SettingsPage==I?FLinearColor(.08,.25,.55):FLinearColor(.06,.08,.11)).OnClicked_Lambda([this,I](){SettingsPage=I;BuildSettings();return FReply::Handled();})];
  Panel->AddSlot().AutoHeight().Padding(0,0,0,12)[Tabs];
  for(int32 I=0;I<UE_ARRAY_COUNT(Fields);I++){
-  if((SettingsPage==0&&I>=5)||(SettingsPage==1&&I!=7)||(SettingsPage==2&&(I<5||I>6)))continue;
+  if(SettingsPage==0){
+   if(I==0||(I>=6&&I<=8))continue;
+   if(DraftSettings.AwdMode&&I>=9)continue;
+   if(!DraftSettings.AwdMode&&(I==1||I==2||I==5))continue;
+  }else if((SettingsPage==1&&I!=0&&I!=8)||(SettingsPage==2&&(I<6||I>7)))continue;
   const auto Field=Fields[I];
   Panel->AddSlot().AutoHeight().Padding(0,6)[SNew(SHorizontalBox)
    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Regular",14)).Text(FText::FromString(Field.Label))]
@@ -89,10 +106,11 @@ void ARingCar::BuildSettings(){
  auto Toggle=[this,&Panel](const TCHAR* Label,bool Ring::DrivingSettings::*Member){
   Panel->AddSlot().AutoHeight().Padding(0,10)[SNew(SCheckBox)
    .IsChecked_Lambda([this,Member](){return DraftSettings.*Member?ECheckBoxState::Checked:ECheckBoxState::Unchecked;})
-   .OnCheckStateChanged_Lambda([this,Member](ECheckBoxState State){DraftSettings.*Member=State==ECheckBoxState::Checked;})
+   .OnCheckStateChanged_Lambda([this,Member](ECheckBoxState State){DraftSettings.*Member=State==ECheckBoxState::Checked;if(Member==&Ring::DrivingSettings::AwdMode)BuildSettings();})
    [SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Regular",14)).Text(FText::FromString(Label))]];
  };
- if(SettingsPage==0)Toggle(TEXT("Traction control assistance"),&Ring::DrivingSettings::TractionControl);
+ if(SettingsPage==0)Toggle(TEXT("AWD physics (H switches AWD / Arcade)"),&Ring::DrivingSettings::AwdMode);
+ if(SettingsPage==0&&DraftSettings.AwdMode)Toggle(TEXT("Traction control assistance"),&Ring::DrivingSettings::TractionControl);
  if(SettingsPage==1)Toggle(TEXT("Tyre squeal"),&Ring::DrivingSettings::TyreSqueal);
  Panel->AddSlot().AutoHeight().Padding(0,10)[SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Regular",14)).Text(FText::FromString(TEXT("Restore defaults changes this draft. Cancel keeps your current setup."))).AutoWrapText(true)];
  Panel->AddSlot().AutoHeight()[SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Regular",14)).ColorAndOpacity(FLinearColor(1,.4f,.3f)).Text_Lambda([this](){return FText::FromString(SettingsStatus);})];
@@ -108,7 +126,7 @@ void ARingCar::BuildSettings(){
  auto* PC=Cast<APlayerController>(GetController());FInputModeGameAndUI Mode;Mode.SetHideCursorDuringCapture(false);Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);PC->SetInputMode(Mode);PC->bShowMouseCursor=true;
 }
 void ARingCar::CloseSettings(bool Apply){
- if(Apply){DraftSettings.ClampValues();if(!SaveDrivingSettings(DraftSettings)){SettingsStatus=TEXT("Could not save settings. Check that the Saved folder is writable.");return;}Settings=DraftSettings;ApplyDrivingSettings();}
+ if(Apply){DraftSettings.ClampValues();if(!SaveDrivingSettings(DraftSettings)){SettingsStatus=TEXT("Could not save settings. Check that the Saved folder is writable.");return;}bool ChangedMode=Settings.AwdMode!=DraftSettings.AwdMode;Settings=DraftSettings;ApplyDrivingSettings();if(ChangedMode){Laps=Ring::LapClock();ResetCar();}}
  GetWorld()->GetGameViewport()->RemoveViewportWidgetContent(SettingsWidget.ToSharedRef());SettingsWidget.Reset();SettingsOpen=false;
  SetDrivePaused(SettingsWasPaused);IgnoreMouseFrames=2;HadMouseCapture=false;
  auto* PC=Cast<APlayerController>(GetController());PC->SetInputMode(FInputModeGameOnly());PC->bShowMouseCursor=false;

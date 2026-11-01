@@ -8,8 +8,7 @@ int main(int argc,char** argv){
  for(int rate:{44100,48000,96000}){
   Ring::EngineMixer mixer;float samples[960],expected[960];
   for(int n=0;n<400;n++){
-   float squeal=n<50?0:n<150?(n-50)/100.f:n<250?1:0;
-   mixer.Render(samples,960,2,rate,3500,.6f,n<25?0:30,squeal,n>=350);
+   mixer.Render(samples,960,2,rate,3500,.6f,n<25?0:30,0,n>=350);
    reference.read(reinterpret_cast<char*>(expected),sizeof(expected));assert(reference.gcount()==sizeof(expected));
    for(int i=0;i<960;i++){
     assert(std::isfinite(samples[i])&&std::abs(samples[i])<1);

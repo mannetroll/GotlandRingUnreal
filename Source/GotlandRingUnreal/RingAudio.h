@@ -5,6 +5,7 @@
 #include <vector>
 #include "RingAudio.generated.h"
 struct FRingAudioState {
+ std::atomic<float> Asphalt{0},Kerb{0},LooseGround{0};
  std::atomic<float> Rpm{900},Load{0},Speed{0},Squeal{0};std::atomic<bool> Muted{false};
  std::atomic<int32> Rate{0},Written{0};
  // Bounded capture used only by the standalone validation run.
@@ -17,6 +18,7 @@ public:
  URingAudio(const FObjectInitializer& ObjectInitializer);
  TSharedPtr<FRingAudioState,ESPMode::ThreadSafe> State;
  void SetEngine(float Rpm,float Load,float Speed,float Squeal,bool Muted);
+ void SetSurface(float Asphalt,float Kerb,float Loose);
  void CaptureTestAudio();
  bool SaveCapture(const FString& Filename,float& Peak,int32& Samples);
 protected:

@@ -29,6 +29,9 @@ const FControl Controls[]={
  {TEXT("Handbrake"),TEXT("Lock the rear wheels"),EKeys::SpaceBar,{}},
  {TEXT("Steering input"),TEXT("Keyboard / mouse steering"),EKeys::U,{}},
  {TEXT("Camera"),TEXT("Cockpit / bonnet / chase / drone"),EKeys::C,{}},
+ {TEXT("Reference lap"),TEXT("SADAIR’S SPEAR / position-matched game replay"),EKeys::O,{}},
+ {TEXT("Scenery views"),TEXT("15 viewpoints / V next / C return"),EKeys::V,{}},
+ {TEXT("Handling"),TEXT("AWD physics / Arcade"),EKeys::H,{}},
  {TEXT("Autopilot"),TEXT("Follow the Gotland Ring circuit"),EKeys::P,{}},
  {TEXT("Recover car"),TEXT("Return to the nearest road section"),EKeys::R,{}},
  {TEXT("Restart lap"),TEXT("Return to the starting position"),EKeys::Home,{}},
@@ -111,6 +114,8 @@ void ARingCar::BuildMenu(){
  };
  if(MenuPage==0){
   Button(TEXT("Resume driving [Esc]"),[this](){CloseMenu();},true);
+  Button(FString::Printf(TEXT("SADAIR’S SPEAR reference lap [%s]"),*KeyHint(EKeys::O)),[this](){ToggleReferenceLap();});
+  Button(FString::Printf(TEXT("Scenery / 15 views [%s]"),*KeyHint(EKeys::V)),[this](){NextSceneryView();});
   Button(TEXT("Restart lap"),[this](){CloseMenu();ResetCar();});
   auto SettingsAction=[this](int32 Page){CloseMenu();SetDrivePaused(true);ReturnToMenu=true;SettingsPage=Page;OpenSettings();};
   Button(FString::Printf(TEXT("Driving dynamics [%s]"),*KeyHint(EKeys::F3)),[SettingsAction](){SettingsAction(0);});

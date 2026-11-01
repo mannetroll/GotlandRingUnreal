@@ -1,0 +1,11 @@
+{
+  "engine_source_parity_max_sample_error": 0,
+  "surface_source_parity_max_sample_error": 0,
+  "sample_rates_hz": [
+    44100,
+    48000,
+    96000
+  ],
+  "unity_revision": "2b465afc80b0d29ed39b3603d5d94c59a8cf473f",
+  "passed": true
+}

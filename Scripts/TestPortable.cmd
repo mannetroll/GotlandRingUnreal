@@ -14,4 +14,12 @@ if errorlevel 1 exit /b 1
 cl /nologo /std:c++17 /EHsc /O2 /fp:strict /I"%~dp0..\Source\GotlandRingUnreal" "%~dp0..\Tests\tyre_audio.cpp" /Fe:"%~dp0..\Saved\tyre-audio-tests.exe" /Fo:"%~dp0..\Saved\tyre-audio-tests.obj"
 if errorlevel 1 exit /b 1
 "%~dp0..\Saved\tyre-audio-tests.exe" "%~dp0..\Saved\tyre-reference.f32"
+if errorlevel 1 exit /b 1
+"%VSROOT%\MSBuild\Current\Bin\Roslyn\csc.exe" /nologo /out:"%~dp0..\Saved\surface-reference.exe" "%~dp0..\Tests\SurfaceAudioReference.cs" "%~dp0..\..\GotlandRingUnity\Assets\Scripts\SurfaceAudioMixer.cs"
+if errorlevel 1 exit /b 1
+"%~dp0..\Saved\surface-reference.exe" "%~dp0..\Saved\surface-reference.f32"
+if errorlevel 1 exit /b 1
+cl /nologo /std:c++17 /EHsc /O2 /fp:strict /I"%~dp0..\Source\GotlandRingUnreal" "%~dp0..\Tests\surface_audio.cpp" /Fe:"%~dp0..\Saved\surface-audio-tests.exe" /Fo:"%~dp0..\Saved\surface-audio-tests.obj"
+if errorlevel 1 exit /b 1
+"%~dp0..\Saved\surface-audio-tests.exe" "%~dp0..\Saved\surface-reference.f32"
 exit /b %errorlevel%

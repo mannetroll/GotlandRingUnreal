@@ -10,6 +10,10 @@
     {
       "Name": "EditorScriptingUtilities",
       "Enabled": true
+    },
+    {
+      "Name": "ProceduralMeshComponent",
+      "Enabled": true
     }
   ],
   "EngineAssociation": "5.8",

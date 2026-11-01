@@ -1,8 +1,10 @@
 #include "RingAudio.h"
 #include "RingEngineMixer.h"
+#include "RingSurfaceMixer.h"
 #include "Misc/FileHelper.h"
 class FRingGenerator final : public ISoundGenerator {
  Ring::EngineMixer Mixer;
+ Ring::SurfaceMixer Surface;
  TSharedPtr<FRingAudioState,ESPMode::ThreadSafe> State;
  int32 Rate,Channels;
 public:
@@ -10,6 +12,7 @@ public:
  int32 GetNumChannels()const override{return Channels;}
  int32 OnGenerateAudio(float* Out,int32 Count)override{
   Mixer.Render(Out,Count,Channels,Rate,State->Rpm.load(),State->Load.load(),State->Speed.load(),State->Squeal.load(),State->Muted.load());
+  Surface.Render(Out,Count,Channels,Rate,State->Speed.load(),State->Asphalt.load(),State->Kerb.load(),State->LooseGround.load(),State->Muted.load());
   int32 Written=State->Written.load(std::memory_order_relaxed);
   int32 Copy=FMath::Min(Count,int32(State->Capture.size())-Written);
   if(Copy>0){FMemory::Memcpy(State->Capture.data()+Written,Out,Copy*sizeof(float));State->Written.store(Written+Copy,std::memory_order_release);}
@@ -29,3 +32,5 @@ bool URingAudio::SaveCapture(const FString& Filename,float& Peak,int32& Samples)
  for(int32 I=0;I<Samples;I++){float V=State->Capture[I];Peak=FMath::Max(Peak,FMath::Abs(V));int16 S=int16(FMath::Clamp(V,-1.f,1.f)*32767);bytes(&S,2);}
  return FFileHelper::SaveArrayToFile(Wav,*Filename)&&Peak>0&&Peak<1;
 }
+
+void URingAudio::SetSurface(float Asphalt,float Kerb,float Loose){State->Asphalt.store(Asphalt);State->Kerb.store(Kerb);State->LooseGround.store(Loose);}

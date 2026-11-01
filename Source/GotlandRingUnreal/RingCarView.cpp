@@ -22,7 +22,7 @@ void ARingCar::UpdateView(float Dt,APlayerController* PC){
  }
  FVector Lean=FVector::ZeroVector,Tilt=FVector::ZeroVector;
  if(!DrivePaused){
-  FVector Velocity=Chassis->GetPhysicsLinearVelocity()/100;
+  FVector Velocity=Settings.AwdMode?Chassis->GetPhysicsLinearVelocity()/100:ArcadeVelocity;
   FVector Acceleration=GetActorTransform().InverseTransformVectorNoScale((Velocity-PreviousVelocity)/Dt);Acceleration.Z=0;Acceleration=Acceleration.GetClampedToMaxSize(15);
   if(Velocity.Size()<.2f)Acceleration=FVector::ZeroVector;
   PreviousVelocity=Velocity;ViewAcceleration=FMath::Lerp(ViewAcceleration,Acceleration,1-FMath::Exp(-Dt/.14f));
@@ -54,7 +54,10 @@ void ARingCar::UpdateView(float Dt,APlayerController* PC){
   Boom->SetRelativeLocation(Boom->GetRelativeLocation()+Lean);
   Boom->SetRelativeRotation(FRotator((ViewMode==0?-8.45f:-2.f)-LookPitch+Tilt.X,LookYaw,Tilt.Z));
  }
- Camera->SetFieldOfView(FMath::FInterpTo(Camera->FieldOfView,76+SpeedKmh/3.6f*.12f,Dt,3));
+ const float Aspect=GetWorld()->GetGameViewport()->Viewport->GetSizeXY().X/float(FMath::Max(1,GetWorld()->GetGameViewport()->Viewport->GetSizeXY().Y));
+ const float Vertical=76+SpeedKmh/3.6f*.12f;
+ const float Horizontal=FMath::RadiansToDegrees(2*FMath::Atan(FMath::Tan(FMath::DegreesToRadians(Vertical)*.5f)*Aspect));
+ Camera->SetFieldOfView(FMath::FInterpTo(Camera->FieldOfView,Horizontal,Dt,3));
  for(int32 I=0;I<Visuals.Num();I++)if(VisualWheels[I]==-2)Visuals[I]->SetVisibility(ViewMode!=0);
 }
 void ARingCar::RecoverCar(){

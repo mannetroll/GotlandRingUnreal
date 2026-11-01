@@ -20,8 +20,7 @@ public static class TyreAudioReference {
    foreach(int rate in new[]{44100,48000,96000}) {
     var mixer=new ImprezaEngineMixer(loops,rate);var data=new float[960];
     for(int n=0;n<400;n++) {
-     float squeal=n<50?0:n<150?(n-50)/100f:n<250?1:0;
-     mixer.Render(data,2,3500,.6f,n<25?0:30,squeal,n>=350);
+     mixer.Render(data,2,3500,.6f,n<25?0:30,n>=350);
      foreach(float value in data)writer.Write(value);
     }
    }

@@ -1,0 +1,10 @@
+{
+	"max_speed_kmh": 37.091152191162109,
+	"brake_start_kmh": 36.916393280029297,
+	"brake_end_kmh": 0.11205791682004929,
+	"distance_m": 16.452829360961914,
+	"steering_yaw_change_deg": 10.923705101013184,
+	"grounded_wheels_before_reset": 4,
+	"reset_position_error_cm": 0,
+	"passed": true
+}

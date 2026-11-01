@@ -1,4 +1,9 @@
 #include "RingCar.h"
+#include "Engine/TextureRenderTarget2D.h"
+#include "RingReferenceData.h"
+#include "Framework/Application/SlateApplication.h"
+#include "Rendering/SlateRenderer.h"
+#include "Fonts/FontMeasure.h"
 #include "RingRouteData.h"
 #include "RingPresentationData.h"
 #include "Components/TextRenderComponent.h"
@@ -50,7 +55,7 @@ void ARingCar::UpdateLap(float Dt){
  Laps.Step(Dt,Index,Ring::CircuitStart,UE_ARRAY_COUNT(Ring::RouteData),OnRoad);
 }
 void ARingHUD::DrawHUD(){
- Super::DrawHUD();auto* Car=Cast<ARingCar>(GetOwningPawn());if(!Car||Car->HideHUD||!Canvas)return;
+ Super::DrawHUD();auto* Car=Cast<ARingCar>(GetOwningPawn());if(!Car||!Canvas||(Car->HideHUD&&!Car->ReferenceActive&&Car->SceneryView<0))return;
  const float S=FMath::Min(Canvas->SizeX/1600.f,Canvas->SizeY/900.f),W=Canvas->SizeX/S,H=Canvas->SizeY/S;
  const FLinearColor White=FLinearColor::White,Muted=FLinearColor::FromSRGBColor(FColor(156,167,185));
  auto Rect=[&](float X,float Y,float Width,float Height,FLinearColor Color){DrawRect(Color,X*S,Y*S,Width*S,Height*S);};
@@ -67,11 +72,47 @@ void ARingHUD::DrawHUD(){
    }
   }FCanvasTriangleItem Item(Tris,GWhiteTexture);Item.BlendMode=SE_BLEND_Translucent;Canvas->DrawItem(Item);
  };
+ if(Car->ReferenceActive){
+  const float Scale=FMath::Min(Canvas->SizeX/1920.f,Canvas->SizeY/1080.f),OX=(Canvas->SizeX-1920*Scale)/2,OY=(Canvas->SizeY-1080*Scale)/2;
+  DrawRect(FLinearColor::FromSRGBColor(FColor(9,14,18)),0,0,Canvas->SizeX,Canvas->SizeY);
+  DrawTexture(Car->BonnetTexture,OX,OY,1920*Scale,708*Scale,0,0,1,1,FLinearColor::White,BLEND_Opaque);
+  DrawTexture(Car->CockpitTexture,OX,OY+708*Scale,960*Scale,372*Scale,0,0,1,1,FLinearColor::White,BLEND_Opaque);
+  auto Label=[&](const FString& Value,float X,float Y,float Width,float Size,FLinearColor Color,bool Right=false){
+   FSlateFontInfo Font(GEngine->GetMediumFont(),FMath::RoundToInt(Size*.75f*Scale),Size==32?FName("Bold"):FName("Regular"));
+   FCanvasTextItem Item(FVector2D::ZeroVector,FText::FromString(Value),Font,Color);
+   const FVector2D Extent=FSlateApplication::Get().GetRenderer()->GetFontMeasureService()->Measure(Value,Font);
+   Item.Position=FVector2D(OX+(X+Width*(Right?1:.5f))*Scale-Extent.X*(Right?1:.5f),OY+Y*Scale);Canvas->DrawItem(Item);
+  };
+  Label(TEXT("GOTLAND RING / v0.3.4"),1100,24,770,32,White,true);
+  Label(TEXT("SADAIR’S SPEAR • REFERENCE LAP"),1000,75,870,21,White,true);
+  DrawRect(FLinearColor(.012,.025,.037),OX+16*Scale,OY+722*Scale,224*Scale,40*Scale);
+  Label(TEXT("GAME COCKPIT"),16,729,224,21,White);
+  Label(Car->ReferenceSeconds>=186?TEXT("LAP COMPLETE"):Car->ReferencePaused?TEXT("REPLAY PAUSED"):TEXT("REFERENCE LAP TIME"),990,753,900,21,FLinearColor(.66,.83,.79));
+  int Hundredths=FMath::RoundToInt(Car->ReferenceClock*100);
+  Label(FString::Printf(TEXT("%02d:%02d.%02d"),Hundredths/6000,Hundredths/100%60,Hundredths%100),990,805,900,120,White);
+  Label(TEXT("POSITION-MATCHED GAME REPLAY"),990,948,900,21,White);
+  DrawRect(FLinearColor(.24,.33,.36),OX+1030*Scale,OY+981*Scale,820*Scale,3*Scale);
+  DrawRect(FLinearColor(.85,.62,.37),OX+1030*Scale,OY+981*Scale,820*Scale*Car->ReferenceClock/Ring::ReferenceLapDuration,3*Scale);
+  Label(FString::Printf(TEXT("%s  Return to driving    Space / Esc  Pause    Home  Restart    %s  Sound"),*Car->KeyHint(EKeys::O),*Car->KeyHint(EKeys::M)),985,1000,910,17,White);
+  Label(TEXT("Rally Car: SpatialNeglect / CC BY-NC 4.0"),990,1030,900,17,Muted);
+  Label(TEXT("Track: © OpenStreetMap contributors • © Lantmäteriet"),990,1052,900,17,Muted);
+  return;
+ }
+ if(Car->SceneryView>=0){
+  Panel(25,25,700,122);Text(TEXT("GOTLAND RING / SCENERY"),45,35,20,White);
+  Text(FString::Printf(TEXT("%d / 15   %s"),Car->SceneryView+1,*Car->SceneryViews[Car->SceneryView].Name),45,74,20,White);
+  Text(FString::Printf(TEXT("%s: next view    %s / Escape: return to car    F2: screenshot"),*Car->KeyHint(EKeys::V),*Car->KeyHint(EKeys::C)),45,114,13,White);
+  Panel(25,160,205,36);Panel(245,160,205,36);
+  Text(Car->SceneryView==14?TEXT("Return to car [V]"):TEXT("Next scenery [V]"),40,169,15,White);Text(TEXT("Return to car [C]"),260,169,15,White);
+  AddHitBox(FVector2D(25,160)*S,FVector2D(205,36)*S,TEXT("NextScenery"),true);AddHitBox(FVector2D(245,160)*S,FVector2D(205,36)*S,TEXT("ExitScenery"),true);
+  Panel(25,H-81,700,56);Text(TEXT("Drive paused while viewing / Mannetroll Solutions AB"),45,H-72,13,White);
+  Text(TEXT("Rally Car: SpatialNeglect / CC BY-NC 4.0"),45,H-49,13,Muted);return;
+ }
  Panel(25,H-165,365,140);Text(FString::Printf(TEXT("%03d"),FMath::RoundToInt(Car->SpeedKmh)),42,H-161,55,White);
  Text(TEXT("km/h"),175,H-110,19,White);Text(Car->Dynamics.Throttle<0?TEXT("R"):FString::FromInt(Car->Dynamics.Gear),285,H-161,55,White);
- Rect(43,H-84,315,5,Muted);Rect(43,H-84,315*FMath::Clamp(Car->Dynamics.Motor.Rpm()/7000,0.f,1.f),5,FLinearColor(1,.22,.1));
- Text(FString::Printf(TEXT("%d RPM    BOOST %.2f bar"),int(Car->Dynamics.Motor.Rpm()),Car->Dynamics.Boost*.9f),43,H-74,13,White);
- Text(TEXT("AWD PHYSICS"),43,H-45,13,White);
+ Rect(43,H-84,315,5,Muted);Rect(43,H-84,315*FMath::Clamp((Car->Settings.AwdMode?Car->Dynamics.Motor.Rpm():Car->ArcadeRpm)/7000,0.f,1.f),5,FLinearColor(1,.22,.1));
+ Text(FString::Printf(TEXT("%d RPM    BOOST %.2f bar"),int(Car->Settings.AwdMode?Car->Dynamics.Motor.Rpm():Car->ArcadeRpm),Car->Dynamics.Boost*.9f),43,H-74,13,White);
+ Text(Car->Settings.AwdMode?TEXT("AWD PHYSICS / H FOR ARCADE"):TEXT("ARCADE HANDLING / H FOR AWD"),43,H-45,13,White);
  const float InfoX=W-450;Panel(InfoX,H-215,425,190);
  Text(TEXT("Gotland Ring · Open practice"),InfoX+18,H-200,22,White);Text(TEXT("Impreza Rally"),InfoX+18,H-171,14,Muted);
  Text(FString::Printf(TEXT("Lap %d · %s"),Car->Laps.Lap,*ClockText(Car->Laps.Seconds)),InfoX+18,H-145,21,White);
@@ -144,4 +185,9 @@ void ARingCar::RunSignsTest(){
   }
  }else FScreenshotRequest::RequestScreenshot(FPaths::ProjectSavedDir()/FString::Printf(TEXT("TrackSign%s.png"),Numbers[I]),false,false);
  SignsPhase++;
+}
+
+void ARingHUD::NotifyHitBoxClick(FName BoxName){
+ Super::NotifyHitBoxClick(BoxName);auto* Car=Cast<ARingCar>(GetOwningPawn());if(!Car||Car->SceneryView<0)return;
+ if(BoxName==TEXT("NextScenery"))Car->NextSceneryView();else if(BoxName==TEXT("ExitScenery"))Car->ExitSceneryViews();
 }
