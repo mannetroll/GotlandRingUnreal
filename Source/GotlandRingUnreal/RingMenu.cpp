@@ -1,4 +1,5 @@
 #include "RingCar.h"
+#include "RingVersion.h"
 #include "Engine/World.h"
 #include "Engine/GameViewportClient.h"
 #include "GameFramework/PlayerController.h"
@@ -106,7 +107,7 @@ void ARingCar::BuildMenu(){
  if(MenuWidget.IsValid())GetWorld()->GetGameViewport()->RemoveViewportWidgetContent(MenuWidget.ToSharedRef());
  auto Panel=SNew(SVerticalBox);
  auto Label=[&](const FString& Text,int Size,FLinearColor Color){Panel->AddSlot().AutoHeight().Padding(0,0,0,12)[SNew(STextBlock).Text(FText::FromString(Text)).Font(FCoreStyle::GetDefaultFontStyle(Size>=24?"Bold":"Regular",Size)).ColorAndOpacity(Color).AutoWrapText(true)];};
- Label(TEXT("GOTLAND RING"),14,FLinearColor(.2f,.46f,1));
+ Label(TEXT("GOTLAND RING / ")+Ring::VersionLabel(),14,FLinearColor(.2f,.46f,1));
  Label(MenuPage==0?TEXT("Practice paused"):TEXT("Keyboard help & setup"),32,FLinearColor::White);
  Label(MenuPage==0?TEXT("Circuit driving and timed laps. Resume when you are ready."):TEXT("Click a key, then press its replacement. Save applies to future launches."),16,FLinearColor(.45f,.5f,.6f));
  auto Button=[&](const FString& Text,TFunction<void()> Action,bool Primary=false){

@@ -1,4 +1,5 @@
 #include "RingCar.h"
+#include "RingVersion.h"
 #include "RingReferenceData.h"
 #include "RingAudio.h"
 #include "ProceduralMeshComponent.h"
@@ -16,7 +17,7 @@
 void ARingCar::RunMigrationTest(float Dt){
  if(Elapsed<2)return;
  if(MigrationPhase==0){
-  auto J=MakeShared<FJsonObject>();bool Samples=UE_ARRAY_COUNT(Ring::ReferenceFrames)==4464;float Previous=-BIG_NUMBER;
+  auto J=MakeShared<FJsonObject>();J->SetStringField(TEXT("game_version"),Ring::VersionLabel());bool Samples=UE_ARRAY_COUNT(Ring::ReferenceFrames)==4464;float Previous=-BIG_NUMBER;
   int OffRoad=0;for(const auto& F:Ring::ReferenceFrames){Samples&=F.Distance>Previous&&F.Speed>0&&F.Rpm>=3800&&F.Rpm<=6800&&F.Gear>=1&&F.Gear<=5;Previous=F.Distance;FVector P=ReferencePoint(F.Distance);FHitResult H;FCollisionQueryParams Q(SCENE_QUERY_STAT(ReferenceValidation),true,this);if(!RoadSurface->LineTraceComponent(H,P+FVector(0,0,3000),P-FVector(0,0,3000),Q))OffRoad++;}
   bool SkyCollisionFree=false;
   for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("RingPhotographicSky")))SkyCollisionFree=!It->GetActorEnableCollision()&&It->GetStaticMeshComponent()->GetCollisionEnabled()==ECollisionEnabled::NoCollision;

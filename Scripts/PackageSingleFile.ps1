@@ -1,6 +1,6 @@
 param(
-    [string]$PackageDirectory='C:\Dev\GotlandRing\Releases\reference-portable\Windows',
-    [string]$OutputDirectory='C:\Dev\GotlandRing\Releases\unreal.8-single-file'
+    [string]$PackageDirectory='C:\Dev\GotlandRing\Releases\v0.1.0-portable\Windows',
+    [string]$OutputDirectory='C:\Dev\GotlandRing\Releases\v0.1.0-single-file'
 )
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot -Parent
@@ -31,7 +31,7 @@ $info=@{
     payload_sha256=(Get-FileHash $payload -Algorithm SHA256).Hash.ToLower()
     configuration='Shipping'
     platform='Win64'
-    tag='unreal.8'
+    tag='v0.1.0'
 }
 $info | ConvertTo-Json | Set-Content (Join-Path $OutputDirectory 'build-info.json') -Encoding UTF8
 Write-Output "Single-file portable game: $exe"

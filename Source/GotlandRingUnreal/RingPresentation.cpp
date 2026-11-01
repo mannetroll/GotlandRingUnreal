@@ -1,4 +1,5 @@
 #include "RingCar.h"
+#include "RingVersion.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "RingReferenceData.h"
 #include "Framework/Application/SlateApplication.h"
@@ -83,7 +84,7 @@ void ARingHUD::DrawHUD(){
    const FVector2D Extent=FSlateApplication::Get().GetRenderer()->GetFontMeasureService()->Measure(Value,Font);
    Item.Position=FVector2D(OX+(X+Width*(Right?1:.5f))*Scale-Extent.X*(Right?1:.5f),OY+Y*Scale);Canvas->DrawItem(Item);
   };
-  Label(TEXT("GOTLAND RING / v0.3.4"),1100,24,770,32,White,true);
+  Label(TEXT("GOTLAND RING / ")+Ring::VersionLabel(),1100,24,770,32,White,true);
   Label(TEXT("SADAIR’S SPEAR • REFERENCE LAP"),1000,75,870,21,White,true);
   DrawRect(FLinearColor(.012,.025,.037),OX+16*Scale,OY+722*Scale,224*Scale,40*Scale);
   Label(TEXT("GAME COCKPIT"),16,729,224,21,White);
@@ -114,7 +115,7 @@ void ARingHUD::DrawHUD(){
  Text(FString::Printf(TEXT("%d RPM    BOOST %.2f bar"),int(Car->Settings.AwdMode?Car->Dynamics.Motor.Rpm():Car->ArcadeRpm),Car->Dynamics.Boost*.9f),43,H-74,13,White);
  Text(Car->Settings.AwdMode?TEXT("AWD PHYSICS / H FOR ARCADE"):TEXT("ARCADE HANDLING / H FOR AWD"),43,H-45,13,White);
  const float InfoX=W-450;Panel(InfoX,H-215,425,190);
- Text(TEXT("Gotland Ring · Open practice"),InfoX+18,H-200,22,White);Text(TEXT("Impreza Rally"),InfoX+18,H-171,14,Muted);
+ Text(TEXT("Gotland Ring · Open practice"),InfoX+18,H-200,22,White);Text(TEXT("Impreza Rally · ")+Ring::VersionLabel(),InfoX+18,H-171,14,Muted);
  Text(FString::Printf(TEXT("Lap %d · %s"),Car->Laps.Lap,*ClockText(Car->Laps.Seconds)),InfoX+18,H-145,21,White);
  Text(Car->Laps.Best>0?TEXT("Best ")+ClockText(Car->Laps.Best):FString::Printf(TEXT("%.3f km"),Ring::CircuitLength/1000),InfoX+255,H-140,13,Muted);
  Text(FString::Printf(TEXT("%.0f FPS / %.1f ms · Side slip %.1f°"),1/FMath::Max(GetWorld()->GetDeltaSeconds(),.001f),GetWorld()->GetDeltaSeconds()*1000,FMath::Abs(Car->SideslipDegrees)),InfoX+18,H-112,13,Muted);

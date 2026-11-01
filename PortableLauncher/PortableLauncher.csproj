@@ -13,8 +13,8 @@
     <ApplicationIcon>Impreza.ico</ApplicationIcon>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
-    <Version>0.3.4</Version>
-    <InformationalVersion>unreal.8</InformationalVersion>
+    <Version>0.1.0</Version>
+    <InformationalVersion>v0.1.0</InformationalVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Company>Mannetroll Solutions AB</Company>
     <Product>Gotland Ring Unreal</Product>

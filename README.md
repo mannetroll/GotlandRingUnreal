@@ -8,7 +8,9 @@
 
 **Drive a rally Impreza around a Baltic circuit, with a live cockpit, open practice and a reference-lap viewer.**
 
-**Game source:** [unreal.8](https://github.com/mannetroll/GotlandRingUnreal/tree/unreal.8) · **Published downloads:** [Releases](https://github.com/mannetroll/GotlandRingUnreal/releases) · **Unity project:** [GotlandRing](https://github.com/mannetroll/GotlandRing)
+**Release v0.1.0:** [Windows portable EXE](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-Portable.exe) · [macOS ZIP (Apple Silicon)](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-v0.1.0-macOS-arm64.zip) · [Windows installer](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-v0.1.0-Setup-Win64.exe) · [Checksums](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/SHA256SUMS.txt)
+
+[Source: v0.1.0](https://github.com/mannetroll/GotlandRingUnreal/tree/v0.1.0) · [Release notes](https://github.com/mannetroll/GotlandRingUnreal/releases/tag/v0.1.0) · [Unity project](https://github.com/mannetroll/GotlandRing)
 
 An Unreal Engine **5.8** driving prototype using the original GotlandRing road geometry, scenery, car textures and Impreza engine recordings. The approximately **7.214 km** circuit includes banked asphalt, gravel aprons, woodland, limestone quarry banks, barriers, buildings, numbered signs and twelve rotating wind turbines.
 
@@ -16,13 +18,13 @@ The current build includes **AWD physics and arcade handling**, an animated driv
 
 ## Get behind the wheel
 
-**Windows x64:** double-click **GotlandRingUnreal-Portable.exe**. Copy that one file when moving the game to another computer. The game, its runtime DLLs and the launcher's .NET runtime are bundled; no Unreal Editor, separate .NET installation or installer is required.
+**Windows 10/11 x64:** double-click **GotlandRingUnreal-Portable.exe**. Copy that one file when moving the game to another computer. The game, its runtime DLLs and the launcher's .NET runtime are bundled; no Unreal Editor, separate .NET installation or installer is required.
 
 First launch extracts the game to `%LOCALAPPDATA%\Mannetroll\GotlandRingUnreal\<payload hash>`. Subsequent launches reuse that version. The current EXE is approximately **388 MB**; allow space for both the EXE and the approximately **494 MB** extracted game.
 
-**macOS Apple Silicon:** open **GotlandRingUnreal.app**. The complete game is inside the app bundle; no Unreal Editor is required. The current build targets **macOS 14 or newer** on an Apple Silicon Mac. Keep the accompanying asset credits when sharing a packaged build.
+**macOS Apple Silicon:** extract **GotlandRingUnreal-v0.1.0-macOS-arm64.zip**, then open **GotlandRingUnreal.app** inside it. The complete game is inside the app bundle; no Unreal Editor is required. The current build targets **macOS 14 or newer** on an Apple Silicon Mac. Keep the accompanying asset credits when sharing a packaged build.
 
-The current single-file Windows EXE and macOS app are local build outputs. The published [v0.1.0 release](https://github.com/mannetroll/GotlandRingUnreal/releases/tag/v0.1.0) contains earlier Windows ZIP and installer builds. Use the build instructions below to reproduce the current game.
+Download the EXE or ZIP above for **v0.1.0**. A [Windows folder ZIP](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-v0.1.0-Windows.zip) is also available. Both `v0.1.0` and the migration milestone `unreal.8` identify this release source.
 
 | Control | Action |
 |---|---|
@@ -128,14 +130,14 @@ Open **`GotlandRingUnreal.uproject`**, build its C++ editor target and open **`/
 Install Unreal Engine 5.8 and Xcode, then run from the repository root:
 
 ```bash
-bash Scripts/PackageMac.sh "$PWD/../Releases/unreal.8-macOS"
-open ../Releases/unreal.8-macOS/Mac/GotlandRingUnreal.app
+bash Scripts/PackageMac.sh "$PWD/../Releases/v0.1.0-macOS"
+open ../Releases/v0.1.0-macOS/Mac/GotlandRingUnreal.app
 ```
 
 The script detects Unreal at `~/Epic Games/UE_5.8`. For another installation:
 
 ```bash
-UE_MAC_ROOT="/path/to/UE_5.8" bash Scripts/PackageMac.sh "$PWD/../Releases/unreal.8-macOS"
+UE_MAC_ROOT="/path/to/UE_5.8" bash Scripts/PackageMac.sh "$PWD/../Releases/v0.1.0-macOS"
 ```
 
 It builds, cooks, stages and packages the app, applies the mirrored Unity Impreza icon, and copies the asset credits. The local app is ad-hoc signed; public distribution signing/notarization is separate.
@@ -150,24 +152,11 @@ $Project = Join-Path $PWD 'GotlandRingUnreal.uproject'
 & "$UE\Engine\Build\BatchFiles\Build.bat" GotlandRingUnrealEditor Win64 Development "-Project=$Project" -WaitMutex
 ```
 
-To make a portable game folder, stage the Microsoft C++ runtime DLLs alongside the game:
+To make a portable game folder, including the Microsoft C++ runtime DLLs and asset credits:
 
 ```powershell
-$vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-$vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$redist = Get-ChildItem "$vs\VC\Redist\MSVC" -Directory |
-    Where-Object { $_.Name -match '^\d+\.' } |
-    Sort-Object { [version]$_.Name } -Descending | Select-Object -First 1
-$deps = Join-Path $PWD 'Saved\PortableDependencies'
-$crt = Join-Path $deps 'Win64\x64\Microsoft.VC143.CRT'
-New-Item -ItemType Directory -Force $crt | Out-Null
-Copy-Item "$($redist.FullName)\x64\Microsoft.VC143.CRT\*.dll" $crt -Force
-$output = Join-Path $PWD '..\Releases\unreal.8-portable'
-& "$UE\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun "-project=$Project" `
-    -noP4 -platform=Win64 -clientconfig=Shipping -build -cook `
-    -map=/Game/Migration/Prototype -stage -pak -iostore -archive `
-    "-archivedirectory=$output" "-applocaldirectory=$deps" -nodebuginfo -unattended
-Copy-Item LICENSE,DATA_LICENSES.md,VEHICLE_ASSET_CREDITS.md,ENGINE_AUDIO_CREDITS.md "$output\Windows"
+$output = Join-Path $PWD '..\Releases\v0.1.0-portable'
+.\Scripts\PackagePortable.ps1 -EngineRoot $UE -OutputDirectory $output
 ```
 
 The result is **`<output>\Windows\GotlandRingUnreal.exe`** with its adjacent game data. Keep that complete folder together.
@@ -177,7 +166,7 @@ To wrap it in one portable EXE, install the .NET 10 SDK and run:
 ```powershell
 .\Scripts\PackageSingleFile.ps1 `
     -PackageDirectory "$output\Windows" `
-    -OutputDirectory "$PWD\..\Releases\unreal.8-single-file"
+    -OutputDirectory "$PWD\..\Releases\v0.1.0-single-file"
 ```
 
 The result is **`GotlandRingUnreal-Portable.exe`**, plus a checksum file and build metadata. Only the EXE is needed to play. `--extract-only` prepares its cache without starting the game; other arguments are forwarded unchanged.
@@ -203,21 +192,21 @@ Asset regeneration tools use a sibling **`GotlandRingUnity`** checkout and an is
 
 ## Lines of code
 
-**3,673 code lines across 78 project source files**, counted with [cloc 2.06](https://github.com/AlDanial/cloc/tree/v2.06). These are physical lines containing code; comment-only and blank lines are listed separately.
+**3,728 code lines across 80 project source files**, counted with [cloc 2.06](https://github.com/AlDanial/cloc/tree/v2.06). These are physical lines containing code; comment-only and blank lines are listed separately.
 
 | Component | Language | Files | Code | Comments | Blank |
 |---|---|---:|---:|---:|---:|
-| Unreal module, including in-game checks | C++ / headers | 26 | 1,911 | 18 | 12 |
+| Unreal module, including in-game checks | C++ / headers | 27 | 1,924 | 18 | 12 |
 | Asset export/import and data tools | Python | 26 | 971 | 35 | 20 |
-| Unity asset export bridge | C# | 5 | 219 | 1 | 4 |
-| Windows build, packaging and verification | PowerShell | 9 | 182 | 0 | 0 |
 | Native source comparisons | C++ | 5 | 148 | 1 | 2 |
+| Windows build, packaging and verification | PowerShell | 10 | 218 | 0 | 3 |
 | Portable EXE launcher | C# | 1 | 74 | 0 | 2 |
+| Unity asset export bridge | C# | 5 | 219 | 1 | 4 |
 | Cockpit display shader | HLSL | 1 | 65 | 2 | 0 |
 | C# reference checks | C# | 2 | 41 | 1 | 0 |
-| macOS packaging and icon tools | Bash | 2 | 37 | 0 | 0 |
 | Windows test runner | Batch | 1 | 25 | 0 | 0 |
-| **Total** | | **78** | **3,673** | **58** | **40** |
+| macOS packaging and icon tools | Bash | 2 | 43 | 0 | 0 |
+| **Total** | | **80** | **3,728** | **58** | **43** |
 
 Generated track, replay, driver-skin, presentation, scenery-view and audio tables add **10,090 source/data lines in seven files**, excluded from the project-code total above. The count also excludes Unreal Engine and other dependencies, build outputs, assets, documentation, project configuration, and the C# `.Build.cs` / `.Target.cs` configuration files.
 
@@ -243,7 +232,7 @@ The current packaged game passes **five rendered checks on macOS and five on Win
 | Acceleration, braking, steering, road contact and reset | [Pass](Validation/driving_reference_macos.json) | [Pass](Validation/driving_reference_fractal.json) |
 | Twelve rotors: speed, direction, fixed hubs and pause/resume | [Pass](Validation/wind_reference_macos.json) | [Pass](Validation/wind_reference_fractal.json) |
 
-The [source/asset comparison](Validation/reference_source_fractal.json) confirms that **188 game source and asset files** match across the two machines. [Audio comparisons](Validation/reference_audio_parity.json) match the current Unity engine and surface mixers at **44.1, 48 and 96 kHz**.
+The [source/asset comparison](Validation/reference_source_fractal.json) confirms that **189 game source and asset files** match across the two machines. [Audio comparisons](Validation/reference_audio_parity.json) match the current Unity engine and surface mixers at **44.1, 48 and 96 kHz**.
 
 The [single-file EXE check](Validation/single_file_fractal.json) runs from a folder containing only the EXE. It verifies concurrent first-launch extraction, all **42 extracted files** against the original package, cache reuse, argument forwarding with spaces, and the migration, instrument and driving checks through the launcher.
 
@@ -264,7 +253,7 @@ For a rendered test, launch a packaged game with one of these switches:
 For example, on macOS:
 
 ```bash
-open -n -W ../Releases/unreal.8-macOS/Mac/GotlandRingUnreal.app --args \
+open -n -W ../Releases/v0.1.0-macOS/Mac/GotlandRingUnreal.app --args \
     -RingMigrationTest -windowed -ResX=1600 -ResY=900
 ```
 

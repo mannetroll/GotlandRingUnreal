@@ -1,0 +1,9 @@
+﻿{
+    "passed":  true,
+    "version":  "0.1.0",
+    "tested_os":  "Windows 11 x64",
+    "start_menu_shortcut":  true,
+    "uninstall_passed":  true,
+    "installed_file_hashes_match":  42,
+    "installed_game_passed":  true
+}

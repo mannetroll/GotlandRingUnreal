@@ -1,6 +1,6 @@
 param(
-    [string]$SingleExe='C:\Dev\GotlandRing\Releases\unreal.8-single-file\GotlandRingUnreal-Portable.exe',
-    [string]$PackageDirectory='C:\Dev\GotlandRing\Releases\reference-portable\Windows'
+    [string]$SingleExe='C:\Dev\GotlandRing\Releases\v0.1.0-single-file\GotlandRingUnreal-Portable.exe',
+    [string]$PackageDirectory='C:\Dev\GotlandRing\Releases\v0.1.0-portable\Windows'
 )
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot -Parent

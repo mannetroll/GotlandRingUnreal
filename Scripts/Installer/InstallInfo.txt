@@ -1,0 +1,7 @@
+GotlandRingUnreal v0.1.0
+
+The game, circuit assets and runtime DLLs are included. Unreal Editor is not required. Installation is per-user without administrator rights. A Start-menu shortcut and uninstaller are included; a desktop shortcut is optional.
+
+Windows x64. Tested on Windows 11; Windows 10 has not been runtime-tested. A compatible graphics driver is required.
+
+Project code and engine recordings are MIT-licensed. Vehicle/cockpit assets are CC BY-NC 4.0. Preserve the included license and attribution documents.

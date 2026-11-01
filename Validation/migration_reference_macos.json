@@ -1,4 +1,5 @@
 {
+	"game_version": "v0.1.0",
 	"sky_has_no_collision": true,
 	"arcade_start_on_road": true,
 	"arcade_peak_kmh": 86.256340026855469,
