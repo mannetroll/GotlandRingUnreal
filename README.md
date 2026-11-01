@@ -201,6 +201,36 @@ The result is **`GotlandRingUnreal-Portable.exe`**, plus a checksum file and bui
 
 Asset regeneration tools use a sibling **`GotlandRingUnity`** checkout and an isolated Unity staging project under the ignored `Export/` directory. They reuse the source road samples, runtime scenery construction, car assets, driver weights and replay timeline. This is separate from compiling the committed Unreal project.
 
+## Lines of code
+
+**3,673 code lines across 78 project source files**, counted with [cloc 2.06](https://github.com/AlDanial/cloc/tree/v2.06). These are physical lines containing code; comment-only and blank lines are listed separately.
+
+| Component | Language | Files | Code | Comments | Blank |
+|---|---|---:|---:|---:|---:|
+| Unreal module, including in-game checks | C++ / headers | 26 | 1,911 | 18 | 12 |
+| Asset export/import and data tools | Python | 26 | 971 | 35 | 20 |
+| Unity asset export bridge | C# | 5 | 219 | 1 | 4 |
+| Windows build, packaging and verification | PowerShell | 9 | 182 | 0 | 0 |
+| Native source comparisons | C++ | 5 | 148 | 1 | 2 |
+| Portable EXE launcher | C# | 1 | 74 | 0 | 2 |
+| Cockpit display shader | HLSL | 1 | 65 | 2 | 0 |
+| C# reference checks | C# | 2 | 41 | 1 | 0 |
+| macOS packaging and icon tools | Bash | 2 | 37 | 0 | 0 |
+| Windows test runner | Batch | 1 | 25 | 0 | 0 |
+| **Total** | | **78** | **3,673** | **58** | **40** |
+
+Generated track, replay, driver-skin, presentation, scenery-view and audio tables add **10,090 source/data lines in seven files**, excluded from the project-code total above. The count also excludes Unreal Engine and other dependencies, build outputs, assets, documentation, project configuration, and the C# `.Build.cs` / `.Target.cs` configuration files.
+
+To reproduce the project-code count from the repository root with `cloc` and `rg` installed:
+
+```bash
+git ls-files Source Scripts Tests PortableLauncher \
+    | rg '\.(cpp|h|inl|cs|py|ps1|cmd|sh|hlsl)$' \
+    | rg -v '\.(Build|Target)\.cs$|/(EngineCycles|RingDriverData|RingReferenceData|RingRouteData|RingPresentationData)\.h$|/(RingKerbs|RingSceneryViews)\.inl$' \
+    > /tmp/gotland-unreal-code-files.txt
+cloc --list-file=/tmp/gotland-unreal-code-files.txt --skip-uniqueness
+```
+
 ## Verification
 
 The current packaged game passes **five rendered checks on macOS and five on Windows/Fractal**. Windows checks run in an interactive Windows 11 session; Windows 10 runtime testing has not been performed.
