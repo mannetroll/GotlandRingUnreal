@@ -8,7 +8,7 @@
 
 **Drive a rally Impreza around a Baltic circuit, with a live cockpit, open practice and a reference-lap viewer.**
 
-**Release v0.1.0:** [Windows portable EXE](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-Portable.exe) · [macOS ZIP (Apple Silicon)](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-v0.1.0-macOS-arm64.zip) · [Windows installer](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-v0.1.0-Setup-Win64.exe) · [Checksums](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/SHA256SUMS.txt)
+**Release v0.1.0:** [Windows portable EXE](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-Portable.exe) · [macOS DMG (Apple Silicon)](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-v0.1.0-macOS-arm64.dmg) · [macOS ZIP (Apple Silicon)](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-v0.1.0-macOS-arm64.zip) · [Windows installer](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-v0.1.0-Setup-Win64.exe) · [Checksums](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/SHA256SUMS.txt)
 
 [Source: v0.1.0](https://github.com/mannetroll/GotlandRingUnreal/tree/v0.1.0) · [Release notes](https://github.com/mannetroll/GotlandRingUnreal/releases/tag/v0.1.0) · [Unity project](https://github.com/mannetroll/GotlandRing)
 
@@ -22,9 +22,9 @@ The current build includes **AWD physics and arcade handling**, an animated driv
 
 First launch extracts the game to `%LOCALAPPDATA%\Mannetroll\GotlandRingUnreal\<payload hash>`. Subsequent launches reuse that version. Allow space for both the EXE and its extracted game.
 
-**macOS Apple Silicon:** extract **GotlandRingUnreal-v0.1.0-macOS-arm64.zip**, then open **GotlandRingUnreal.app** inside it. The complete game is inside the app bundle; no Unreal Editor is required. The current build targets **macOS 14 or newer** on an Apple Silicon Mac. Keep the accompanying asset credits when sharing a packaged build.
+**macOS Apple Silicon:** open **GotlandRingUnreal-v0.1.0-macOS-arm64.dmg** and drag **GotlandRingUnreal.app** onto the **Applications** shortcut. Eject the disk image, then launch the app from Applications. A ZIP download is also available. The complete game is inside the app bundle; no Unreal Editor is required. The current build targets **macOS 14 or newer** on an Apple Silicon Mac. Keep the accompanying asset credits when sharing a packaged build.
 
-Download the EXE or ZIP above for **v0.1.0**. A [Windows folder ZIP](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-v0.1.0-Windows.zip) is also available. Both `v0.1.0` and the migration milestone `unreal.8` identify this release source.
+Download the EXE, DMG or ZIP above for **v0.1.0**. A [Windows folder ZIP](https://github.com/mannetroll/GotlandRingUnreal/releases/download/v0.1.0/GotlandRingUnreal-v0.1.0-Windows.zip) is also available. Both `v0.1.0` and the migration milestone `unreal.8` identify this release source.
 
 | Control | Action |
 |---|---|
